@@ -1,0 +1,149 @@
+﻿/* =========================
+   MOLECULES
+   ========================= */
+
+.product-card {
+    -fx-background-color: var(--surface);
+    -fx-background-radius: var(--radius-xl);
+    -fx-border-color: var(--border-light);
+    -fx-border-width: 1px;
+    -fx-border-radius: var(--radius-xl);
+    -fx-effect: var(--shadow-sm);
+    -fx-padding: 14px;
+    -fx-spacing: 10px;
+    -fx-cursor: hand;
+}
+
+.product-card:hover {
+    -fx-effect: var(--shadow-md);
+    -fx-border-color: derive(var(--primary), 40%);
+}
+
+.product-image {
+    -fx-background-color: var(--surface-variant);
+    -fx-background-radius: var(--radius-lg);
+    -fx-min-height: 110px;
+    -fx-max-height: 110px;
+}
+
+.product-name {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+}
+
+.product-price {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-Bold", "Inter";
+    -fx-font-weight: 700;
+    -fx-font-size: 16px;
+}
+
+.product-stock {
+    -fx-text-fill: var(--text-secondary);
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 12px;
+}
+
+.cart-item {
+    -fx-background-color: var(--surface);
+    -fx-padding: 10px 12px;
+    -fx-spacing: 10px;
+    -fx-border-color: var(--border-light);
+    -fx-border-width: 0 0 1px 0;
+    -fx-alignment: center-left;
+}
+
+.cart-item:last-child {
+    -fx-border-width: 0;
+}
+
+.cart-item-name {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+.cart-item-price {
+    -fx-text-fill: var(--text-secondary);
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 12px;
+}
+
+.quantity-control {
+    -fx-background-color: var(--surface-variant);
+    -fx-background-radius: var(--radius-md);
+    -fx-padding: 4px;
+    -fx-spacing: 6px;
+    -fx-alignment: center;
+}
+
+.qty-btn {
+    -fx-background-color: var(--surface);
+    -fx-background-radius: var(--radius-sm);
+    -fx-border-color: var(--border);
+    -fx-border-width: 1px;
+    -fx-min-width: 24px;
+    -fx-min-height: 24px;
+    -fx-max-width: 24px;
+    -fx-max-height: 24px;
+    -fx-cursor: hand;
+}
+
+.qty-btn:hover {
+    -fx-background-color: var(--surface-hover);
+}
+
+.qty-label {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 12px;
+    -fx-min-width: 20px;
+    -fx-alignment: center;
+}
+
+.search-bar {
+    -fx-background-color: rgba(247, 246, 255, 0.93);
+    -fx-background-radius: var(--radius-md);
+    -fx-padding: 8px 14px;
+    -fx-spacing: 8px;
+    -fx-alignment: center-left;
+    -fx-border-color: var(--border);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: var(--radius-md);
+}
+
+.search-bar:focused-within {
+    -fx-border-color: var(--primary);
+    -fx-effect: var(--shadow-xs);
+}
+
+.totals-row {
+    -fx-padding: 6px 0;
+    -fx-spacing: 10px;
+    -fx-alignment: center-left;
+}
+
+.total-label {
+    -fx-text-fill: var(--text-secondary);
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 13px;
+}
+
+.total-value {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+    -fx-alignment: center-right;
+}
+
+.total-grand {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-Bold", "Inter";
+    -fx-font-weight: 700;
+    -fx-font-size: 16px;
+}

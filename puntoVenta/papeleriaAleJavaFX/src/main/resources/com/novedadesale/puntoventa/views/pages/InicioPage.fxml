@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="layout-page pos-container" VBox.vgrow="ALWAYS" spacing="18"
+      fx:controller="com.novedadesale.puntoventa.controllers.InicioController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="10">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Nueva Venta" styleClass="label-title"/>
+            <Label text="Selecciona productos para la venta" styleClass="label-subtitle"/>
+        </VBox>
+    </HBox>
+
+    <!-- Filtros Categorías -->
+    <HBox styleClass="categories-bar" spacing="8" alignment="CENTER_LEFT">
+        <ToggleButton text="Todos" styleClass="chip active" selected="true" mnemonicParsing="false"/>
+        <ToggleButton text="Papelería" styleClass="chip" mnemonicParsing="false"/>
+        <ToggleButton text="Regalos" styleClass="chip" mnemonicParsing="false"/>
+        <ToggleButton text="Otros" styleClass="chip" mnemonicParsing="false"/>
+    </HBox>
+
+    <!-- Buscador -->
+    <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" maxWidth="480">
+        <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+        <TextField fx:id="txtBuscar" promptText="Buscar producto..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <!-- Contenido Principal -->
+    <HBox spacing="18" VBox.vgrow="ALWAYS">
+        <!-- Grid Productos -->
+        <VBox styleClass="products-section" spacing="14" HBox.hgrow="ALWAYS">
+            <HBox styleClass="section-header" alignment="CENTER_LEFT">
+                <Label text="Productos" styleClass="label-heading"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Agregar" styleClass="btn-primary button-hover"/>
+            </HBox>
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
+                <FlowPane fx:id="productGrid" styleClass="product-grid" hgap="14" vgap="14"/>
+            </ScrollPane>
+        </VBox>
+
+        <!-- Carrito -->
+        <fx:include source="../organisms/ShoppingCart.fxml"/>
+    </HBox>
+</VBox>

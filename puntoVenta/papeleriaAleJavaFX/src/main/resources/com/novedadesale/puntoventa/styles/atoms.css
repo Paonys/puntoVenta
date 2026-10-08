@@ -1,0 +1,210 @@
+﻿/* =========================
+   ATOMS - Componentes base
+   ========================= */
+
+/* Botón Primario */
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #CF36D9, #8453E9);
+    -fx-text-fill: var(--primary-foreground);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 18px;
+    -fx-background-radius: var(--radius-md);
+    -fx-border-radius: var(--radius-md);
+    -fx-effect: var(--shadow-sm);
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, derive(#CF36D9, 10%), derive(#8453E9, 10%));
+    -fx-effect: var(--shadow-md);
+}
+
+.btn-primary:pressed {
+    -fx-background-color: linear-gradient(to right, derive(#CF36D9, -5%), derive(#8453E9, -5%));
+}
+
+/* Botón Secundario */
+.btn-secondary {
+    -fx-background-color: var(--surface);
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 18px;
+    -fx-background-radius: var(--radius-md);
+    -fx-border-radius: var(--radius-md);
+    -fx-border-color: var(--border);
+    -fx-border-width: 1.5px;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: var(--surface-hover);
+}
+
+.btn-secondary:pressed {
+    -fx-background-color: derive(var(--surface-hover), -2%);
+}
+
+/* Botón Peligro */
+.btn-danger {
+    -fx-background-color: var(--danger);
+    -fx-text-fill: var(--text-inverse);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 14px;
+    -fx-background-radius: var(--radius-md);
+    -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+    -fx-background-color: derive(var(--danger), 10%);
+}
+
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-padding: 6px;
+    -fx-background-radius: var(--radius-full);
+    -fx-cursor: hand;
+    -fx-min-width: 34px;
+    -fx-min-height: 34px;
+    -fx-max-width: 34px;
+    -fx-max-height: 34px;
+    -fx-alignment: center;
+}
+
+.btn-icon:hover {
+    -fx-background-color: var(--surface-hover);
+}
+
+.btn-icon.primary {
+    -fx-background-color: var(--primary);
+    -fx-text-fill: var(--primary-foreground);
+}
+
+.btn-icon.primary:hover {
+    -fx-background-color: derive(var(--primary), 10%);
+}
+
+/* Inputs */
+.text-field,
+.search-field {
+    -fx-background-color: var(--surface);
+    -fx-text-fill: var(--text-primary);
+    -fx-prompt-text-fill: var(--text-tertiary);
+    -fx-font-family: "Inter", "Inter-Regular";
+    -fx-font-size: 14px;
+    -fx-padding: 10px 14px;
+    -fx-background-radius: var(--radius-md);
+    -fx-border-radius: var(--radius-md);
+    -fx-border-color: var(--border);
+    -fx-border-width: 1.5px;
+}
+
+.text-field:hover,
+.search-field:hover {
+    -fx-border-color: derive(var(--primary), 40%);
+}
+
+.text-field:focused,
+.search-field:focused {
+    -fx-border-color: var(--primary);
+    -fx-effect: var(--shadow-xs);
+}
+
+.search-field {
+    -fx-padding: 10px 14px 10px 42px;
+}
+
+/* Labels */
+.label-title {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-Bold", "Inter";
+    -fx-font-weight: 700;
+    -fx-font-size: 24px;
+}
+
+.label-subtitle {
+    -fx-text-fill: var(--text-secondary);
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 16px;
+}
+
+.label-heading {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 18px;
+}
+
+.label-body {
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 14px;
+}
+
+.label-caption {
+    -fx-text-fill: var(--text-tertiary);
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 12px;
+}
+
+/* Badge */
+.badge {
+    -fx-background-color: var(--primary);
+    -fx-text-fill: var(--primary-foreground);
+    -fx-font-family: "Inter-SemiBold", "Inter";
+    -fx-font-weight: 600;
+    -fx-font-size: 11px;
+    -fx-padding: 2px 8px;
+    -fx-background-radius: var(--radius-full);
+}
+
+.badge.success {
+    -fx-background-color: var(--success);
+}
+
+.badge.warning {
+    -fx-background-color: var(--warning);
+    -fx-text-fill: #1F2937;
+}
+
+.badge.danger {
+    -fx-background-color: var(--danger);
+}
+
+.badge.secondary {
+    -fx-background-color: var(--surface-variant);
+    -fx-text-fill: var(--text-primary);
+}
+
+/* Chip */
+.chip {
+    -fx-background-color: var(--surface);
+    -fx-text-fill: var(--text-primary);
+    -fx-font-family: "Inter-Medium", "Inter";
+    -fx-font-weight: 500;
+    -fx-font-size: 13px;
+    -fx-padding: 6px 14px;
+    -fx-background-radius: var(--radius-full);
+    -fx-border-color: var(--border);
+    -fx-border-width: 1.5px;
+    -fx-cursor: hand;
+}
+
+.chip:hover {
+    -fx-background-color: var(--surface-hover);
+}
+
+.chip.active {
+    -fx-background-color: linear-gradient(to right, #CF36D9, #8453E9);
+    -fx-text-fill: var(--text-inverse);
+    -fx-border-color: transparent;
+}
+
+.chip.active:hover {
+    -fx-background-color: linear-gradient(to right, derive(#CF36D9, 10%), derive(#8453E9, 10%));
+}

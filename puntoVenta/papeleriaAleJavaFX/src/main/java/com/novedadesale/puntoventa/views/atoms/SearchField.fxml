@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <TextField fx:id="searchField" styleClass="search-field" promptText="Buscar producto..." />
+    <FontIcon iconLiteral="mdi2m-magnify" iconSize="18" styleClass="text-secondary"
+              StackPane.alignment="CENTER_LEFT">
+        <StackPane.margin>
+            <Insets left="14"/>
+        </StackPane.margin>
+    </FontIcon>
+</StackPane>

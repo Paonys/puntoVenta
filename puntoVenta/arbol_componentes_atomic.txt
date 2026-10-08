@@ -1,0 +1,7 @@
+﻿Átomos (8): Badge, IconButton, LabelTitle, PrimaryButton, SearchField, SecondaryButton, TextFieldAtom, ToggleChip
+Moléculas (5): CartItem(+C), CategoryChip, ProductCard(+C), SearchBar, TotalsSummary
+Organismos (5): CategoriesBar, ProductGrid, ShoppingCart, Sidebar, TopBar
+Plantillas (1): MainLayout(+C)
+Páginas (4): Clientes, Inventario, PointOfSale(+C), Reportes
+
+Total: 23 FXML + 5 Controllers

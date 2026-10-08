@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" styleClass="layout-page" spacing="18">
+    <VBox styleClass="page-header" spacing="6">
+        <Label text="Reportes" styleClass="label-title"/>
+        <Label text="Ventas y estadísticas" styleClass="label-subtitle"/>
+    </VBox>
+    <VBox styleClass="products-section" VBox.vgrow="ALWAYS">
+        <Label text="Módulo en desarrollo" styleClass="label-body"/>
+    </VBox>
+</VBox>

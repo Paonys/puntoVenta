@@ -1,0 +1,99 @@
+﻿papeleriaAleJavaFX/
+├── pom.xml
+└── src/
+    └── main/
+        ├── java/
+        │   └── com/
+        │       └── novedadesale/
+        │           └── puntoventa/
+        │               ├── App.java
+        │               ├── controllers/
+        │               ├── models/
+        │               │   ├── Categoria.java
+        │               │   ├── Producto.java
+        │               │   ├── ItemVenta.java
+        │               │   └── Venta.java
+        │               ├── repositories/
+        │               │   ├── CategoriaRepository.java
+        │               │   ├── ProductoRepository.java
+        │               │   └── VentaRepository.java
+        │               ├── services/
+        │               │   ├── CategoriaService.java
+        │               │   ├── ProductoService.java
+        │               │   ├── VentaService.java
+        │               │   └── ImpresionTicketService.java
+        │               ├── shared/
+        │               │   ├── constants/
+        │               │   │   ├── AppConstants.java
+        │               │   │   └── ViewRoutes.java
+        │               │   └── utils/
+        │               │       ├── AlertUtils.java
+        │               │       ├── BigDecimalUtils.java
+        │               │       └── StringUtils.java
+        │               ├── viewmodels/
+        │               │   ├── BaseViewModel.java
+        │               │   ├── MainLayoutViewModel.java
+        │               │   ├── PointOfSaleViewModel.java
+        │               │   ├── InventarioViewModel.java
+        │               │   ├── ClientesViewModel.java
+        │               │   └── ReportesViewModel.java
+        │               └── views/
+        │                   ├── atoms/
+        │                   │   ├── PrimaryButton.fxml
+        │                   │   ├── SecondaryButton.fxml
+        │                   │   ├── DangerButton.fxml
+        │                   │   ├── IconButton.fxml
+        │                   │   ├── TextField.fxml
+        │                   │   ├── SearchField.fxml
+        │                   │   ├── LabelTitle.fxml
+        │                   │   ├── Badge.fxml
+        │                   │   ├── QuantitySpinner.fxml
+        │                   │   └── ToggleChip.fxml
+        │                   ├── molecules/
+        │                   │   ├── CategoryChip.fxml
+        │                   │   ├── ProductCard.fxml
+        │                   │   ├── CartItem.fxml
+        │                   │   ├── SearchBar.fxml
+        │                   │   ├── TotalsSummary.fxml
+        │                   │   └── ProductInfoRow.fxml
+        │                   ├── organisms/
+        │                   │   ├── TopBar.fxml
+        │                   │   ├── Sidebar.fxml
+        │                   │   ├── CategoriesBar.fxml
+        │                   │   ├── ProductGrid.fxml
+        │                   │   ├── ShoppingCart.fxml
+        │                   │   ├── EmptyCart.fxml
+        │                   │   └── DataTableToolbar.fxml
+        │                   ├── templates/
+        │                   │   └── MainLayout.fxml
+        │                   └── pages/
+        │                       ├── PointOfSalePage.fxml
+        │                       ├── InventarioPage.fxml
+        │                       ├── ClientesPage.fxml
+        │                       └── ReportesPage.fxml
+        └── resources/
+            └── com/
+                └── novedadesale/
+                    └── puntoventa/
+                        ├── fonts/
+                        │   ├── Inter-Regular.ttf
+                        │   ├── Inter-Medium.ttf
+                        │   ├── Inter-SemiBold.ttf
+                        │   ├── Inter-Bold.ttf
+                        │   └── Poppins-SemiBold.ttf
+                        ├── images/
+                        │   ├── logo.png
+                        │   ├── logo-dark.png
+                        │   ├── placeholder-product.png
+                        │   └── background-pattern.svg
+                        ├── styles/
+                        │   ├── theme.css
+                        │   ├── animations.css
+                        │   ├── atoms.css
+                        │   ├── molecules.css
+                        │   ├── organisms.css
+                        │   ├── templates.css
+                        │   ├── pages.css
+                        │   └── utilities.css
+                        ├── views/
+                        └── icons/

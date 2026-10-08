@@ -1,0 +1,38 @@
+﻿/* =========================
+   TEMPLATES
+   ========================= */
+
+.main-layout {
+    -fx-background-color: var(--background);
+}
+
+.layout-topbar {
+    -fx-background-color: transparent;
+}
+
+.layout-content {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-spacing: 0;
+}
+
+.layout-sidebar {
+    -fx-background-color: transparent;
+}
+
+.layout-page {
+    -fx-background-color: transparent;
+    -fx-padding: 24px;
+    -fx-spacing: 18px;
+}
+
+.page-header {
+    -fx-padding: 0 4px;
+    -fx-spacing: 6px;
+    -fx-alignment: center-left;
+}
+
+.page-content {
+    -fx-spacing: 18px;
+    -fx-padding: 0 4px;
+}

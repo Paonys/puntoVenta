@@ -1,0 +1,129 @@
+﻿/* =========================
+   PAGES - Punto de Venta
+   ========================= */
+
+.pos-container {
+    -fx-spacing: 18px;
+    -fx-alignment: top-left;
+    -fx-fill-width: true;
+}
+
+.pos-main {
+    -fx-spacing: 18px;
+    -fx-alignment: top-left;
+    -fx-fill-width: true;
+}
+
+.pos-sidebar-right {
+    -fx-spacing: 18px;
+}
+
+.metrics-row {
+    -fx-spacing: 14px;
+    -fx-alignment: center-left;
+    -fx-fill-width: true;
+}
+
+.metric-card {
+    -fx-background-color: var(--surface);
+    -fx-background-radius: var(--radius-xl);
+    -fx-effect: var(--shadow-sm);
+    -fx-border-color: var(--border-light);
+    -fx-border-width: 1px;
+    -fx-border-radius: var(--radius-xl);
+    -fx-padding: 14px;
+    -fx-spacing: 10px;
+    -fx-min-width: 200px;
+    -fx-pref-width: 260px;
+    -fx-max-width: Infinity;
+}
+
+.metric-card.gradient-1 {
+    -fx-background-color: linear-gradient(135deg, #CF36D9 0%, #8453E9 100%);
+    -fx-text-fill: var(--text-inverse);
+    -fx-border-color: transparent;
+}
+
+.metric-card.gradient-2 {
+    -fx-background-color: linear-gradient(135deg, #8453E9 0%, #5A58D5 100%);
+    -fx-text-fill: var(--text-inverse);
+    -fx-border-color: transparent;
+}
+
+.metric-card.gradient-3 {
+    -fx-background-color: linear-gradient(135deg, #535DF0 0%, #3B82F6 100%);
+    -fx-text-fill: var(--text-inverse);
+    -fx-border-color: transparent;
+}
+
+.metric-card.gradient-4 {
+    -fx-background-color: linear-gradient(135deg, #A28AEA 0%, #8453E9 100%);
+    -fx-text-fill: var(--text-inverse);
+    -fx-border-color: transparent;
+}
+
+.metric-title {
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 13px;
+    -fx-opacity: 0.9;
+}
+
+.metric-card.gradient-1 .metric-title,
+.metric-card.gradient-2 .metric-title,
+.metric-card.gradient-3 .metric-title,
+.metric-card.gradient-4 .metric-title {
+    -fx-text-fill: var(--text-inverse);
+}
+
+.metric-value {
+    -fx-font-family: "Inter-Bold", "Inter";
+    -fx-font-weight: 700;
+    -fx-font-size: 24px;
+}
+
+.metric-card.gradient-1 .metric-value,
+.metric-card.gradient-2 .metric-value,
+.metric-card.gradient-3 .metric-value,
+.metric-card.gradient-4 .metric-value {
+    -fx-text-fill: var(--text-inverse);
+}
+
+.metric-desc {
+    -fx-font-family: "Inter-Regular", "Inter";
+    -fx-font-size: 11px;
+    -fx-opacity: 0.85;
+}
+
+.metric-card.gradient-1 .metric-desc,
+.metric-card.gradient-2 .metric-desc,
+.metric-card.gradient-3 .metric-desc,
+.metric-card.gradient-4 .metric-desc {
+    -fx-text-fill: var(--text-inverse);
+}
+
+.products-section {
+    -fx-background-color: var(--surface);
+    -fx-background-radius: var(--radius-xl);
+    -fx-effect: var(--shadow-sm);
+    -fx-border-color: var(--border-light);
+    -fx-border-width: 1px;
+    -fx-border-radius: var(--radius-xl);
+    -fx-padding: 18px;
+    -fx-spacing: 14px;
+}
+
+.section-header {
+    -fx-spacing: 10px;
+    -fx-alignment: center-left;
+}
+
+.sales-section {
+    -fx-background-color: var(--surface);
+    -fx-background-radius: var(--radius-xl);
+    -fx-effect: var(--shadow-sm);
+    -fx-border-color: var(--border-light);
+    -fx-border-width: 1px;
+    -fx-border-radius: var(--radius-xl);
+    -fx-padding: 18px;
+    -fx-spacing: 14px;
+}

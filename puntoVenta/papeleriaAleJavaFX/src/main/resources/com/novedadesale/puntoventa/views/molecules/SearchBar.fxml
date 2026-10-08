@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="search-bar" alignment="CENTER_LEFT" spacing="8">
+    <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+    <TextField fx:id="txtSearch" promptText="Buscar producto..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+</HBox>

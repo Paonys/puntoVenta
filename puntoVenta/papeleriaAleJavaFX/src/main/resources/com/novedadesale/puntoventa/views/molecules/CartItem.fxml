@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.novedadesale.puntoventa.controllers.molecules.CartItemController"
+      styleClass="cart-item" alignment="CENTER_LEFT" spacing="10">
+    <VBox HBox.hgrow="ALWAYS" spacing="2">
+        <Label fx:id="lblName" styleClass="cart-item-name" text="Producto"/>
+        <Label fx:id="lblPrice" styleClass="cart-item-price" text=".00"/>
+    </VBox>
+    <HBox styleClass="quantity-control" alignment="CENTER" spacing="6">
+        <Button fx:id="btnMinus" text="-" styleClass="qty-btn" onAction="#decrease"/>
+        <Label fx:id="lblQty" styleClass="qty-label" text="1"/>
+        <Button fx:id="btnPlus" text="+" styleClass="qty-btn" onAction="#increase"/>
+    </HBox>
+    <Label fx:id="lblSubtotal" styleClass="total-value" text=".00" minWidth="60" alignment="CENTER_RIGHT"/>
+    <Button fx:id="btnRemove" styleClass="btn-icon" onAction="#remove">
+        <graphic>
+            <FontIcon iconLiteral="mdi2t-trash-can-outline" iconSize="16"/>
+        </graphic>
+    </Button>
+</HBox>

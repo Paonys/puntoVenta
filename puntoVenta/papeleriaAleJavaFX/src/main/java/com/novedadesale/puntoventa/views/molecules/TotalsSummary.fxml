@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="cart-total-section" spacing="8">
+    <HBox styleClass="totals-row">
+        <Label text="Subtotal" styleClass="total-label" HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblSubtotal" text=".00" styleClass="total-value"/>
+    </HBox>
+    <HBox styleClass="totals-row">
+        <Label text="IVA (16%)" styleClass="total-label" HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblIVA" text=".00" styleClass="total-value"/>
+    </HBox>
+    <HBox styleClass="totals-row">
+        <Label text="Descuento" styleClass="total-label" HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblDescuento" text=".00" styleClass="total-value"/>
+    </HBox>
+    <Separator/>
+    <HBox styleClass="totals-row">
+        <Label text="Total a pagar" styleClass="total-grand" HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblTotal" text=".00" styleClass="total-grand"/>
+    </HBox>
+</VBox>
