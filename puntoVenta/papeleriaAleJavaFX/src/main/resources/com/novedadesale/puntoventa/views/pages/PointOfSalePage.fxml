@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -22,7 +22,7 @@
             <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
                 <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
                     <Label text="Ventas del día" styleClass="metric-title"/>
-                    <Label fx:id="lblVentasDia" text=",245.00" styleClass="metric-value"/>
+<Label fx:id="lblVentasDia" text="4245.00" styleClass="metric-value"/>
                     <Label text="↑ 12% vs. ayer" styleClass="metric-desc"/>
                 </VBox>
                 <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
@@ -32,7 +32,7 @@
                 </VBox>
                 <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
                     <Label text="Valor inventario" styleClass="metric-title"/>
-                    <Label fx:id="lblValorInventario" text=",760.00" styleClass="metric-value"/>
+                    <Label fx:id="lblValorInventario" text="3760.00" styleClass="metric-value"/>
                 </VBox>
                 <VBox styleClass="metric-card gradient-4" HBox.hgrow="ALWAYS" spacing="6">
                     <Label text="Stock bajo" styleClass="metric-title"/>
@@ -66,20 +66,20 @@
                 <VBox styleClass="cart-total-section" spacing="8">
                     <HBox styleClass="totals-row">
                         <Label text="Subtotal" styleClass="total-label" HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="lblSubtotal" text=".00" styleClass="total-value"/>
+                        <Label fx:id="lblSubtotal" text="0.00" styleClass="total-value"/>
                     </HBox>
                     <HBox styleClass="totals-row">
                         <Label text="IVA (16%)" styleClass="total-label" HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="lblIVA" text=".00" styleClass="total-value"/>
+                        <Label fx:id="lblIVA" text="0.00" styleClass="total-value"/>
                     </HBox>
                     <HBox styleClass="totals-row">
                         <Label text="Descuento" styleClass="total-label" HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="lblDescuento" text=".00" styleClass="total-value"/>
+                        <Label fx:id="lblDescuento" text="0.00" styleClass="total-value"/>
                     </HBox>
                     <Separator/>
                     <HBox styleClass="totals-row">
                         <Label text="Total a pagar" styleClass="total-grand" HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="lblTotal" text=".00" styleClass="total-grand"/>
+                        <Label fx:id="lblTotal" text="0.00" styleClass="total-grand"/>
                     </HBox>
                 </VBox>
                 <Button text="Cobrar" styleClass="btn-primary" maxWidth="Infinity" prefHeight="46" onAction="#cobrar"/>

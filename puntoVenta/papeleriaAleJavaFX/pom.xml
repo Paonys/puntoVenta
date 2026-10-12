@@ -4,9 +4,104 @@
   <groupId>com.novedadesale</groupId>
   <artifactId>papeleriaAleJavaFX</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <properties>
+<properties>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- ============================================================
+         DESIGN TOKENS (única fuente de verdad, prefijo "ui.").
+         Maven los inyecta en styles/*.css durante el build
+         (resource filtering, aplicado solo a **/*.css).
+         Cambiar un valor aquí actualiza toda la app.
+         ============================================================ -->
+    <!-- Fuente -->
+    <ui.font.family>"Segoe UI"</ui.font.family>
+
+    <!-- Colores de marca -->
+    <ui.color.primary>#8453E9</ui.color.primary>
+    <ui.color.primary-light>#A28AEA</ui.color.primary-light>
+    <ui.color.primary-dark>#5C3FB3</ui.color.primary-dark>
+    <ui.color.primary-hover>derive(#8453E9, 10%)</ui.color.primary-hover>
+    <ui.color.primary-pressed>derive(#8453E9, -5%)</ui.color.primary-pressed>
+    <ui.color.primary-border-hover>derive(#8453E9, 40%)</ui.color.primary-border-hover>
+    <ui.color.secondary>#CF36D9</ui.color.secondary>
+    <ui.color.secondary-hover>derive(#CF36D9, 10%)</ui.color.secondary-hover>
+    <ui.color.secondary-pressed>derive(#CF36D9, -5%)</ui.color.secondary-pressed>
+    <ui.color.secondary-active>rgba(207, 54, 217, 0.85)</ui.color.secondary-active>
+    <ui.color.accent>#535DF0</ui.color.accent>
+    <ui.color.topbar-mid>#8651DE</ui.color.topbar-mid>
+    <ui.color.sidebar-start>#7650D9</ui.color.sidebar-start>
+    <ui.color.sidebar-end>#5A58D5</ui.color.sidebar-end>
+    <ui.color.info>#3B82F6</ui.color.info>
+
+    <!-- Neutrales -->
+    <ui.color.background>#F7F6FF</ui.color.background>
+    <ui.color.surface>#FFFFFF</ui.color.surface>
+    <ui.color.surface-variant>#F5F3FF</ui.color.surface-variant>
+    <ui.color.surface-hover>#F0EEFF</ui.color.surface-hover>
+    <ui.color.surface-hover-pressed>derive(#F0EEFF, -2%)</ui.color.surface-hover-pressed>
+    <ui.color.border>#DDD8FF</ui.color.border>
+    <ui.color.border-light>rgba(221, 216, 255, 0.5)</ui.color.border-light>
+    <ui.color.search-bg>rgba(247, 246, 255, 0.93)</ui.color.search-bg>
+
+    <!-- Texto -->
+    <ui.color.text-primary>#2411A7</ui.color.text-primary>
+    <ui.color.text-secondary>#655AC5</ui.color.text-secondary>
+    <ui.color.text-tertiary>#9A94D6</ui.color.text-tertiary>
+    <ui.color.text-inverse>#FFFFFF</ui.color.text-inverse>
+    <ui.color.text-warning>#1F2937</ui.color.text-warning>
+
+    <!-- Semánticos -->
+    <ui.color.success>#22C55E</ui.color.success>
+    <ui.color.warning>#F59E0B</ui.color.warning>
+    <ui.color.danger>#EF4444</ui.color.danger>
+    <ui.color.danger-hover>derive(#EF4444, 10%)</ui.color.danger-hover>
+
+    <!-- Superposiciones / scrollbar -->
+    <ui.color.overlay-white-12>rgba(255, 255, 255, 0.10)</ui.color.overlay-white-12>
+    <ui.color.overlay-white-70>rgba(255, 255, 255, 0.7)</ui.color.overlay-white-70>
+    <ui.color.scroll-thumb>rgba(101, 90, 197, 0.3)</ui.color.scroll-thumb>
+    <ui.color.scroll-thumb-hover>rgba(101, 90, 197, 0.5)</ui.color.scroll-thumb-hover>
+
+    <!-- Navegación / materiales (estilo macOS) -->
+    <ui.color.icon-nav>rgba(255, 255, 255, 0.88)</ui.color.icon-nav>
+    <ui.color.icon-nav-active>#FFFFFF</ui.color.icon-nav-active>
+    <ui.color.sidebar-active>rgba(255, 255, 255, 0.16)</ui.color.sidebar-active>
+    <ui.color.sidebar-active-border>rgba(255, 255, 255, 0.18)</ui.color.sidebar-active-border>
+    <ui.color.topbar-hairline>rgba(255, 255, 255, 0.20)</ui.color.topbar-hairline>
+
+    <!-- Radios -->
+    <ui.radius.sm>8px</ui.radius.sm>
+    <ui.radius.md>10px</ui.radius.md>
+    <ui.radius.lg>12px</ui.radius.lg>
+    <ui.radius.xl>16px</ui.radius.xl>
+    <ui.radius.2xl>20px</ui.radius.2xl>
+    <ui.radius.full>9999px</ui.radius.full>
+
+    <!-- Sombras (crisp, estilo Apple) -->
+    <ui.shadow.xs>dropshadow(gaussian, rgba(36, 17, 167, 0.05), 3, 0, 0, 2)</ui.shadow.xs>
+    <ui.shadow.sm>dropshadow(gaussian, rgba(36, 17, 167, 0.07), 8, 0, 0, 2)</ui.shadow.sm>
+    <ui.shadow.md>dropshadow(gaussian, rgba(36, 17, 167, 0.10), 16, 0, 0, 4)</ui.shadow.md>
+    <ui.shadow.lg>dropshadow(gaussian, rgba(36, 17, 167, 0.14), 24, 0, 0, 8)</ui.shadow.lg>
+
+    <!-- Espaciado (escala de utilidades) -->
+    <ui.space.xs>4px</ui.space.xs>
+    <ui.space.sm>6px</ui.space.sm>
+    <ui.space.md>10px</ui.space.md>
+    <ui.space.lg>14px</ui.space.lg>
+    <ui.space.xl>18px</ui.space.xl>
+    <ui.space.2xl>24px</ui.space.2xl>
+
+    <!-- Degradados reutilizables -->
+    <ui.gradients.brand>linear-gradient(to right, #CF36D9, #8453E9)</ui.gradients.brand>
+    <ui.gradients.brand-hover>linear-gradient(to right, derive(#CF36D9, 10%), derive(#8453E9, 10%))</ui.gradients.brand-hover>
+    <ui.gradients.brand-pressed>linear-gradient(to right, derive(#CF36D9, -5%), derive(#8453E9, -5%))</ui.gradients.brand-pressed>
+    <ui.gradients.topbar>linear-gradient(to right, #CF36D9, #8651DE 38%, #535DF0)</ui.gradients.topbar>
+    <ui.gradients.sidebar>linear-gradient(to bottom, #7650D9, #5A58D5)</ui.gradients.sidebar>
+    <ui.gradients.card-1>linear-gradient(to bottom right, #CF36D9 0%, #8453E9 100%)</ui.gradients.card-1>
+    <ui.gradients.card-2>linear-gradient(to bottom right, #8453E9 0%, #5A58D5 100%)</ui.gradients.card-2>
+    <ui.gradients.card-3>linear-gradient(to bottom right, #535DF0 0%, #3B82F6 100%)</ui.gradients.card-3>
+    <ui.gradients.card-4>linear-gradient(to bottom right, #A28AEA 0%, #8453E9 100%)</ui.gradients.card-4>
   </properties>
   <dependencies>
     <dependency><groupId>org.openjfx</groupId><artifactId>javafx-controls</artifactId><version>21.0.6</version></dependency>
@@ -16,8 +111,29 @@
     <dependency><groupId>org.kordamp.ikonli</groupId><artifactId>ikonli-javafx</artifactId><version>12.3.1</version></dependency>
     <dependency><groupId>org.kordamp.ikonli</groupId><artifactId>ikonli-materialdesign2-pack</artifactId><version>12.3.1</version></dependency>
   </dependencies>
-  <build>
+<build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.css</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/*.css</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+      </plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.13.0</version></plugin>
       <plugin><groupId>org.openjfx</groupId><artifactId>javafx-maven-plugin</artifactId><version>0.0.8</version><configuration><mainClass>com.novedadesale.puntoventa.App</mainClass></configuration></plugin>
     </plugins>

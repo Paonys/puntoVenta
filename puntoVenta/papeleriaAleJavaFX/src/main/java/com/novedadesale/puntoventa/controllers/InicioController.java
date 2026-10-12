@@ -20,8 +20,8 @@ public class InicioController implements Initializable {
 
     private void cargarProductosMock() {
         // Mock basado en la vista original Inicio (Cuaderno, Plumas, Peluches...)
-        String[] nombres = {"Cuaderno espiral", "Plumas de gel", "Peluches", "L??pices de colores", "Taza personalizada"};
-        String[] precios = {".00", ".00", ".00", ".00", ".00"};
+        String[] nombres = {"Cuaderno espiral", "Plumas de gel", "Peluches", "Lápices de colores", "Taza personalizada"};
+        String[] precios = {"$5.00", "$1.50", "$8.00", "$3.50", "$7.00"};
         int[] stocks = {50, 120, 18, 80, 15};
 
         for (int i = 0; i < nombres.length; i++) {

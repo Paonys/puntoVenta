@@ -1,76 +1,20 @@
-﻿/* =========================
-   Animaciones y Transiciones
+/* =========================
+   Estados interactivos (hover/pressed)
+   =========================
+   NOTA: JavaFX no soporta @keyframes ni -fx-animation ni -fx-transition.
+   Las micro-animaciones de escala (tipo macOS) se hacen con
+   ScaleTransition/TranslateTransition desde código (Animations.java).
+   Aquí solo se conserva el cursor y la elevación de sombra vía :hover.
    ========================= */
-
-@keyframes fadeIn {
-    0% { -fx-opacity: 0; -fx-translate-y: -6px; }
-    100% { -fx-opacity: 1; -fx-translate-y: 0; }
-}
-
-@keyframes fadeUp {
-    0% { -fx-opacity: 0; -fx-translate-y: 10px; }
-    100% { -fx-opacity: 1; -fx-translate-y: 0; }
-}
-
-@keyframes slideInRight {
-    0% { -fx-opacity: 0; -fx-translate-x: 20px; }
-    100% { -fx-opacity: 1; -fx-translate-x: 0; }
-}
-
-@keyframes slideInLeft {
-    0% { -fx-opacity: 0; -fx-translate-x: -20px; }
-    100% { -fx-opacity: 1; -fx-translate-x: 0; }
-}
-
-@keyframes scaleIn {
-    0% { -fx-opacity: 0; -fx-scale-x: 0.95; -fx-scale-y: 0.95; }
-    100% { -fx-opacity: 1; -fx-scale-x: 1; -fx-scale-y: 1; }
-}
-
-@keyframes pulse {
-    0%, 100% { -fx-opacity: 1; }
-    50% { -fx-opacity: 0.6; }
-}
-
-.animate-fade-in {
-    -fx-animation: fadeIn var(--transition-base) ease-in-out forwards;
-}
-
-.animate-fade-up {
-    -fx-animation: fadeUp var(--transition-base) ease-in-out forwards;
-}
-
-.animate-scale-in {
-    -fx-animation: scaleIn var(--transition-fast) ease-out forwards;
-}
 
 .card-hover {
     -fx-cursor: hand;
-    -fx-transition: -fx-scale-x 150ms, -fx-scale-y 150ms, -fx-effect var(--transition-fast);
 }
 
 .card-hover:hover {
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-    -fx-effect: var(--shadow-md);
-}
-
-.card-hover:pressed {
-    -fx-scale-x: 0.99;
-    -fx-scale-y: 0.99;
+    -fx-effect: ${ui.shadow.md};
 }
 
 .button-hover {
     -fx-cursor: hand;
-    -fx-transition: -fx-background-color var(--transition-fast), -fx-scale-x 100ms, -fx-scale-y 100ms;
-}
-
-.button-hover:hover {
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
-.button-hover:pressed {
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
 }

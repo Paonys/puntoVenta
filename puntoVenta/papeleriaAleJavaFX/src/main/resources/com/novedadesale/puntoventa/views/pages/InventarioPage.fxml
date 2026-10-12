@@ -1,12 +1,19 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns="http://javafx.com/javafx/21" styleClass="layout-page" spacing="18">
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="layout-page" spacing="20">
     <VBox styleClass="page-header" spacing="6">
         <Label text="Inventario" styleClass="label-title"/>
         <Label text="Gestión de productos" styleClass="label-subtitle"/>
     </VBox>
-    <VBox styleClass="products-section" VBox.vgrow="ALWAYS">
-        <Label text="Módulo en desarrollo" styleClass="label-body"/>
+    <VBox styleClass="products-section empty-state" VBox.vgrow="ALWAYS">
+        <StackPane styleClass="empty-icon-circle">
+            <FontIcon iconLiteral="mdi2c-clipboard-text-outline" iconSize="34"/>
+        </StackPane>
+        <Label text="Inventario en construcción" styleClass="empty-state-title"/>
+        <Label text="Aquí podrás registrar productos, actualizar cantidades y monitorear alertas de stock bajo." styleClass="empty-state-text" wrapText="true"/>
     </VBox>
 </VBox>

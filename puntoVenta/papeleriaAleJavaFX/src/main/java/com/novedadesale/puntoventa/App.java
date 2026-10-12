@@ -28,7 +28,7 @@ public class App extends Application {
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/novedadesale/puntoventa/styles/pages.css")).toExternalForm());
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/com/novedadesale/puntoventa/styles/utilities.css")).toExternalForm());
 
-        stage.setTitle("Punto de Venta - Papeler????a Novedades Ale");
+        stage.setTitle("Punto de Venta - Papelería Novedades Ale");
         try {
             Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/novedadesale/puntoventa/images/logo.png")));
             stage.getIcons().add(icon);

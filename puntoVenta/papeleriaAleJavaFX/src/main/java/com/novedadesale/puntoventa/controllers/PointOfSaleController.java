@@ -12,18 +12,27 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class PointOfSaleController implements Initializable {
 
     @FXML private FlowPane productGrid;
     @FXML private VBox cartItemsContainer;
+    @FXML private Label lblVentasDia;
+    @FXML private Label lblValorInventario;
     @FXML private Label lblSubtotal;
     @FXML private Label lblIVA;
+    @FXML private Label lblDescuento;
     @FXML private Label lblTotal;
+
+    private final NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("es", "MX"));
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        lblVentasDia.setText(currency.format(4245.00));
+        lblValorInventario.setText(currency.format(3760.00));
         loadMockProducts();
         updateTotals();
     }
@@ -34,9 +43,9 @@ public class PointOfSaleController implements Initializable {
                 "Plumas de gel",
                 "Peluches",
                 "Taza personalizada",
-                "L??pices de colores"
+                "Lápices de colores"
         };
-        String[] prices = {".00", ".00", ".00", ".00", ".00"};
+        String[] prices = {"$5.00", "$1.50", "$8.00", "$7.00", "$3.50"};
 
         for (int i = 0; i < products.length; i++) {
             VBox card = createProductCard(products[i], prices[i]);
@@ -83,9 +92,10 @@ public class PointOfSaleController implements Initializable {
         // TODO
     }
 
-    private void updateTotals() {
-        lblSubtotal.setText(".00");
-        lblIVA.setText(".00");
-        lblTotal.setText(".00");
+private void updateTotals() {
+        lblSubtotal.setText(currency.format(0.0));
+        lblIVA.setText(currency.format(0.0));
+        lblDescuento.setText(currency.format(0.0));
+        lblTotal.setText(currency.format(0.0));
     }
 }

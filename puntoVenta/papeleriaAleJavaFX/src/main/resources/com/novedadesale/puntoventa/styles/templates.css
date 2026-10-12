@@ -1,9 +1,9 @@
-﻿/* =========================
+/* =========================
    TEMPLATES
    ========================= */
 
 .main-layout {
-    -fx-background-color: var(--background);
+    -fx-background-color: ${ui.color.background};
 }
 
 .layout-topbar {
@@ -22,17 +22,17 @@
 
 .layout-page {
     -fx-background-color: transparent;
-    -fx-padding: 24px;
-    -fx-spacing: 18px;
+    -fx-padding: 28px 28px 24px 28px;
+    -fx-spacing: 20px;
 }
 
 .page-header {
     -fx-padding: 0 4px;
-    -fx-spacing: 6px;
+    -fx-spacing: ${ui.space.sm};
     -fx-alignment: center-left;
 }
 
 .page-content {
-    -fx-spacing: 18px;
+    -fx-spacing: 20px;
     -fx-padding: 0 4px;
 }

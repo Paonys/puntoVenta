@@ -1,10 +1,11 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:id="root" styleClass="main-layout"
@@ -12,7 +13,7 @@
 
     <!-- TOPBAR -->
     <top>
-        <HBox styleClass="topbar" alignment="CENTER_LEFT" spacing="20">
+        <HBox fx:id="topbar" styleClass="topbar" alignment="CENTER_LEFT" spacing="16">
             <HBox styleClass="logo-container" alignment="CENTER_LEFT" spacing="10">
                 <ImageView fitWidth="180" fitHeight="60" preserveRatio="true">
                     <image>
@@ -21,15 +22,18 @@
                 </ImageView>
             </HBox>
             <Pane HBox.hgrow="ALWAYS" styleClass="topbar-spacer"/>
-            <HBox styleClass="topbar-actions" alignment="CENTER" spacing="12">
-                <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="380">
+            <HBox styleClass="topbar-actions" alignment="CENTER" spacing="14">
+                <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="340">
                     <Region prefWidth="18" prefHeight="18" styleClass="icon-search"/>
                     <TextField fx:id="searchField" promptText="Buscar producto..." styleClass="search-field"
                                HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
                 </HBox>
                 <HBox fx:id="userMenu" styleClass="user-menu" alignment="CENTER" spacing="8" onMouseClicked="#toggleUserMenu">
                     <Label fx:id="userAvatar" text="CA" styleClass="user-avatar"/>
-                    <Label text="Caja 1" styleClass="user-name"/>
+                    <VBox alignment="CENTER_LEFT" spacing="0">
+                        <Label text="Caja 1" styleClass="user-name"/>
+                        <Label text="Novedades Ale" styleClass="user-name-secondary"/>
+                    </VBox>
                     <Region prefWidth="12" prefHeight="12" styleClass="icon-chevron"/>
                 </HBox>
             </HBox>
@@ -38,20 +42,40 @@
 
     <!-- SIDEBAR -->
     <left>
-        <VBox styleClass="sidebar" spacing="6" prefWidth="240">
+        <VBox fx:id="sidebar" styleClass="sidebar" spacing="8" prefWidth="264">
             <Label text="MENÚ PRINCIPAL" styleClass="nav-section-title"/>
-            <Button fx:id="btnInicio" text="Inicio" styleClass="nav-item" graphicTextGap="14" onAction="#goToInicio"/>
-            <Button fx:id="btnVentas" text="Ventas" styleClass="nav-item" graphicTextGap="14" onAction="#goToVentas"/>
-            <Button fx:id="btnProductos" text="Productos" styleClass="nav-item" graphicTextGap="14" onAction="#goToProductos"/>
-            <Button fx:id="btnRegalos" text="Regalos" styleClass="nav-item" graphicTextGap="14" onAction="#goToRegalos"/>
-            <Button fx:id="btnOfertas" text="Ofertas" styleClass="nav-item" graphicTextGap="14" onAction="#goToOfertas"/>
+            <Button fx:id="btnInicio" text="Inicio" styleClass="nav-item" graphicTextGap="14" onAction="#goToInicio">
+                <graphic><FontIcon iconLiteral="mdi2h-home-outline" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnVentas" text="Ventas" styleClass="nav-item" graphicTextGap="14" onAction="#goToVentas">
+                <graphic><FontIcon iconLiteral="mdi2c-cart-outline" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnProductos" text="Productos" styleClass="nav-item" graphicTextGap="14" onAction="#goToProductos">
+                <graphic><FontIcon iconLiteral="mdi2p-package-variant" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnRegalos" text="Regalos" styleClass="nav-item" graphicTextGap="14" onAction="#goToRegalos">
+                <graphic><FontIcon iconLiteral="mdi2g-gift-outline" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnOfertas" text="Ofertas" styleClass="nav-item" graphicTextGap="14" onAction="#goToOfertas">
+                <graphic><FontIcon iconLiteral="mdi2t-tag-outline" iconSize="20"/></graphic>
+            </Button>
 
-            <Label text="ADMINISTRACIÓN" styleClass="nav-section-title" style="-fx-padding: 12px 14px 4px 14px;"/>
-            <Button fx:id="btnInventario" text="Inventario" styleClass="nav-item" graphicTextGap="14" onAction="#goToInventario"/>
-            <Button fx:id="btnClientes" text="Clientes" styleClass="nav-item" graphicTextGap="14" onAction="#goToClientes"/>
-            <Button fx:id="btnProveedores" text="Proveedores" styleClass="nav-item" graphicTextGap="14" onAction="#goToProveedores"/>
-            <Button fx:id="btnReportes" text="Reportes" styleClass="nav-item" graphicTextGap="14" onAction="#goToReportes"/>
-            <Button fx:id="btnConfiguracion" text="Configuración" styleClass="nav-item" graphicTextGap="14" onAction="#goToConfiguracion"/>
+            <Label text="ADMINISTRACIÓN" styleClass="nav-section-title"/>
+            <Button fx:id="btnInventario" text="Inventario" styleClass="nav-item" graphicTextGap="14" onAction="#goToInventario">
+                <graphic><FontIcon iconLiteral="mdi2c-clipboard-text-outline" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnClientes" text="Clientes" styleClass="nav-item" graphicTextGap="14" onAction="#goToClientes">
+                <graphic><FontIcon iconLiteral="mdi2a-account-group-outline" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnProveedores" text="Proveedores" styleClass="nav-item" graphicTextGap="14" onAction="#goToProveedores">
+                <graphic><FontIcon iconLiteral="mdi2t-truck-outline" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnReportes" text="Reportes" styleClass="nav-item" graphicTextGap="14" onAction="#goToReportes">
+                <graphic><FontIcon iconLiteral="mdi2c-chart-box-outline" iconSize="20"/></graphic>
+            </Button>
+            <Button fx:id="btnConfiguracion" text="Configuración" styleClass="nav-item" graphicTextGap="14" onAction="#goToConfiguracion">
+                <graphic><FontIcon iconLiteral="mdi2c-cog-outline" iconSize="20"/></graphic>
+            </Button>
 
             <Pane VBox.vgrow="ALWAYS"/>
         </VBox>

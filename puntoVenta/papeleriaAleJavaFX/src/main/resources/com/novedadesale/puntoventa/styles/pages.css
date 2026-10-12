@@ -1,96 +1,94 @@
-﻿/* =========================
-   PAGES - Punto de Venta
+/* =========================
+   PAGES - Punto de Venta y vacíos
    ========================= */
 
 .pos-container {
-    -fx-spacing: 18px;
+    -fx-spacing: 22px;
     -fx-alignment: top-left;
     -fx-fill-width: true;
 }
 
 .pos-main {
-    -fx-spacing: 18px;
+    -fx-spacing: 22px;
     -fx-alignment: top-left;
     -fx-fill-width: true;
 }
 
 .pos-sidebar-right {
-    -fx-spacing: 18px;
+    -fx-spacing: 22px;
 }
 
 .metrics-row {
-    -fx-spacing: 14px;
+    -fx-spacing: ${ui.space.lg};
     -fx-alignment: center-left;
     -fx-fill-width: true;
 }
 
 .metric-card {
-    -fx-background-color: var(--surface);
-    -fx-background-radius: var(--radius-xl);
-    -fx-effect: var(--shadow-sm);
-    -fx-border-color: var(--border-light);
+    -fx-background-color: ${ui.color.surface};
+    -fx-background-radius: ${ui.radius.xl};
+    -fx-effect: ${ui.shadow.sm};
+    -fx-border-color: ${ui.color.border-light};
     -fx-border-width: 1px;
-    -fx-border-radius: var(--radius-xl);
-    -fx-padding: 14px;
-    -fx-spacing: 10px;
+    -fx-border-radius: ${ui.radius.xl};
+    -fx-padding: 20px;
+    -fx-spacing: 6px;
     -fx-min-width: 200px;
-    -fx-pref-width: 260px;
+    -fx-pref-width: 240px;
     -fx-max-width: Infinity;
 }
 
 .metric-card.gradient-1 {
-    -fx-background-color: linear-gradient(135deg, #CF36D9 0%, #8453E9 100%);
-    -fx-text-fill: var(--text-inverse);
+    -fx-background-color: ${ui.gradients.card-1};
+    -fx-text-fill: ${ui.color.text-inverse};
     -fx-border-color: transparent;
 }
 
 .metric-card.gradient-2 {
-    -fx-background-color: linear-gradient(135deg, #8453E9 0%, #5A58D5 100%);
-    -fx-text-fill: var(--text-inverse);
+    -fx-background-color: ${ui.gradients.card-2};
+    -fx-text-fill: ${ui.color.text-inverse};
     -fx-border-color: transparent;
 }
 
 .metric-card.gradient-3 {
-    -fx-background-color: linear-gradient(135deg, #535DF0 0%, #3B82F6 100%);
-    -fx-text-fill: var(--text-inverse);
+    -fx-background-color: ${ui.gradients.card-3};
+    -fx-text-fill: ${ui.color.text-inverse};
     -fx-border-color: transparent;
 }
 
 .metric-card.gradient-4 {
-    -fx-background-color: linear-gradient(135deg, #A28AEA 0%, #8453E9 100%);
-    -fx-text-fill: var(--text-inverse);
+    -fx-background-color: ${ui.gradients.card-4};
+    -fx-text-fill: ${ui.color.text-inverse};
     -fx-border-color: transparent;
 }
 
 .metric-title {
-    -fx-font-family: "Inter-Regular", "Inter";
-    -fx-font-size: 13px;
-    -fx-opacity: 0.9;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-opacity: 0.92;
 }
 
 .metric-card.gradient-1 .metric-title,
 .metric-card.gradient-2 .metric-title,
 .metric-card.gradient-3 .metric-title,
 .metric-card.gradient-4 .metric-title {
-    -fx-text-fill: var(--text-inverse);
+    -fx-text-fill: ${ui.color.text-inverse};
 }
 
 .metric-value {
-    -fx-font-family: "Inter-Bold", "Inter";
     -fx-font-weight: 700;
-    -fx-font-size: 24px;
+    -fx-font-size: 30px;
 }
 
 .metric-card.gradient-1 .metric-value,
 .metric-card.gradient-2 .metric-value,
 .metric-card.gradient-3 .metric-value,
 .metric-card.gradient-4 .metric-value {
-    -fx-text-fill: var(--text-inverse);
+    -fx-text-fill: ${ui.color.text-inverse};
 }
 
 .metric-desc {
-    -fx-font-family: "Inter-Regular", "Inter";
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-opacity: 0.85;
 }
 
@@ -98,32 +96,59 @@
 .metric-card.gradient-2 .metric-desc,
 .metric-card.gradient-3 .metric-desc,
 .metric-card.gradient-4 .metric-desc {
-    -fx-text-fill: var(--text-inverse);
+    -fx-text-fill: ${ui.color.text-inverse};
 }
 
-.products-section {
-    -fx-background-color: var(--surface);
-    -fx-background-radius: var(--radius-xl);
-    -fx-effect: var(--shadow-sm);
-    -fx-border-color: var(--border-light);
+.products-section,
+.sales-section {
+    -fx-background-color: ${ui.color.surface};
+    -fx-background-radius: ${ui.radius.xl};
+    -fx-effect: ${ui.shadow.xs};
+    -fx-border-color: ${ui.color.border-light};
     -fx-border-width: 1px;
-    -fx-border-radius: var(--radius-xl);
-    -fx-padding: 18px;
-    -fx-spacing: 14px;
+    -fx-border-radius: ${ui.radius.xl};
+    -fx-padding: 22px;
+    -fx-spacing: ${ui.space.lg};
 }
 
 .section-header {
-    -fx-spacing: 10px;
+    -fx-spacing: ${ui.space.md};
     -fx-alignment: center-left;
 }
 
-.sales-section {
-    -fx-background-color: var(--surface);
-    -fx-background-radius: var(--radius-xl);
-    -fx-effect: var(--shadow-sm);
-    -fx-border-color: var(--border-light);
-    -fx-border-width: 1px;
-    -fx-border-radius: var(--radius-xl);
-    -fx-padding: 18px;
+/* Estados vacíos (estilo empty-state de Apple) */
+.empty-state {
+    -fx-alignment: center;
     -fx-spacing: 14px;
+    -fx-padding: 56px 28px;
+    -fx-max-width: Infinity;
+}
+
+.empty-icon-circle {
+    -fx-background-color: ${ui.color.surface-variant};
+    -fx-background-radius: ${ui.radius.full};
+    -fx-border-color: ${ui.color.border};
+    -fx-border-width: 1px;
+    -fx-min-width: 88px;
+    -fx-min-height: 88px;
+    -fx-max-width: 88px;
+    -fx-max-height: 88px;
+    -fx-alignment: center;
+}
+
+.empty-icon-circle .ikonli-font-icon {
+    -fx-icon-color: ${ui.color.primary};
+}
+
+.empty-state-title {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 600;
+    -fx-font-size: 18px;
+}
+
+.empty-state-text {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-size: 14px;
+    -fx-text-alignment: center;
+    -fx-max-width: 440px;
 }
