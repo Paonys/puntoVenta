@@ -1,0 +1,73 @@
+/* =========================
+   Novedades Ale - POS Theme
+   JavaFX CSS (NO es CSS web: sin var(), sin custom properties)
+   =========================
+
+   DESIGN TOKENS: la única fuente de verdad está en el pom.xml
+   (sección <properties>, prefijo "ui."). Maven reemplaza los
+   placeholders "ui.*" aquí durante el build (resource filtering,
+   aplicado solo a **/*.css). Cambiar un color en el pom
+   actualiza toda la app.
+
+   Guía rápida del pom:
+     ui.color.primary #8453E9   ui.color.secondary #CF36D9
+     ui.color.accent  #535DF0   ui.color.background #F7F6FF
+     ui.color.surface #FFFFFF   ui.color.border #DDD8FF
+     ui.color.text-primary #2411A7  ui.color.text-secondary #655AC5
+     ui.color.text-tertiary #9A94D6
+     ui.gradients.*   ui.radius.*   ui.shadow.*   ui.space.*
+   ========================= */
+
+.root {
+    -fx-font-family: ${ui.font.family};
+    -fx-font-size: 14px;
+    -fx-font-smoothing-type: lcd;
+    -fx-background-color: ${ui.color.background};
+    -fx-text-fill: ${ui.color.text-primary};
+}
+
+/* Tipografía base coherente: hereda Segoe UI y color de marca */
+.label {
+    -fx-font-family: ${ui.font.family};
+    -fx-text-fill: ${ui.color.text-primary};
+}
+
+.button,
+.text-field,
+.text-area,
+.combo-box {
+    -fx-font-family: ${ui.font.family};
+    -fx-font-size: 14px;
+}
+
+.focused {
+    -fx-focus-traversable: true;
+    -fx-border-color: ${ui.color.primary};
+    -fx-border-width: 2px;
+    -fx-border-radius: ${ui.radius.lg};
+}
+
+/* Diálogos (formularios y confirmaciones) */
+.dialog-pane {
+    -fx-background-color: ${ui.color.surface};
+    -fx-padding: 8px;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: transparent;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: ${ui.color.text-primary};
+}
+
+.dialog-pane .content.label,
+.dialog-pane .label {
+    -fx-text-fill: ${ui.color.text-primary};
+}
+
+.dialog-pane .button-bar .button {
+    -fx-padding: 10px 20px;
+    -fx-background-radius: ${ui.radius.lg};
+    -fx-cursor: hand;
+}

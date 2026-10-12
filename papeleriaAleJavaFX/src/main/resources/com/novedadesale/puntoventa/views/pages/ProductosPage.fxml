@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
+      fx:controller="com.novedadesale.puntoventa.controllers.ProductosController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Productos" styleClass="label-title"/>
+            <Label text="Gestiona tu catálogo: registra, edita y elimina productos" styleClass="label-subtitle"/>
+        </VBox>
+        <Button text="Nuevo producto" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoProducto">
+            <graphic><FontIcon iconLiteral="mdi2p-plus" iconSize="18"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- Metrics -->
+    <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
+        <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Total productos" styleClass="metric-title"/>
+            <Label fx:id="lblTotalProductos" text="0" styleClass="metric-value"/>
+            <Label text="en el catálogo" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Stock bajo" styleClass="metric-title"/>
+            <Label fx:id="lblStockBajo" text="0" styleClass="metric-value"/>
+            <Label text="productos por reponer" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Valor inventario" styleClass="metric-title"/>
+            <Label fx:id="lblValorInventario" text="0" styleClass="metric-value"/>
+            <Label text="a precio de venta" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-4" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Categorías" styleClass="metric-title"/>
+            <Label fx:id="lblCategorias" text="0" styleClass="metric-value"/>
+            <Label text="secciones activas" styleClass="metric-desc"/>
+        </VBox>
+    </HBox>
+
+    <!-- Catálogo -->
+    <VBox styleClass="products-section" spacing="14" VBox.vgrow="ALWAYS">
+        <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+            <Label text="Catálogo" styleClass="label-heading"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="300">
+                <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar por nombre o código..." styleClass="search-field"
+                           HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </HBox>
+
+        <HBox fx:id="chipsCategorias" styleClass="categories-bar" spacing="8" alignment="CENTER_LEFT"/>
+
+        <TableView fx:id="tblProductos" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colCodigo" text="Código" prefWidth="110"/>
+                <TableColumn fx:id="colNombre" text="Producto" prefWidth="240"/>
+                <TableColumn fx:id="colCategoria" text="Categoría" prefWidth="150"/>
+                <TableColumn fx:id="colPrecio" text="Precio" prefWidth="110"/>
+                <TableColumn fx:id="colStock" text="Stock" prefWidth="90"/>
+                <TableColumn fx:id="colEstado" text="Estado" prefWidth="130"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="110"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

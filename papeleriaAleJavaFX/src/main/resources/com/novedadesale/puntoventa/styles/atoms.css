@@ -1,0 +1,224 @@
+/* =========================
+   ATOMS - Componentes base (escala de jerarquía tipo Apple)
+   ========================= */
+
+/* Botón Primario */
+.btn-primary {
+    -fx-background-color: ${ui.gradients.brand};
+    -fx-text-fill: ${ui.color.text-inverse};
+    -fx-font-weight: 600;
+    -fx-font-size: 15px;
+    -fx-min-height: 44px;
+    -fx-padding: 12px 22px;
+    -fx-background-radius: ${ui.radius.lg};
+    -fx-border-radius: ${ui.radius.lg};
+    -fx-effect: ${ui.shadow.sm};
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: ${ui.gradients.brand-hover};
+    -fx-effect: ${ui.shadow.md};
+}
+
+.btn-primary:pressed {
+    -fx-background-color: ${ui.gradients.brand-pressed};
+    -fx-effect: ${ui.shadow.xs};
+}
+
+/* Botón Secundario */
+.btn-secondary {
+    -fx-background-color: ${ui.color.surface};
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 600;
+    -fx-font-size: 15px;
+    -fx-min-height: 44px;
+    -fx-padding: 12px 22px;
+    -fx-background-radius: ${ui.radius.lg};
+    -fx-border-radius: ${ui.radius.lg};
+    -fx-border-color: ${ui.color.border};
+    -fx-border-width: 1.5px;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: ${ui.color.surface-hover};
+    -fx-border-color: ${ui.color.primary-border-hover};
+}
+
+.btn-secondary:pressed {
+    -fx-background-color: ${ui.color.surface-hover-pressed};
+}
+
+/* Botón Peligro */
+.btn-danger {
+    -fx-background-color: ${ui.color.danger};
+    -fx-text-fill: ${ui.color.text-inverse};
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-min-height: 42px;
+    -fx-padding: 10px 18px;
+    -fx-background-radius: ${ui.radius.lg};
+    -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+    -fx-background-color: ${ui.color.danger-hover};
+}
+
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-background-radius: ${ui.radius.full};
+    -fx-cursor: hand;
+    -fx-min-width: 38px;
+    -fx-min-height: 38px;
+    -fx-max-width: 38px;
+    -fx-max-height: 38px;
+    -fx-alignment: center;
+}
+
+.btn-icon:hover {
+    -fx-background-color: ${ui.color.surface-hover};
+}
+
+.btn-icon.primary {
+    -fx-background-color: ${ui.color.primary};
+    -fx-text-fill: ${ui.color.text-inverse};
+}
+
+.btn-icon.primary:hover {
+    -fx-background-color: ${ui.color.primary-hover};
+}
+
+.btn-icon.danger:hover {
+    -fx-background-color: ${ui.color.danger-soft};
+}
+
+.btn-icon.danger .ikonli-font-icon {
+    -fx-icon-color: ${ui.color.danger};
+}
+
+/* Inputs */
+.text-field {
+    -fx-background-color: ${ui.color.surface};
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-prompt-text-fill: ${ui.color.text-tertiary};
+    -fx-font-size: 15px;
+    -fx-min-height: 44px;
+    -fx-padding: 10px 16px;
+    -fx-background-radius: ${ui.radius.lg};
+    -fx-border-radius: ${ui.radius.lg};
+    -fx-border-color: ${ui.color.border};
+    -fx-border-width: 1.5px;
+}
+
+.text-field:hover {
+    -fx-border-color: ${ui.color.primary-border-hover};
+}
+
+.text-field:focused {
+    -fx-border-color: ${ui.color.primary};
+    -fx-effect: ${ui.shadow.xs};
+}
+
+/* Labels - jerarquía tipográfica */
+.label-title {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 600;
+    -fx-font-size: 28px;
+}
+
+.label-subtitle {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-weight: 500;
+    -fx-font-size: 16px;
+}
+
+.label-heading {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 600;
+    -fx-font-size: 20px;
+}
+
+.label-body {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-size: 14px;
+}
+
+.label-caption {
+    -fx-text-fill: ${ui.color.text-tertiary};
+    -fx-font-size: 12px;
+}
+
+/* Badge */
+.badge {
+    -fx-background-color: ${ui.color.primary};
+    -fx-text-fill: ${ui.color.text-inverse};
+    -fx-font-weight: 600;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: ${ui.radius.full};
+}
+
+.badge.success {
+    -fx-background-color: ${ui.color.success};
+}
+
+.badge.warning {
+    -fx-background-color: ${ui.color.warning};
+    -fx-text-fill: ${ui.color.text-warning};
+}
+
+.badge.danger {
+    -fx-background-color: ${ui.color.danger};
+}
+
+.badge.secondary {
+    -fx-background-color: ${ui.color.surface-variant};
+    -fx-text-fill: ${ui.color.text-primary};
+}
+
+/* Chip */
+.chip {
+    -fx-background-color: ${ui.color.surface};
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 500;
+    -fx-font-size: 14px;
+    -fx-min-height: 36px;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: ${ui.radius.full};
+    -fx-border-color: ${ui.color.border};
+    -fx-border-width: 1.5px;
+    -fx-cursor: hand;
+}
+
+.chip:hover {
+    -fx-background-color: ${ui.color.surface-hover};
+}
+
+.chip:selected,
+.chip.active {
+    -fx-background-color: ${ui.gradients.brand};
+    -fx-text-fill: ${ui.color.text-inverse};
+    -fx-border-color: transparent;
+    -fx-effect: ${ui.shadow.sm};
+}
+
+.chip:selected:hover,
+.chip.active:hover {
+    -fx-background-color: ${ui.gradients.brand-hover};
+}
+
+/* Iconos decorativos (Regiones con forma SVG) */
+.icon-search {
+    -fx-background-color: ${ui.color.text-tertiary};
+    -fx-scale-shape: false;
+    -fx-shape: "M 8 2.5 A 5.5 5.5 0 1 0 8 13.5 A 5.5 5.5 0 1 0 8 2.5 M 12.5 12.5 L 17 17 L 15.5 18.5 L 11 14 Z";
+}
+
+.icon-chevron {
+    -fx-background-color: ${ui.color.text-secondary};
+    -fx-scale-shape: false;
+    -fx-shape: "M 0 0 L 12 0 L 6 7 Z";
+}
