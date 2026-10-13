@@ -34,6 +34,9 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Cliente guardar(Cliente cliente) {
         Validadores.requerido(cliente.nombre(), "Nombre");
+        Validadores.opcionalEmail(cliente.email(), "Correo");
+        Validadores.opcionalTelefono(cliente.telefono(), "Teléfono");
+        Validadores.rangoPorcentaje(cliente.descuento(), "Descuento");
         return repo.guardar(cliente);
     }
 

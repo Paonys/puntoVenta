@@ -73,11 +73,13 @@ Totales t = CalculadoraTotales.calcular(items, descuentoPorcentaje);
   cálculo de totales y registro de venta con descuento de stock. `mvn test` → 4/4 OK.
 - [x] **A2.** Servicios respaldados por repositorios SQLite (`services/impl/*ServiceImpl`);
   se eliminaron las implementaciones en memoria. **No** cambió la firma de `Servicios`.
-- [ ] **A3.** Autenticación con contraseñas hasheadas + hashing real (salt configurable).
-- [ ] **A4.** `ReporteService` real (resumen de jornada, más vendidos, corte de caja).
-- [ ] **A5.** Tests (`src/test/java`) con JUnit 5: `CalculadoraTotales`, registrar venta
-  (descuento de stock), folios, autenticación, totales del carrito.
-- [ ] **A6.** Validaciones de formulario en la capa de servicio (precios/stock numéricos).
+- [x] **A3.** Autenticación con contraseñas hasheadas: PBKDF2-HMAC-SHA256 + salt
+  aleatorio por usuario (`shared/Seguridad`); compatible con los hashes SHA-256 previos.
+- [x] **A4.** `ReporteService` real (resumen de jornada, más vendidos, ingresos).
+- [x] **A5.** Tests (`src/test/java`) con JUnit 5: `CalculadoraTotales`, registrar venta
+  (descuento de stock), folios, autenticación, hashing y validadores. `mvn test` → 8/8 OK.
+- [x] **A6.** Validaciones en la capa de servicio (correo, teléfono, precio > 0,
+  descuento 0-100) vía `shared/Validadores`.
 
 ## 4. Tareas del Agente B (Frontend)
 

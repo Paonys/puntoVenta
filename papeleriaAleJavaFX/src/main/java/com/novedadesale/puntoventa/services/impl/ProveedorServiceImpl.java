@@ -34,6 +34,8 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     public Proveedor guardar(Proveedor proveedor) {
         Validadores.requerido(proveedor.nombre(), "Nombre");
+        Validadores.opcionalEmail(proveedor.email(), "Correo");
+        Validadores.opcionalTelefono(proveedor.telefono(), "Teléfono");
         return repo.guardar(proveedor);
     }
 

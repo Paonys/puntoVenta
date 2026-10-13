@@ -47,7 +47,7 @@ public class ProductoServiceImpl implements ProductoService {
     public Producto guardar(Producto producto) {
         Validadores.requerido(producto.codigo(), "Código");
         Validadores.requerido(producto.nombre(), "Nombre");
-        Validadores.positivo(producto.precio(), "Precio");
+        Validadores.estrictamentePositivo(producto.precio(), "Precio");
         if (producto.stock() < 0) {
             throw new ValidacionException("El stock no puede ser negativo");
         }
