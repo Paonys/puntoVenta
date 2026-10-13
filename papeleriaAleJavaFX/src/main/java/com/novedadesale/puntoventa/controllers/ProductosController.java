@@ -1,6 +1,12 @@
 package com.novedadesale.puntoventa.controllers;
 
 import com.novedadesale.puntoventa.App;
+import com.novedadesale.puntoventa.models.Categoria;
+import com.novedadesale.puntoventa.models.Producto;
+import com.novedadesale.puntoventa.services.Servicios;
+import com.novedadesale.puntoventa.shared.AppConstants;
+import com.novedadesale.puntoventa.shared.Formato;
+import com.novedadesale.puntoventa.ui.Dialogos;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -10,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -26,31 +31,26 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.math.BigDecimal;
 import java.net.URL;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-/**
- * Vista de Productos (frontEnd).
- * Trabaja con datos mock en memoria; la persistencia y los modelos reales
- * se incorporarán en la fase de backend.
- */
+/** Vista de Productos: CRUD real sobre {@link Servicios#productos()}. */
 public class ProductosController implements Initializable {
 
-    @FXML private TableView<ProductRow> tblProductos;
-    @FXML private TableColumn<ProductRow, String> colCodigo;
-    @FXML private TableColumn<ProductRow, String> colNombre;
-    @FXML private TableColumn<ProductRow, String> colCategoria;
-    @FXML private TableColumn<ProductRow, Double> colPrecio;
-    @FXML private TableColumn<ProductRow, Integer> colStock;
-    @FXML private TableColumn<ProductRow, ProductRow> colEstado;
-    @FXML private TableColumn<ProductRow, ProductRow> colAcciones;
+    @FXML private TableView<Producto> tblProductos;
+    @FXML private TableColumn<Producto, String> colCodigo;
+    @FXML private TableColumn<Producto, String> colNombre;
+    @FXML private TableColumn<Producto, String> colCategoria;
+    @FXML private TableColumn<Producto, BigDecimal> colPrecio;
+    @FXML private TableColumn<Producto, Integer> colStock;
+    @FXML private TableColumn<Producto, Producto> colEstado;
+    @FXML private TableColumn<Producto, Producto> colAcciones;
     @FXML private TextField txtBuscar;
     @FXML private HBox chipsCategorias;
     @FXML private Label lblTotalProductos;
@@ -59,18 +59,16 @@ public class ProductosController implements Initializable {
     @FXML private Label lblCategorias;
 
     private static final String TODOS = "Todos";
-    private static final int UMBRAL_STOCK_BAJO = 10;
+    private static final int UMBRAL_STOCK_BAJO = AppConstants.UMBRAL_STOCK_BAJO;
 
-    private final NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("es", "MX"));
-    private final ObservableList<ProductRow> productos = FXCollections.observableArrayList();
-    private final List<String> categorias = List.of("Escolares", "Oficina", "Regalos", "Arte");
+    private final ObservableList<Producto> productos = FXCollections.observableArrayList();
+    private final List<Categoria> categorias = new ArrayList<>();
 
-    private FilteredList<ProductRow> filtrados;
+    private FilteredList<Producto> filtrados;
     private String categoriaActiva = TODOS;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        productos.setAll(mockProductos());
         filtrados = new FilteredList<>(productos, p -> true);
         tblProductos.setItems(filtrados);
         tblProductos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
@@ -80,25 +78,17 @@ public class ProductosController implements Initializable {
         tblProductos.setPlaceholder(placeholder);
 
         configurarColumnas();
-        crearChips();
         txtBuscar.textProperty().addListener((obs, old, nuevo) -> aplicarFiltros());
-        actualizarMetricas();
+        recargar();
     }
 
-    // ------------------------------------------------------------------
-    // Datos mock (será reemplazado por el backend)
-    // ------------------------------------------------------------------
-    private List<ProductRow> mockProductos() {
-        return List.of(
-                new ProductRow("P-001", "Cuaderno espiral 100 hojas", "Escolares", 25.50, 48),
-                new ProductRow("P-002", "Plumas de gel (caja 12)", "Oficina", 89.90, 8),
-                new ProductRow("P-003", "Peluche oso mediano", "Regalos", 149.00, 12),
-                new ProductRow("P-004", "Lápices de colores 24 piezas", "Arte", 79.00, 0),
-                new ProductRow("P-005", "Mochila escolar", "Escolares", 399.00, 6),
-                new ProductRow("P-006", "Taza personalizada", "Regalos", 120.00, 20),
-                new ProductRow("P-007", "Marcadores permanentes", "Oficina", 45.00, 35),
-                new ProductRow("P-008", "Block de dibujo profesional", "Arte", 55.00, 9)
-        );
+    private void recargar() {
+        categorias.clear();
+        categorias.addAll(Servicios.categorias().listar());
+        productos.setAll(Servicios.productos().listar());
+        crearChips();
+        aplicarFiltros();
+        actualizarMetricas();
     }
 
     // ------------------------------------------------------------------
@@ -112,9 +102,9 @@ public class ProductosController implements Initializable {
         colPrecio.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().precio()));
         colPrecio.setCellFactory(c -> new TableCell<>() {
             { getStyleClass().add("num-cell"); }
-            @Override protected void updateItem(Double valor, boolean empty) {
+            @Override protected void updateItem(BigDecimal valor, boolean empty) {
                 super.updateItem(valor, empty);
-                setText(empty || valor == null ? null : currency.format(valor));
+                setText(empty || valor == null ? null : Formato.money(valor));
             }
         });
 
@@ -134,7 +124,7 @@ public class ProductosController implements Initializable {
     private void configurarEstado() {
         colEstado.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colEstado.setCellFactory(c -> new TableCell<>() {
-            @Override protected void updateItem(ProductRow producto, boolean empty) {
+            @Override protected void updateItem(Producto producto, boolean empty) {
                 super.updateItem(producto, empty);
                 if (empty || producto == null) {
                     setGraphic(null);
@@ -142,10 +132,10 @@ public class ProductosController implements Initializable {
                 }
                 Label badge = new Label();
                 badge.getStyleClass().add("badge");
-                if (producto.stock() <= 0) {
+                if (producto.agotado()) {
                     badge.setText("Agotado");
                     badge.getStyleClass().add("danger");
-                } else if (producto.stock() <= UMBRAL_STOCK_BAJO) {
+                } else if (producto.stockBajo()) {
                     badge.setText("Stock bajo");
                     badge.getStyleClass().add("warning");
                 } else {
@@ -166,10 +156,10 @@ public class ProductosController implements Initializable {
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 btnEliminar.getStyleClass().add("danger");
-                btnEditar.setOnAction(e -> onEditar(filaEnIndice(getIndex())));
-                btnEliminar.setOnAction(e -> onEliminar(filaEnIndice(getIndex())));
+                btnEditar.setOnAction(e -> onEditar(getItem()));
+                btnEliminar.setOnAction(e -> onEliminar(getItem()));
             }
-            @Override protected void updateItem(ProductRow producto, boolean empty) {
+            @Override protected void updateItem(Producto producto, boolean empty) {
                 super.updateItem(producto, empty);
                 setGraphic(empty || producto == null ? null : box);
             }
@@ -186,11 +176,6 @@ public class ProductosController implements Initializable {
         return boton;
     }
 
-    private ProductRow filaEnIndice(int indice) {
-        return indice >= 0 && indice < tblProductos.getItems().size()
-                ? tblProductos.getItems().get(indice) : null;
-    }
-
     // ------------------------------------------------------------------
     // Filtros y métricas
     // ------------------------------------------------------------------
@@ -199,7 +184,11 @@ public class ProductosController implements Initializable {
         ToggleGroup grupo = new ToggleGroup();
         List<String> opciones = new ArrayList<>();
         opciones.add(TODOS);
-        opciones.addAll(categorias);
+        categorias.forEach(c -> opciones.add(c.nombre()));
+
+        if (!TODOS.equals(categoriaActiva) && !opciones.contains(categoriaActiva)) {
+            categoriaActiva = TODOS;
+        }
 
         for (String categoria : opciones) {
             ToggleButton chip = new ToggleButton(categoria);
@@ -230,65 +219,67 @@ public class ProductosController implements Initializable {
     }
 
     private void actualizarMetricas() {
-        int total = productos.size();
-        long stockBajo = productos.stream().filter(p -> p.stock() <= UMBRAL_STOCK_BAJO).count();
-        double valor = productos.stream().mapToDouble(p -> p.precio() * p.stock()).sum();
-        long totalCategorias = productos.stream().map(ProductRow::categoria).distinct().count();
+        long stockBajo = productos.stream().filter(Producto::stockBajo).count();
+        BigDecimal valor = productos.stream()
+                .map(p -> p.precio().multiply(BigDecimal.valueOf(p.stock())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        lblTotalProductos.setText(String.valueOf(total));
+        lblTotalProductos.setText(String.valueOf(productos.size()));
         lblStockBajo.setText(String.valueOf(stockBajo));
-        lblValorInventario.setText(currency.format(valor));
-        lblCategorias.setText(String.valueOf(totalCategorias));
+        lblValorInventario.setText(Formato.money(valor));
+        lblCategorias.setText(String.valueOf(categorias.size()));
     }
 
     // ------------------------------------------------------------------
-    // Acciones CRUD (frontend, en memoria)
+    // Acciones CRUD
     // ------------------------------------------------------------------
     @FXML
     private void onNuevoProducto() {
-        ProductRow nuevo = mostrarFormulario(null);
-        if (nuevo != null) {
-            productos.add(0, nuevo);
-            actualizarMetricas();
-            aplicarFiltros();
-            tblProductos.getSelectionModel().select(nuevo);
+        Producto borrador = mostrarFormulario(null);
+        if (borrador == null) {
+            return;
+        }
+        try {
+            Servicios.productos().guardar(borrador);
+            recargar();
+        } catch (RuntimeException e) {
+            Dialogos.error(e.getMessage());
         }
     }
 
-    private void onEditar(ProductRow producto) {
+    private void onEditar(Producto producto) {
         if (producto == null) {
             return;
         }
-        ProductRow editado = mostrarFormulario(producto);
-        if (editado != null) {
-            int indice = productos.indexOf(producto);
-            if (indice >= 0) {
-                productos.set(indice, editado);
-                actualizarMetricas();
-                aplicarFiltros();
+        Producto borrador = mostrarFormulario(producto);
+        if (borrador == null) {
+            return;
+        }
+        try {
+            Servicios.productos().guardar(borrador);
+            recargar();
+        } catch (RuntimeException e) {
+            Dialogos.error(e.getMessage());
+        }
+    }
+
+    private void onEliminar(Producto producto) {
+        if (producto == null) {
+            return;
+        }
+        if (Dialogos.confirmar("¿Eliminar el producto \"" + producto.nombre() + "\"?")) {
+            try {
+                Servicios.productos().eliminar(producto.id());
+                recargar();
+            } catch (RuntimeException e) {
+                Dialogos.error(e.getMessage());
             }
         }
     }
 
-    private void onEliminar(ProductRow producto) {
-        if (producto == null) {
-            return;
-        }
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION,
-                "¿Eliminar el producto \"" + producto.nombre() + "\"?", ButtonType.OK, ButtonType.CANCEL);
-        confirmacion.setTitle("Eliminar producto");
-        confirmacion.setHeaderText(null);
-        aplicarEstilos(confirmacion.getDialogPane());
-        if (confirmacion.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            productos.remove(producto);
-            actualizarMetricas();
-            aplicarFiltros();
-        }
-    }
-
-    private ProductRow mostrarFormulario(ProductRow existente) {
+    private Producto mostrarFormulario(Producto existente) {
         boolean esNuevo = existente == null;
-        Dialog<ProductRow> dialogo = new Dialog<>();
+        Dialog<Producto> dialogo = new Dialog<>();
         dialogo.setTitle(esNuevo ? "Nuevo producto" : "Editar producto");
         dialogo.setResizable(false);
         if (App.getPrimaryStage() != null) {
@@ -297,14 +288,17 @@ public class ProductosController implements Initializable {
 
         DialogPane panel = dialogo.getDialogPane();
         panel.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        aplicarEstilos(panel);
+        Dialogos.aplicarEstilos(panel);
 
         TextField codigo = new TextField(esNuevo ? nextCodigo() : existente.codigo());
         TextField nombre = new TextField(esNuevo ? "" : existente.nombre());
-        ComboBox<String> categoria = new ComboBox<>(FXCollections.observableArrayList(categorias));
-        categoria.setValue(esNuevo ? categorias.get(0) : existente.categoria());
+        ComboBox<String> categoria = new ComboBox<>(FXCollections.observableArrayList(
+                categorias.stream().map(Categoria::nombre).toList()));
+        categoria.setValue(esNuevo
+                ? (categorias.isEmpty() ? null : categorias.get(0).nombre())
+                : existente.categoria());
         categoria.setMaxWidth(Double.MAX_VALUE);
-        TextField precio = new TextField(esNuevo ? "" : String.valueOf(existente.precio()));
+        TextField precio = new TextField(esNuevo ? "" : existente.precio().toPlainString());
         precio.setPromptText("0.00");
         TextField stock = new TextField(esNuevo ? "" : String.valueOf(existente.stock()));
         stock.setPromptText("0");
@@ -336,12 +330,19 @@ public class ProductosController implements Initializable {
                 return null;
             }
             String textoCodigo = codigo.getText() == null ? "" : codigo.getText().trim();
-            return new ProductRow(
+            Categoria cat = categorias.stream()
+                    .filter(c -> c.nombre().equals(categoria.getValue()))
+                    .findFirst().orElse(null);
+            int id = esNuevo ? 0 : existente.id();
+            int stockMinimo = esNuevo ? UMBRAL_STOCK_BAJO : existente.stockMinimo();
+            return new Producto(id,
                     textoCodigo.isEmpty() ? nextCodigo() : textoCodigo,
                     textoNombre,
-                    categoria.getValue(),
-                    parseDouble(precio.getText()),
-                    (int) parseDouble(stock.getText()));
+                    cat == null ? 0 : cat.id(),
+                    cat == null ? "" : cat.nombre(),
+                    Formato.decimal(precio.getText()),
+                    (int) Formato.decimal(stock.getText()).doubleValue(),
+                    stockMinimo);
         });
 
         return dialogo.showAndWait().orElse(null);
@@ -353,40 +354,18 @@ public class ProductosController implements Initializable {
         return label;
     }
 
-    private void aplicarEstilos(DialogPane panel) {
-        Stage owner = App.getPrimaryStage();
-        if (owner != null && owner.getScene() != null) {
-            panel.getStylesheets().addAll(owner.getScene().getStylesheets());
-        }
-    }
-
     private String nextCodigo() {
         int maximo = 0;
-        for (ProductRow producto : productos) {
+        for (Producto producto : productos) {
             String codigo = producto.codigo();
             if (codigo != null && codigo.startsWith("P-")) {
                 try {
                     maximo = Math.max(maximo, Integer.parseInt(codigo.substring(2)));
                 } catch (NumberFormatException ignored) {
-                    // código con formato no numérico, se ignora para el cálculo
+                    // código con formato no numérico, se ignora
                 }
             }
         }
         return String.format("P-%03d", maximo + 1);
-    }
-
-    private double parseDouble(String valor) {
-        if (valor == null) {
-            return 0;
-        }
-        try {
-            return Double.parseDouble(valor.trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    /** Fila de la tabla (frontend). El modelo de dominio real llegará en la fase de backend. */
-    public record ProductRow(String codigo, String nombre, String categoria, double precio, int stock) {
     }
 }

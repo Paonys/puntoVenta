@@ -3,16 +3,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       styleClass="layout-page pos-container" VBox.vgrow="ALWAYS" spacing="18"
       fx:controller="com.novedadesale.puntoventa.controllers.PointOfSaleController">
 
     <!-- Header -->
-    <VBox styleClass="page-header" spacing="6">
-        <Label text="¡Bienvenida!" styleClass="label-title"/>
-        <Label text="Resumen de tu negocio" styleClass="label-subtitle"/>
-    </VBox>
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Punto de venta" styleClass="label-title"/>
+            <Label text="Selecciona productos y cobra la venta" styleClass="label-subtitle"/>
+        </VBox>
+    </HBox>
 
     <!-- Content -->
     <HBox spacing="18" VBox.vgrow="ALWAYS">
@@ -22,31 +25,35 @@
             <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
                 <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
                     <Label text="Ventas del día" styleClass="metric-title"/>
-<Label fx:id="lblVentasDia" text="4245.00" styleClass="metric-value"/>
-                    <Label text="↑ 12% vs. ayer" styleClass="metric-desc"/>
+                    <Label fx:id="lblVentasDia" text="0.00" styleClass="metric-value"/>
+                    <Label text="corte de hoy" styleClass="metric-desc"/>
                 </VBox>
                 <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
                     <Label text="Productos" styleClass="metric-title"/>
-                    <Label fx:id="lblProductos" text="124" styleClass="metric-value"/>
+                    <Label fx:id="lblProductos" text="0" styleClass="metric-value"/>
                     <Label text="en inventario" styleClass="metric-desc"/>
                 </VBox>
                 <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
                     <Label text="Valor inventario" styleClass="metric-title"/>
-                    <Label fx:id="lblValorInventario" text="3760.00" styleClass="metric-value"/>
+                    <Label fx:id="lblValorInventario" text="0.00" styleClass="metric-value"/>
                 </VBox>
                 <VBox styleClass="metric-card gradient-4" HBox.hgrow="ALWAYS" spacing="6">
                     <Label text="Stock bajo" styleClass="metric-title"/>
-                    <Label fx:id="lblStockBajo" text="8" styleClass="metric-value"/>
+                    <Label fx:id="lblStockBajo" text="0" styleClass="metric-value"/>
                     <Label text="productos" styleClass="metric-desc"/>
                 </VBox>
             </HBox>
 
             <!-- Products Section -->
             <VBox styleClass="products-section" spacing="14" VBox.vgrow="ALWAYS">
-                <HBox styleClass="section-header" spacing="10">
+                <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
                     <Label text="Productos" styleClass="label-heading"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Ver todos" styleClass="btn-secondary" onAction="#verTodosProductos"/>
+                    <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="300">
+                        <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+                        <TextField fx:id="txtBuscarProducto" promptText="Buscar por nombre o código..."
+                                   styleClass="search-field" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    </HBox>
                 </HBox>
                 <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
                     <FlowPane fx:id="productGrid" styleClass="product-grid" hgap="14" vgap="14"/>
@@ -73,7 +80,7 @@
                         <Label fx:id="lblIVA" text="0.00" styleClass="total-value"/>
                     </HBox>
                     <HBox styleClass="totals-row">
-                        <Label text="Descuento" styleClass="total-label" HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblDescuentoTexto" text="Descuento" styleClass="total-label" HBox.hgrow="ALWAYS"/>
                         <Label fx:id="lblDescuento" text="0.00" styleClass="total-value"/>
                     </HBox>
                     <Separator/>

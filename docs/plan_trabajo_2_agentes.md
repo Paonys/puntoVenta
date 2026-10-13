@@ -35,6 +35,8 @@ services/    CategoriaService, ProductoService, UsuarioService, ClienteService,
 services/impl/  Implementaciones (CategoriaServiceImpl, ...) sobre repositories
 repositories/   Interfaces DAO + repositories/sqlite/ (persistencia SQLite)
 persistence/    BaseDatos (conexión + esquema), Esquema (DDL), Seeder (datos demo)
+ui/             Sesion (usuario logueado), Dialogos (alertas/confirmación), Animations
+controllers/    MainLayout, PointOfSale (funcional), Productos (funcional)
 ```
 
 > Persistencia: **SQLite** (archivo `novedadesale.db`, ignorado por git). El contrato
@@ -83,18 +85,28 @@ Totales t = CalculadoraTotales.calcular(items, descuentoPorcentaje);
 
 ## 4. Tareas del Agente B (Frontend)
 
-- [ ] **B1.** Refactorizar `ProductosController` para usar `Servicios.productos()`
-  (hoy usa mocks locales) y `Producto`/`Categoria`.
-- [ ] **B2.** Hacer funcional el **Punto de Venta**: botón *Agregar* → carrito,
+- [x] **B1.** Refactorizar `ProductosController` para usar `Servicios.productos()`
+  y `Servicios.categorias()` (CRUD real; ya no usa mocks locales).
+- [x] **B2.** Punto de Venta funcional: catálogo real, botón *Agregar* → carrito,
   cantidades, `CalculadoraTotales` para totales y `Servicios.ventas().registrar(...)`
   mostrando el **cambio**.
-- [ ] **B3.** Diálogo de **Pago** (métodos) + **Ticket** (generar/imprimir).
-- [ ] **B4.** **Login** + control de usuarios (usar `Servicios.usuarios().autenticar(...)`).
+- [x] **B3.** Diálogo de **Pago** (métodos + cambio) + **Ticket** (con intento de impresión).
+- [x] **B0 (infra UI).** `ui/Sesion` (usuario logueado) y `ui/Dialogos`
+  (alertas/confirmación con el tema de la app).
+- [ ] **B4.** **Login** + control de usuarios (`Servicios.usuarios().autenticar(...)`,
+  `Sesion.iniciar(...)`; arrancar `App` por el Login). Usuarios semilla:
+  `admin/admin123`, `caja1/caja123`.
 - [ ] **B5.** **Dashboard de Inicio** conectado a `Servicios.reportes()`.
 - [ ] **B6.** Vistas reales: Inventario, Clientes, Proveedores, Reportes, Ofertas,
-  Regalos, Configuración.
-- [ ] **B7.** Conectar los 6 botones del sidebar que hoy cargan el POS.
-- [ ] **B8.** Mostrar errores de validación (`ValidacionException`) en la UI.
+  Regalos, Configuración (hoy son placeholders "en construcción").
+- [ ] **B7.** Conectar los 6 botones del sidebar que hoy cargan el POS
+  (`Inicio`, `Ventas`, `Regalos`, `Ofertas`, `Proveedores`, `Configuración`) y
+  mostrar usuario/`searchField` con `Sesion`.
+- [ ] **B8.** Mostrar errores de validación (`ValidacionException`/`ServiceException`)
+  en la UI con `Dialogos.error(...)` (POS y Productos ya lo hacen).
+
+> Detalle completo del handoff en `docs/informe_entrega_agente_B.md` (firmas de servicio,
+> archivos tocados y qué falta).
 
 ---
 
