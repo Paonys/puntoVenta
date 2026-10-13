@@ -4,45 +4,45 @@ import com.novedadesale.puntoventa.models.ItemVenta;
 import com.novedadesale.puntoventa.models.Producto;
 import com.novedadesale.puntoventa.models.Promocion;
 import com.novedadesale.puntoventa.models.TipoPromocion;
+import com.novedadesale.puntoventa.repositories.ProductoRepository;
+import com.novedadesale.puntoventa.repositories.PromocionRepository;
 import com.novedadesale.puntoventa.services.PromocionService;
 import com.novedadesale.puntoventa.shared.Validadores;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class InMemoryPromocionService implements PromocionService {
+public class PromocionServiceImpl implements PromocionService {
 
-    private final Datos d = Datos.get();
+    private final PromocionRepository repo;
+    private final ProductoRepository productoRepo;
+
+    public PromocionServiceImpl(PromocionRepository repo, ProductoRepository productoRepo) {
+        this.repo = repo;
+        this.productoRepo = productoRepo;
+    }
 
     @Override
     public List<Promocion> listar() {
-        return new ArrayList<>(d.promociones.values());
+        return repo.listar();
     }
 
     @Override
     public List<Promocion> activas(LocalDate fecha) {
-        LocalDate f = fecha == null ? LocalDate.now() : fecha;
-        return d.promociones.values().stream().filter(p -> p.vigente(f)).toList();
+        return repo.activas(fecha);
     }
 
     @Override
     public Promocion guardar(Promocion promocion) {
-        String nombre = Validadores.requerido(promocion.nombre(), "Nombre");
-        int id = promocion.id() > 0 ? promocion.id() : d.promoSeq.incrementAndGet();
-        Promocion nueva = new Promocion(id, nombre, promocion.tipo(),
-                promocion.valor() == null ? BigDecimal.ZERO : promocion.valor(),
-                promocion.fechaInicio(), promocion.fechaFin(), promocion.activa(), promocion.categoriaId());
-        d.promociones.put(id, nueva);
-        return nueva;
+        Validadores.requerido(promocion.nombre(), "Nombre");
+        return repo.guardar(promocion);
     }
 
     @Override
     public void eliminar(int id) {
-        d.promociones.remove(id);
+        repo.eliminar(id);
     }
 
     @Override
@@ -57,11 +57,11 @@ public class InMemoryPromocionService implements PromocionService {
             return BigDecimal.ZERO;
         }
 
-        List<Promocion> vigentes = activas(fecha);
+        List<Promocion> vigentes = repo.activas(fecha);
         BigDecimal descuentoTotal = BigDecimal.ZERO;
         for (ItemVenta item : items) {
-            Producto producto = d.productos.get(item.productoId());
-            int categoriaId = producto == null ? -1 : producto.categoriaId();
+            int categoriaId = productoRepo.porId(item.productoId())
+                    .map(Producto::categoriaId).orElse(-1);
 
             BigDecimal mejor = BigDecimal.ZERO;
             for (Promocion promo : vigentes) {

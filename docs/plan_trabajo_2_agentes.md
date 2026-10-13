@@ -32,8 +32,13 @@ exceptions/  ServiceException, ValidacionException
 services/    CategoriaService, ProductoService, UsuarioService, ClienteService,
              ProveedorService, PromocionService, VentaService, PagoService,
              ReporteService, y el localizador Services.Servicios
-services/impl/  Implementaciones EN MEMORIA con datos de ejemplo (temporales)
+services/impl/  Implementaciones (CategoriaServiceImpl, ...) sobre repositories
+repositories/   Interfaces DAO + repositories/sqlite/ (persistencia SQLite)
+persistence/    BaseDatos (conexión + esquema), Esquema (DDL), Seeder (datos demo)
 ```
+
+> Persistencia: **SQLite** (archivo `novedadesale.db`, ignorado por git). El contrato
+> `services` no cambió: la UI sigue usando `Servicios.*` igual que antes.
 
 ### Cómo consume la UI los servicios (obligatorio)
 
@@ -59,14 +64,15 @@ Totales t = CalculadoraTotales.calcular(items, descuentoPorcentaje);
 ## 3. Tareas del Agente A (Backend)
 
 - [x] **A0.** Fase 0: models + shared + exceptions + interfaces + impl en memoria.
-- [ ] **A1.** Persistencia SQLite + JDBC.
-  - Añadir dependencia `org.xerial:sqlite-jdbc` al `pom.xml`.
-  - `persistence/Conexion.java` (singleton, crea/abre `novedadesale.db`).
-  - `resources/db/schema.sql` (tablas: categorias, productos, clientes, proveedores,
-    usuarios, promociones, ventas, venta_items, pagos).
-  - `repositories/` (interfaces DAO por entidad) + `repositories/sqlite/` (implementaciones).
-- [ ] **A2.** Reemplazar `services/impl/InMemory*` por implementaciones SQLite
-  (misma interfaz; **no** cambia `Servicios`, solo el wiring interno).
+- [x] **A1.** Persistencia SQLite + JDBC.
+  - Dependencia `org.xerial:sqlite-jdbc` en el `pom.xml`.
+  - `persistence/BaseDatos.java` (conexión única + esquema), `persistence/Esquema.java` (DDL),
+    `persistence/Seeder.java` (datos de ejemplo si la base está vacía).
+  - `repositories/` (interfaces DAO) + `repositories/sqlite/` (implementaciones).
+- [x] **A1b.** Tests de humo con JUnit 5 (`src/test`): catálogo, autenticación,
+  cálculo de totales y registro de venta con descuento de stock. `mvn test` → 4/4 OK.
+- [x] **A2.** Servicios respaldados por repositorios SQLite (`services/impl/*ServiceImpl`);
+  se eliminaron las implementaciones en memoria. **No** cambió la firma de `Servicios`.
 - [ ] **A3.** Autenticación con contraseñas hasheadas + hashing real (salt configurable).
 - [ ] **A4.** `ReporteService` real (resumen de jornada, más vendidos, corte de caja).
 - [ ] **A5.** Tests (`src/test/java`) con JUnit 5: `CalculadoraTotales`, registrar venta

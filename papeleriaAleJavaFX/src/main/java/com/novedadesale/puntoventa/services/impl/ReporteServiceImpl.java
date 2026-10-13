@@ -6,6 +6,7 @@ import com.novedadesale.puntoventa.models.MetodoPago;
 import com.novedadesale.puntoventa.models.ProductoMasVendido;
 import com.novedadesale.puntoventa.models.ResumenJornada;
 import com.novedadesale.puntoventa.models.Venta;
+import com.novedadesale.puntoventa.repositories.VentaRepository;
 import com.novedadesale.puntoventa.services.ReporteService;
 
 import java.math.BigDecimal;
@@ -16,17 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class InMemoryReporteService implements ReporteService {
+public class ReporteServiceImpl implements ReporteService {
 
-    private final Datos d = Datos.get();
+    private final VentaRepository ventaRepo;
+
+    public ReporteServiceImpl(VentaRepository ventaRepo) {
+        this.ventaRepo = ventaRepo;
+    }
 
     private List<Venta> completadasEntre(LocalDate desde, LocalDate hasta) {
-        return d.ventas.stream()
+        return ventaRepo.entre(desde, hasta).stream()
                 .filter(v -> v.estado() == EstadoVenta.COMPLETADA)
-                .filter(v -> {
-                    LocalDate f = v.fecha().toLocalDate();
-                    return (desde == null || !f.isBefore(desde)) && (hasta == null || !f.isAfter(hasta));
-                })
                 .toList();
     }
 

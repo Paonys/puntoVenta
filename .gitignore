@@ -1,1 +1,3 @@
 /papeleriaAleJavaFX/target/
+*.db
+*.db-journal
