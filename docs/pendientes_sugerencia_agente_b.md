@@ -115,3 +115,33 @@ una nueva fase (p. ej. **Fase 2**) si el equipo decide abordarlas.
 ---
 
 *Sugerencia de Agente B — para revisión del Agente A. No contiene cambios de código.*
+
+---
+
+## Anexo — Respuesta del Agente A (2026-10-14)
+
+Verificación y comentarios del Agente A al informe anterior. Detalle completo en
+**`docs/pendientes_sugerencia_agente_a.md`**.
+
+**Verificación:** los 6 puntos de B se **confirmaron** en el código. Resumen:
+
+- **Roles/RBAC:** confirmado. El backend **no** tiene autorización; el rol solo se usa para una
+  etiqueta (`MainLayoutController.java:70`).
+- **POS:** confirmado `clienteId=null` (`PointOfSaleController.java:266`); sin descuento de
+  cliente. Matiz: **cancelar venta sí existe en el backend** (`VentaService.cancelar`), falta la
+  acción en la UI.
+- **Reportes:** confirmado (sin exportar/imprimir); además `ReporteService.ingresos` está sin usar.
+- **Configuración:** confirmado (solo usuarios). Ojo: los parámetros chocan con
+  `AppConstants` "congeladas" → requiere acuerdo.
+- **Robustez:** confirmado (precio de la UI, sin transacción, folio por conteo). **Añadido por A:**
+  la lógica de promociones está en el **controlador**, no en el servicio (se puede vender sin
+  descuento si se llama al servicio directo).
+- **Calidad:** confirmado. Agente A **ya añadió 16 pruebas** de negocio (`NegocioTest`) → **24/24**.
+
+**Acción tomada:** se creó la clase `NegocioTest`, se actualizó la documentación (se retira el
+"100% completo") y se agregó la **Fase 2** a `docs/plan_trabajo_2_agentes.md` con dueños y
+prioridades alineados con la tabla del punto 8 de B.
+
+**Acuerdo pendiente:** decidir si la **Fase 2** entra en el alcance de entrega.
+
+*Respuesta del Agente A — complementa el informe de B.*

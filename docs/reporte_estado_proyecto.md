@@ -3,18 +3,24 @@
 **Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-14
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B clean compile` → **BUILD SUCCESS** · `mvn -B test` → **8/8 OK**
+**Build:** `mvn -B clean compile` → **BUILD SUCCESS** · `mvn -B test` → **24/24 OK**
 
 ---
 
 ## 1. Resumen ejecutivo
 
-El proyecto está **completo y compilable**: backend con persistencia SQLite (DAO + servicios),
-**todas las vistas del frontend operativas** (11 páginas), **login**, navegación conectada y
-utilidades compartidas.
+El **núcleo del proyecto está completo y compilable**: backend con persistencia SQLite (DAO +
+servicios), **todas las vistas del frontend operativas** (11 páginas), **login**, navegación
+conectada y utilidades compartidas.
 
 Se pasó de un frontend con 3 páginas placeholder y 7 botones apuntando al Punto de Venta, a una
 aplicación con **cada sección cargando su propia página** conectada a datos reales.
+
+> **Alcance pendiente (Fase 2).** Una revisión cruzada entre agentes (`docs/pendientes_sugerencia_agente_b.md`
+> y `docs/pendientes_sugerencia_agente_a.md`) identificó endurecimiento de backend y funciones de UI
+> aún no cerradas (RBAC, cancelar venta en POS, descuento de cliente, exportar/imprimir reportes,
+> parámetros de configuración, transacciones, empaquetado). Están listadas en
+> `docs/plan_trabajo_2_agentes.md` (sección **4.bis**). **Falta decidir si entran en la entrega.**
 
 ---
 
@@ -104,7 +110,7 @@ conserva íntegra:
 - Módulo de **cobro rápido** (totales y cambios) ✅
 - **Inventario dinámico** categorizado, con descuento automático y **alertas de stock bajo** ✅
 - **Acceso seguro** con contraseñas individuales (PBKDF2 + salt) ✅
-- **Reportes de ventas** de fin de jornada (ingresos, más vendidos, corte) e impresión ✅
+- **Reportes de ventas** de fin de jornada (ingresos, más vendidos, corte) ✅ · impresión/exportación ⚠️
 
 ### 5.3 Requerimientos adicionales
 - **Volátiles:** promociones, métodos de pago, descuentos a clientes frecuentes ✅
@@ -126,12 +132,12 @@ conserva íntegra:
 | **Inventario** | ✅ Stock, alertas y ajustes |
 | **Clientes** | ✅ CRUD + descuentos |
 | **Proveedores** | ✅ CRUD |
-| **Reportes** | ✅ Ingresos, más vendidos, corte por fechas |
+| **Reportes** | ✅ Ingresos, más vendidos, corte por fechas · ⚠️ sin exportar/imprimir |
 | **Ofertas / Promociones** | ✅ Reglas de descuento por temporada |
 | **Regalos** | ✅ Catálogo filtrado |
-| **Configuración** | ✅ Usuarios y parámetros |
+| **Configuración** | ✅ Usuarios · ⚠️ parámetros de negocio pendientes (Fase 2) |
 
-**Leyenda:** ✅ implementado.
+**Leyenda:** ✅ implementado · ⚠️ parcial / pendiente en Fase 2.
 
 ### 6.1 Navegación actual
 Cada botón del sidebar carga su `*Page.fxml` correspondiente (`MainLayoutController`); el nombre
@@ -159,11 +165,16 @@ controladores ahora los consumen, eliminando helpers privados duplicados.
 
 ---
 
-## 7. Próximos pasos recomendados
+## 8. Próximos pasos recomendados
 
-1. Revisión visual final y consistencia de estilos entre páginas.
-2. Ampliar la cobertura de pruebas (servicios y flujos de caja).
-3. Empaquetado/distribución del cliente JavaFX.
+Ejecutar la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (sección 4.bis):
+
+1. **Backend (A):** transacciones en el registro de venta, precios desde el catálogo, autorización
+   por rol, folio robusto, `Pago` con FK.
+2. **Frontend (B):** RBAC visual, cliente + descuento y **cancelar venta** en POS, exportar/imprimir
+   reportes.
+2. Ampliar la cobertura de pruebas (flujos de caja y controladores) — ya hay **24/24**.
+3. Empaquetado/distribución del cliente JavaFX (`jpackage`/`jlink`).
 
 ---
 

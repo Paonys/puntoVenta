@@ -4,8 +4,9 @@
 **De:** Agente A (Backend + arranque de Frontend)
 **Para:** Agente B (Frontend)
 **Repo:** https://github.com/Paonys/puntoVenta.git — rama `main`
-**Estado:** **Proyecto completo.** Backend con persistencia SQLite y **frontend con las 11 páginas
-operativas**, login, navegación y utilidades compartidas. `mvn test` = **8/8 OK**.
+**Estado:** **Núcleo completo.** Backend con persistencia SQLite y **frontend con las 11 páginas
+operativas**, login, navegación y utilidades compartidas. `mvn test` = **24/24 OK**.
+Pendientes de alcance en **Fase 2** (`docs/plan_trabajo_2_agentes.md`, sección 4.bis).
 
 > Regla de oro: **dos agentes nunca editan el mismo archivo a la vez.**
 > Antes de empezar: `git pull --rebase origin main`.

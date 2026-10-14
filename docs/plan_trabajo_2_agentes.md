@@ -110,6 +110,27 @@ Totales t = CalculadoraTotales.calcular(items, descuentoPorcentaje);
 
 ---
 
+## 4.bis Fase 2 — Pendientes acordados (posteriores al plan A0–A6 / B0–B8)
+
+Fuente: `docs/pendientes_sugerencia_agente_b.md` (inventario de B) + `docs/pendientes_sugerencia_agente_a.md`
+(verificación y hallazgos de A). **El núcleo funciona; esto es lo que falta para cerrar el alcance.**
+
+| ID | Tarea | Dueño | Prioridad |
+|---|---|---|---|
+| **A7** | `VentaServiceImpl`: releer precios del catálogo, envolver venta+items+stock+pago en **transacción**, folio robusto y resolver **promociones dentro del servicio** | A | Alta |
+| **A8** | Autorización por rol en servicios + impedir quedarse sin `ADMIN` o auto-eliminarse | A | Alta |
+| **A9** | `Pago` con FK a `venta`; usar `ReporteService.ingresos` como fuente única | A | Media |
+| **B9** | *Gating* por rol en la UI (ocultar Configuración y acciones destructivas a `CAJERO`) | B | Alta |
+| **B10** | POS: seleccionar cliente, aplicar **descuento de cliente** y **cancelar venta** (usa `ventas().cancelar`) | B | Alta |
+| **B11** | Reportes: exportar (CSV/PDF) e imprimir | B | Media |
+| **B12** | Configuración: parámetros de negocio (requiere acuerdo con A sobre las constantes congeladas) | B/A | Media |
+| **A10/B13** | Empaquetado (`jpackage`/`jlink`) y pruebas de UI | A/B | Media/Baja |
+
+> **Acuerdo pendiente:** declarar si la Fase 2 entra en el **alcance de entrega**. Hasta que no se
+> decida, no se considera "terminado" el proyecto (evita trabajar "a ciegas").
+
+---
+
 ## 5. Protocolo de sincronización (git)
 
 ```powershell
