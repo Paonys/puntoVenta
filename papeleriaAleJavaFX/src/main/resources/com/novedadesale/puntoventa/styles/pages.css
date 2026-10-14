@@ -152,3 +152,54 @@
     -fx-text-alignment: center;
     -fx-max-width: 440px;
 }
+
+/* =========================
+   LOGIN
+   ========================= */
+
+.login-root {
+    -fx-background-color: ${ui.gradients.brand};
+    -fx-padding: 48px;
+}
+
+.login-card {
+    -fx-background-color: ${ui.color.surface};
+    -fx-background-radius: ${ui.radius.xl};
+    -fx-effect: ${ui.shadow.lg};
+    -fx-padding: 40px 44px;
+    -fx-spacing: 18px;
+    -fx-min-width: 400px;
+}
+
+.login-logo {
+    -fx-effect: dropshadow(gaussian, rgba(132, 83, 233, 0.25), 18, 0.2, 0, 4);
+}
+
+.login-title {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 700;
+    -fx-font-size: 26px;
+}
+
+.login-subtitle {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-size: 14px;
+}
+
+.login-field {
+    -fx-spacing: 6px;
+    -fx-fill-width: true;
+}
+
+.login-field-label {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.login-error {
+    -fx-text-fill: ${ui.color.danger};
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-alignment: center;
+}

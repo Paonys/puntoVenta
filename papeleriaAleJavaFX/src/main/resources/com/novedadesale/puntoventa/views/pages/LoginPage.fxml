@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           styleClass="login-root"
+           fx:controller="com.novedadesale.puntoventa.controllers.LoginController">
+
+    <VBox styleClass="login-card" alignment="CENTER" maxWidth="420" maxHeight="-Infinity">
+
+        <ImageView fitWidth="200" preserveRatio="true" styleClass="login-logo">
+            <image>
+                <Image url="@/com/novedadesale/puntoventa/images/logo.png"/>
+            </image>
+        </ImageView>
+
+        <VBox alignment="CENTER" spacing="4">
+            <Label text="Bienvenido" styleClass="login-title"/>
+            <Label text="Punto de venta · Novedades Ale" styleClass="login-subtitle"/>
+        </VBox>
+
+        <VBox styleClass="login-field">
+            <Label text="Usuario" styleClass="login-field-label"/>
+            <TextField fx:id="txtUsuario" promptText="Nombre de usuario" onAction="#onIngresar"/>
+        </VBox>
+
+        <VBox styleClass="login-field">
+            <Label text="Contraseña" styleClass="login-field-label"/>
+            <PasswordField fx:id="txtPassword" promptText="Contraseña" onAction="#onIngresar"/>
+        </VBox>
+
+        <Label fx:id="lblError" styleClass="login-error" wrapText="true" managed="false" visible="false"/>
+
+        <Button fx:id="btnIngresar" text="Iniciar sesión" styleClass="btn-primary"
+                maxWidth="Infinity" onAction="#onIngresar"/>
+
+        <Label text="Acceso de demostración: admin / admin123 · caja1 / caja123"
+               styleClass="label-caption" wrapText="true" textAlignment="CENTER"/>
+    </VBox>
+</StackPane>

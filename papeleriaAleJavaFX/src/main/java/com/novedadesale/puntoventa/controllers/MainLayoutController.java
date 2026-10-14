@@ -1,15 +1,20 @@
 package com.novedadesale.puntoventa.controllers;
 
+import com.novedadesale.puntoventa.App;
 import com.novedadesale.puntoventa.models.Rol;
 import com.novedadesale.puntoventa.ui.Animations;
 import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -126,6 +131,15 @@ public class MainLayoutController implements Initializable {
     @FXML
     private void toggleUserMenu() {
         Animations.pressPulse(userMenu);
+
+        MenuItem sesion = new MenuItem(Sesion.nombre() + " · " + (Sesion.esAdmin() ? "Administrador" : "Cajero"));
+        sesion.setDisable(true);
+
+        MenuItem cerrarSesion = new MenuItem("Cerrar sesión");
+        cerrarSesion.setOnAction(e -> App.mostrarLogin());
+
+        ContextMenu menu = new ContextMenu(sesion, new SeparatorMenuItem(), cerrarSesion);
+        menu.show(userMenu, Side.BOTTOM, 0, 8);
     }
 
     private void loadPage(String fxmlName) {
