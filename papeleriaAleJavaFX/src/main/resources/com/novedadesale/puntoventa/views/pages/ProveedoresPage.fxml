@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
+      fx:controller="com.novedadesale.puntoventa.controllers.ProveedoresController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Proveedores" styleClass="label-title"/>
+            <Label text="Administra tus proveedores y contactos de compra" styleClass="label-subtitle"/>
+        </VBox>
+        <Button text="Nuevo proveedor" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoProveedor">
+            <graphic><FontIcon iconLiteral="mdi2p-plus" iconSize="18"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- Metrics -->
+    <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
+        <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Proveedores" styleClass="metric-title"/>
+            <Label fx:id="lblTotal" text="0" styleClass="metric-value"/>
+            <Label text="registrados" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Con contacto" styleClass="metric-title"/>
+            <Label fx:id="lblContacto" text="0" styleClass="metric-value"/>
+            <Label text="personas de enlace" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Con correo" styleClass="metric-title"/>
+            <Label fx:id="lblCorreo" text="0" styleClass="metric-value"/>
+            <Label text="correos registrados" styleClass="metric-desc"/>
+        </VBox>
+    </HBox>
+
+    <!-- Proveedores -->
+    <VBox styleClass="products-section" spacing="14" VBox.vgrow="ALWAYS">
+        <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+            <Label text="Directorio de proveedores" styleClass="label-heading"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="300">
+                <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar proveedor..."
+                           styleClass="search-field" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </HBox>
+        <TableView fx:id="tblProveedores" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNombre" text="Proveedor" prefWidth="220"/>
+                <TableColumn fx:id="colContacto" text="Contacto" prefWidth="180"/>
+                <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="150"/>
+                <TableColumn fx:id="colEmail" text="Correo" prefWidth="220"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="110"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

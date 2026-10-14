@@ -1,19 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      styleClass="layout-page" spacing="20">
-    <VBox styleClass="page-header" spacing="6">
-        <Label text="Clientes" styleClass="label-title"/>
-        <Label text="Gestión de clientes" styleClass="label-subtitle"/>
-    </VBox>
-    <VBox styleClass="products-section empty-state" VBox.vgrow="ALWAYS">
-        <StackPane styleClass="empty-icon-circle">
-            <FontIcon iconLiteral="mdi2a-account-group-outline" iconSize="34"/>
-        </StackPane>
-        <Label text="Clientes en construcción" styleClass="empty-state-title"/>
-        <Label text="Aquí podrás administrar tu cartera de clientes, crédito y preferencias de cada comprador." styleClass="empty-state-text" wrapText="true"/>
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
+      fx:controller="com.novedadesale.puntoventa.controllers.ClientesController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Clientes" styleClass="label-title"/>
+            <Label text="Administra tu cartera de clientes y sus descuentos" styleClass="label-subtitle"/>
+        </VBox>
+        <Button text="Nuevo cliente" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoCliente">
+            <graphic><FontIcon iconLiteral="mdi2a-account-plus-outline" iconSize="18"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- Metrics -->
+    <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
+        <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Clientes" styleClass="metric-title"/>
+            <Label fx:id="lblTotal" text="0" styleClass="metric-value"/>
+            <Label text="registrados" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Con descuento" styleClass="metric-title"/>
+            <Label fx:id="lblConDescuento" text="0" styleClass="metric-value"/>
+            <Label text="clientes frecuentes" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Descuento promedio" styleClass="metric-title"/>
+            <Label fx:id="lblPromedio" text="0%" styleClass="metric-value"/>
+            <Label text="sobre sus compras" styleClass="metric-desc"/>
+        </VBox>
+    </HBox>
+
+    <!-- Clientes -->
+    <VBox styleClass="products-section" spacing="14" VBox.vgrow="ALWAYS">
+        <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+            <Label text="Cartera de clientes" styleClass="label-heading"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="300">
+                <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar por nombre, teléfono o correo..."
+                           styleClass="search-field" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </HBox>
+        <TableView fx:id="tblClientes" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNombre" text="Cliente" prefWidth="220"/>
+                <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="160"/>
+                <TableColumn fx:id="colEmail" text="Correo" prefWidth="240"/>
+                <TableColumn fx:id="colDescuento" text="Descuento" prefWidth="120"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="120"/>
+            </columns>
+        </TableView>
     </VBox>
 </VBox>

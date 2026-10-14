@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
+      fx:controller="com.novedadesale.puntoventa.controllers.OfertasController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Ofertas" styleClass="label-title"/>
+            <Label text="Promociones y descuentos por temporada" styleClass="label-subtitle"/>
+        </VBox>
+        <Button text="Nueva oferta" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevaOferta">
+            <graphic><FontIcon iconLiteral="mdi2p-plus" iconSize="18"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- Metrics -->
+    <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
+        <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Ofertas" styleClass="metric-title"/>
+            <Label fx:id="lblTotal" text="0" styleClass="metric-value"/>
+            <Label text="registradas" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Activas" styleClass="metric-title"/>
+            <Label fx:id="lblActivas" text="0" styleClass="metric-value"/>
+            <Label text="habilitadas" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Vigentes hoy" styleClass="metric-title"/>
+            <Label fx:id="lblVigentes" text="0" styleClass="metric-value"/>
+            <Label text="aplicando descuento" styleClass="metric-desc"/>
+        </VBox>
+    </HBox>
+
+    <!-- Ofertas -->
+    <VBox styleClass="products-section" spacing="14" VBox.vgrow="ALWAYS">
+        <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+            <Label text="Promociones" styleClass="label-heading"/>
+        </HBox>
+        <TableView fx:id="tblOfertas" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNombre" text="Nombre" prefWidth="220"/>
+                <TableColumn fx:id="colTipo" text="Tipo" prefWidth="120"/>
+                <TableColumn fx:id="colValor" text="Valor" prefWidth="100"/>
+                <TableColumn fx:id="colCategoria" text="Categoría" prefWidth="140"/>
+                <TableColumn fx:id="colInicio" text="Inicio" prefWidth="110"/>
+                <TableColumn fx:id="colFin" text="Fin" prefWidth="110"/>
+                <TableColumn fx:id="colEstado" text="Estado" prefWidth="120"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="110"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

@@ -1,19 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      styleClass="layout-page" spacing="20">
-    <VBox styleClass="page-header" spacing="6">
-        <Label text="Inventario" styleClass="label-title"/>
-        <Label text="Gestión de productos" styleClass="label-subtitle"/>
-    </VBox>
-    <VBox styleClass="products-section empty-state" VBox.vgrow="ALWAYS">
-        <StackPane styleClass="empty-icon-circle">
-            <FontIcon iconLiteral="mdi2c-clipboard-text-outline" iconSize="34"/>
-        </StackPane>
-        <Label text="Inventario en construcción" styleClass="empty-state-title"/>
-        <Label text="Aquí podrás registrar productos, actualizar cantidades y monitorear alertas de stock bajo." styleClass="empty-state-text" wrapText="true"/>
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
+      fx:controller="com.novedadesale.puntoventa.controllers.InventarioController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Inventario" styleClass="label-title"/>
+            <Label text="Actualiza existencias y vigila el stock bajo" styleClass="label-subtitle"/>
+        </VBox>
+        <Button text="Actualizar" styleClass="btn-secondary" graphicTextGap="8" onAction="#recargar">
+            <graphic><FontIcon iconLiteral="mdi2r-refresh" iconSize="18"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- Metrics -->
+    <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
+        <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Productos" styleClass="metric-title"/>
+            <Label fx:id="lblTotal" text="0" styleClass="metric-value"/>
+            <Label text="en el catálogo" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Stock bajo" styleClass="metric-title"/>
+            <Label fx:id="lblStockBajo" text="0" styleClass="metric-value"/>
+            <Label text="por reponer" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Agotados" styleClass="metric-title"/>
+            <Label fx:id="lblAgotados" text="0" styleClass="metric-value"/>
+            <Label text="sin existencias" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-4" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Valor inventario" styleClass="metric-title"/>
+            <Label fx:id="lblValor" text="0.00" styleClass="metric-value"/>
+            <Label text="a precio de venta" styleClass="metric-desc"/>
+        </VBox>
+    </HBox>
+
+    <!-- Inventario -->
+    <VBox styleClass="products-section" spacing="14" VBox.vgrow="ALWAYS">
+        <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+            <Label text="Existencias" styleClass="label-heading"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="300">
+                <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar por nombre o código..."
+                           styleClass="search-field" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </HBox>
+        <HBox fx:id="chipsFiltro" styleClass="categories-bar" spacing="10" alignment="CENTER_LEFT"/>
+        <TableView fx:id="tblInventario" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colCodigo" text="Código" prefWidth="110"/>
+                <TableColumn fx:id="colNombre" text="Producto" prefWidth="240"/>
+                <TableColumn fx:id="colCategoria" text="Categoría" prefWidth="140"/>
+                <TableColumn fx:id="colStock" text="Stock" prefWidth="90"/>
+                <TableColumn fx:id="colMinimo" text="Mínimo" prefWidth="90"/>
+                <TableColumn fx:id="colEstado" text="Estado" prefWidth="130"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="150"/>
+            </columns>
+        </TableView>
     </VBox>
 </VBox>

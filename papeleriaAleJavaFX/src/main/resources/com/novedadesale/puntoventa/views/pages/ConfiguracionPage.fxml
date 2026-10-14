@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
+      fx:controller="com.novedadesale.puntoventa.controllers.ConfiguracionController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Configuración" styleClass="label-title"/>
+            <Label text="Administra los usuarios y accesos del sistema" styleClass="label-subtitle"/>
+        </VBox>
+        <Button text="Nuevo usuario" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoUsuario">
+            <graphic><FontIcon iconLiteral="mdi2a-account-plus-outline" iconSize="18"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- Metrics -->
+    <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
+        <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Usuarios" styleClass="metric-title"/>
+            <Label fx:id="lblTotal" text="0" styleClass="metric-value"/>
+            <Label text="registrados" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Administradores" styleClass="metric-title"/>
+            <Label fx:id="lblAdmins" text="0" styleClass="metric-value"/>
+            <Label text="con acceso total" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Activos" styleClass="metric-title"/>
+            <Label fx:id="lblActivos" text="0" styleClass="metric-value"/>
+            <Label text="pueden iniciar sesión" styleClass="metric-desc"/>
+        </VBox>
+    </HBox>
+
+    <!-- Usuarios -->
+    <VBox styleClass="products-section" spacing="14" VBox.vgrow="ALWAYS">
+        <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+            <Label text="Usuarios del sistema" styleClass="label-heading"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="300">
+                <FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/>
+                <TextField fx:id="txtBuscar" promptText="Buscar usuario..."
+                           styleClass="search-field" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </HBox>
+        <TableView fx:id="tblUsuarios" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colNombre" text="Nombre" prefWidth="220"/>
+                <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="180"/>
+                <TableColumn fx:id="colRol" text="Rol" prefWidth="140"/>
+                <TableColumn fx:id="colEstado" text="Estado" prefWidth="130"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="110"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

@@ -1,12 +1,15 @@
 package com.novedadesale.puntoventa.controllers;
 
+import com.novedadesale.puntoventa.models.Rol;
 import com.novedadesale.puntoventa.ui.Animations;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -21,10 +24,14 @@ import java.util.ResourceBundle;
 
 public class MainLayoutController implements Initializable {
 
+    private static final String VIEWS = "/com/novedadesale/puntoventa/views/pages/";
+
     @FXML private BorderPane root;
     @FXML private VBox sidebar;
     @FXML private StackPane contentPane;
     @FXML private HBox userMenu;
+    @FXML private Label userName;
+    @FXML private Label userRole;
     @FXML private Button btnInicio;
     @FXML private Button btnVentas;
     @FXML private Button btnProductos;
@@ -46,67 +53,73 @@ public class MainLayoutController implements Initializable {
                 navButtons.add(button);
             }
         }
+        mostrarUsuario();
         goToInicio();
         Animations.enableMicroInteractions(root);
     }
 
+    private void mostrarUsuario() {
+        userName.setText(Sesion.nombre());
+        userRole.setText(Sesion.rol() == Rol.ADMIN ? "Administrador" : "Cajero");
+    }
+
     @FXML
     private void goToInicio() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/PointOfSalePage.fxml");
+        loadPage("DashboardPage.fxml");
         setActive(btnInicio);
     }
 
     @FXML
     private void goToVentas() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/PointOfSalePage.fxml");
+        loadPage("PointOfSalePage.fxml");
         setActive(btnVentas);
     }
 
     @FXML
     private void goToProductos() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/ProductosPage.fxml");
+        loadPage("ProductosPage.fxml");
         setActive(btnProductos);
     }
 
     @FXML
     private void goToRegalos() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/PointOfSalePage.fxml");
+        loadPage("RegalosPage.fxml");
         setActive(btnRegalos);
     }
 
     @FXML
     private void goToOfertas() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/PointOfSalePage.fxml");
+        loadPage("OfertasPage.fxml");
         setActive(btnOfertas);
     }
 
     @FXML
     private void goToInventario() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/InventarioPage.fxml");
+        loadPage("InventarioPage.fxml");
         setActive(btnInventario);
     }
 
     @FXML
     private void goToClientes() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/ClientesPage.fxml");
+        loadPage("ClientesPage.fxml");
         setActive(btnClientes);
     }
 
     @FXML
     private void goToProveedores() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/PointOfSalePage.fxml");
+        loadPage("ProveedoresPage.fxml");
         setActive(btnProveedores);
     }
 
     @FXML
     private void goToReportes() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/ReportesPage.fxml");
+        loadPage("ReportesPage.fxml");
         setActive(btnReportes);
     }
 
     @FXML
     private void goToConfiguracion() {
-        loadPage("/com/novedadesale/puntoventa/views/pages/PointOfSalePage.fxml");
+        loadPage("ConfiguracionPage.fxml");
         setActive(btnConfiguracion);
     }
 
@@ -115,9 +128,9 @@ public class MainLayoutController implements Initializable {
         Animations.pressPulse(userMenu);
     }
 
-    private void loadPage(String fxmlPath) {
+    private void loadPage(String fxmlName) {
         try {
-            Parent page = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Parent page = FXMLLoader.load(getClass().getResource(VIEWS + fxmlName));
             contentPane.getChildren().clear();
             contentPane.getChildren().add(page);
             Animations.viewEntrance(page);

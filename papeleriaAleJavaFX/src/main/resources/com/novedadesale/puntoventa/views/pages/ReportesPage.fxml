@@ -1,19 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      styleClass="layout-page" spacing="20">
-    <VBox styleClass="page-header" spacing="6">
-        <Label text="Reportes" styleClass="label-title"/>
-        <Label text="Ventas y estadísticas" styleClass="label-subtitle"/>
-    </VBox>
-    <VBox styleClass="products-section empty-state" VBox.vgrow="ALWAYS">
-        <StackPane styleClass="empty-icon-circle">
-            <FontIcon iconLiteral="mdi2c-chart-box-outline" iconSize="34"/>
-        </StackPane>
-        <Label text="Reportes en construcción" styleClass="empty-state-title"/>
-        <Label text="Aquí verás el desempeño de la tienda: ventas por período, productos más vendidos y utilidades." styleClass="empty-state-text" wrapText="true"/>
-    </VBox>
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
+      fx:controller="com.novedadesale.puntoventa.controllers.ReportesController">
+
+    <!-- Header -->
+    <HBox styleClass="page-header" spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Reportes" styleClass="label-title"/>
+            <Label text="Analiza las ventas por rango de fechas" styleClass="label-subtitle"/>
+        </VBox>
+        <Label text="Desde" styleClass="label-body"/>
+        <DatePicker fx:id="dpDesde"/>
+        <Label text="Hasta" styleClass="label-body"/>
+        <DatePicker fx:id="dpHasta"/>
+        <Button text="Generar" styleClass="btn-primary" graphicTextGap="8" onAction="#generar">
+            <graphic><FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/></graphic>
+        </Button>
+    </HBox>
+
+    <!-- Metrics -->
+    <HBox styleClass="metrics-row" spacing="14" fillHeight="false">
+        <VBox styleClass="metric-card gradient-1" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Total vendido" styleClass="metric-title"/>
+            <Label fx:id="lblTotalVendido" text="0.00" styleClass="metric-value"/>
+            <Label fx:id="lblRango" text="periodo" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-2" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Tickets" styleClass="metric-title"/>
+            <Label fx:id="lblTickets" text="0" styleClass="metric-value"/>
+            <Label text="ventas realizadas" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-3" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Ticket promedio" styleClass="metric-title"/>
+            <Label fx:id="lblTicketPromedio" text="0.00" styleClass="metric-value"/>
+            <Label text="por venta" styleClass="metric-desc"/>
+        </VBox>
+        <VBox styleClass="metric-card gradient-4" HBox.hgrow="ALWAYS" spacing="6">
+            <Label text="Productos vendidos" styleClass="metric-title"/>
+            <Label fx:id="lblUnidades" text="0" styleClass="metric-value"/>
+            <Label text="unidades" styleClass="metric-desc"/>
+        </VBox>
+    </HBox>
+
+    <!-- Paneles -->
+    <HBox spacing="18" VBox.vgrow="ALWAYS">
+        <VBox styleClass="products-section" spacing="14" HBox.hgrow="ALWAYS" minWidth="360">
+            <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+                <Label text="Productos más vendidos" styleClass="label-heading"/>
+            </HBox>
+            <TableView fx:id="tblMasVendidos" styleClass="data-table" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colMvCodigo" text="Código" prefWidth="100"/>
+                    <TableColumn fx:id="colMvProducto" text="Producto" prefWidth="220"/>
+                    <TableColumn fx:id="colMvCantidad" text="Vendidos" prefWidth="100"/>
+                    <TableColumn fx:id="colMvImporte" text="Importe" prefWidth="120"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <VBox styleClass="products-section" spacing="14" HBox.hgrow="ALWAYS" minWidth="420">
+            <HBox styleClass="section-header" spacing="10" alignment="CENTER_LEFT">
+                <Label text="Detalle de ventas" styleClass="label-heading"/>
+            </HBox>
+            <TableView fx:id="tblVentas" styleClass="data-table" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colFolio" text="Folio" prefWidth="100"/>
+                    <TableColumn fx:id="colFecha" text="Fecha" prefWidth="130"/>
+                    <TableColumn fx:id="colCliente" text="Cliente" prefWidth="150"/>
+                    <TableColumn fx:id="colMetodo" text="Pago" prefWidth="110"/>
+                    <TableColumn fx:id="colEstado" text="Estado" prefWidth="110"/>
+                    <TableColumn fx:id="colTotal" text="Total" prefWidth="110"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
 </VBox>

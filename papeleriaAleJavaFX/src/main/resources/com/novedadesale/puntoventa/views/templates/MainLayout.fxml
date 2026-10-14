@@ -31,8 +31,8 @@
                 <HBox fx:id="userMenu" styleClass="user-menu" alignment="CENTER" spacing="8" onMouseClicked="#toggleUserMenu">
                     <Label fx:id="userAvatar" text="CA" styleClass="user-avatar"/>
                     <VBox alignment="CENTER_LEFT" spacing="0">
-                        <Label text="Caja 1" styleClass="user-name"/>
-                        <Label text="Novedades Ale" styleClass="user-name-secondary"/>
+                        <Label fx:id="userName" text="Invitado" styleClass="user-name"/>
+                        <Label fx:id="userRole" text="Novedades Ale" styleClass="user-name-secondary"/>
                     </VBox>
                     <Region prefWidth="12" prefHeight="12" styleClass="icon-chevron"/>
                 </HBox>
