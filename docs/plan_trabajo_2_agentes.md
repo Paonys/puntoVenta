@@ -93,17 +93,17 @@ Totales t = CalculadoraTotales.calcular(items, descuentoPorcentaje);
 - [x] **B3.** Diálogo de **Pago** (métodos + cambio) + **Ticket** (con intento de impresión).
 - [x] **B0 (infra UI).** `ui/Sesion` (usuario logueado) y `ui/Dialogos`
   (alertas/confirmación con el tema de la app).
-- [ ] **B4.** **Login** + control de usuarios (`Servicios.usuarios().autenticar(...)`,
+- [x] **B4.** **Login** + control de usuarios (`Servicios.usuarios().autenticar(...)`,
   `Sesion.iniciar(...)`; arrancar `App` por el Login). Usuarios semilla:
   `admin/admin123`, `caja1/caja123`.
-- [ ] **B5.** **Dashboard de Inicio** conectado a `Servicios.reportes()`.
-- [ ] **B6.** Vistas reales: Inventario, Clientes, Proveedores, Reportes, Ofertas,
-  Regalos, Configuración (hoy son placeholders "en construcción").
-- [ ] **B7.** Conectar los 6 botones del sidebar que hoy cargan el POS
-  (`Inicio`, `Ventas`, `Regalos`, `Ofertas`, `Proveedores`, `Configuración`) y
-  mostrar usuario/`searchField` con `Sesion`.
-- [ ] **B8.** Mostrar errores de validación (`ValidacionException`/`ServiceException`)
-  en la UI con `Dialogos.error(...)` (POS y Productos ya lo hacen).
+- [x] **B5.** **Dashboard de Inicio** conectado a `Servicios.reportes()`.
+- [x] **B6.** Vistas reales: Inventario, Clientes, Proveedores, Reportes, Ofertas,
+  Regalos y Configuración (ya no son placeholders "en construcción").
+- [x] **B7.** Conectar los botones del sidebar a sus vistas reales
+  (`Inicio`, `Ventas`, `Regalos`, `Ofertas`, `Proveedores`, `Configuración`…) y
+  mostrar el usuario y su rol en el topbar con `Sesion`.
+- [x] **B8.** Mostrar errores de validación (`ValidacionException`/`ServiceException`)
+  en la UI con `Dialogos.error(...)` (POS, Productos y los CRUD nuevos).
 
 > Detalle completo del handoff en `docs/informe_entrega_agente_B.md` (firmas de servicio,
 > archivos tocados y qué falta).
