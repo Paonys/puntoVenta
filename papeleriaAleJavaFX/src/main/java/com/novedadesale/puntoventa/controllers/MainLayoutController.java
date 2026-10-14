@@ -35,6 +35,7 @@ public class MainLayoutController implements Initializable {
     @FXML private VBox sidebar;
     @FXML private StackPane contentPane;
     @FXML private HBox userMenu;
+    @FXML private Label userAvatar;
     @FXML private Label userName;
     @FXML private Label userRole;
     @FXML private Button btnInicio;
@@ -64,8 +65,23 @@ public class MainLayoutController implements Initializable {
     }
 
     private void mostrarUsuario() {
-        userName.setText(Sesion.nombre());
+        String nombre = Sesion.nombre();
+        userName.setText(nombre);
         userRole.setText(Sesion.rol() == Rol.ADMIN ? "Administrador" : "Cajero");
+        userAvatar.setText(iniciales(nombre));
+    }
+
+    private String iniciales(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return "?";
+        }
+        String[] partes = nombre.trim().split("\\s+");
+        StringBuilder iniciales = new StringBuilder()
+                .append(Character.toUpperCase(partes[0].charAt(0)));
+        if (partes.length > 1) {
+            iniciales.append(Character.toUpperCase(partes[partes.length - 1].charAt(0)));
+        }
+        return iniciales.toString();
     }
 
     @FXML
@@ -129,6 +145,19 @@ public class MainLayoutController implements Initializable {
     }
 
     @FXML
+    private void onBuscar() {
+        String texto = searchField.getText() == null ? "" : searchField.getText().trim();
+        if (texto.isEmpty()) {
+            return;
+        }
+        Object controlador = loadPage("ProductosPage.fxml");
+        setActive(btnProductos);
+        if (controlador instanceof ProductosController productos) {
+            productos.buscar(texto);
+        }
+    }
+
+    @FXML
     private void toggleUserMenu() {
         Animations.pressPulse(userMenu);
 
@@ -142,15 +171,18 @@ public class MainLayoutController implements Initializable {
         menu.show(userMenu, Side.BOTTOM, 0, 8);
     }
 
-    private void loadPage(String fxmlName) {
+    private Object loadPage(String fxmlName) {
         try {
-            Parent page = FXMLLoader.load(getClass().getResource(VIEWS + fxmlName));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEWS + fxmlName));
+            Parent page = loader.load();
             contentPane.getChildren().clear();
             contentPane.getChildren().add(page);
             Animations.viewEntrance(page);
             Animations.enableMicroInteractions(page);
+            return loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 

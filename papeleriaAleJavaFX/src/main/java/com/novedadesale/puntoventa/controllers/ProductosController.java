@@ -90,6 +90,15 @@ public class ProductosController implements Initializable {
         actualizarMetricas();
     }
 
+    /** Aplica una búsqueda desde el buscador global del layout (todas las categorías). */
+    public void buscar(String texto) {
+        categoriaActiva = TODOS;
+        crearChips();
+        txtBuscar.setText(texto == null ? "" : texto);
+        aplicarFiltros();
+        txtBuscar.requestFocus();
+    }
+
     // ------------------------------------------------------------------
     // Configuración de columnas
     // ------------------------------------------------------------------

@@ -26,7 +26,7 @@
                 <HBox styleClass="search-bar" alignment="CENTER_LEFT" spacing="8" prefWidth="340">
                     <Region prefWidth="18" prefHeight="18" styleClass="icon-search"/>
                     <TextField fx:id="searchField" promptText="Buscar producto..." styleClass="search-field"
-                               HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                               HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#onBuscar"/>
                 </HBox>
                 <HBox fx:id="userMenu" styleClass="user-menu" alignment="CENTER" spacing="8" onMouseClicked="#toggleUserMenu">
                     <Label fx:id="userAvatar" text="CA" styleClass="user-avatar"/>
