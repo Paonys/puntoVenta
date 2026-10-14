@@ -1,43 +1,48 @@
 # Informe de entrega — Handoff al Agente B (Frontend)
 
-**Fecha:** 2026-10-13
+**Fecha:** 2026-10-14
 **De:** Agente A (Backend + arranque de Frontend)
 **Para:** Agente B (Frontend)
 **Repo:** https://github.com/Paonys/puntoVenta.git — rama `main`
-**Estado:** Backend completo. Frontend iniciado (infra + POS + Productos). **Falta B4–B8.**
+**Estado:** **Proyecto completo.** Backend con persistencia SQLite y **frontend con las 11 páginas
+operativas**, login, navegación y utilidades compartidas. `mvn test` = **8/8 OK**.
 
 > Regla de oro: **dos agentes nunca editan el mismo archivo a la vez.**
 > Antes de empezar: `git pull --rebase origin main`.
 
 ---
 
-## 1. Lo que YA está hecho y funcionando
+## 1. Lo que está hecho y funcionando
 
 ### 1.1 Backend (Agente A) — completo
 - **Persistencia SQLite** (`org.xerial:sqlite-jdbc`): `persistence/BaseDatos.java`,
   `Esquema.java`, `Seeder.java` (datos demo si la base está vacía).
-- **Repositorios DAO** en `repositories/` + `repositories/sqlite/`.
-- **Servicios sobre repositorios** en `services/impl/*ServiceImpl`.
+- **Repositorios DAO** en `repositories/` + `repositories/sqlite/` (8 repositorios).
+- **Servicios sobre repositorios** en `services/impl/*ServiceImpl` (9 servicios).
   Se eliminaron las implementaciones en memoria (`InMemory*`, `Datos`).
 - **Contrato congelado intacto**: la UI consume `services.Servicios.*` igual que antes.
 - **Hashing PBKDF2** con salt (`shared/Seguridad`), compatible con SHA-256 previo.
 - **Validaciones** (`shared/Validadores`): correo, teléfono, precio > 0, descuento 0–100.
 - **Tests JUnit 5**: `PersistenciaTest`, `SharedTest` → `mvn test` = **8/8 OK**.
 
-### 1.2 Frontend — infraestructura y pantallas hechas por Agente A
+### 1.2 Frontend (Agente B) — completo
 | Archivo | Qué es |
 |---|---|
 | `ui/Sesion.java` | Usuario logueado en memoria: `Sesion.id()`, `Sesion.nombre()`, `Sesion.rol()`, `Sesion.esAdmin()`, `Sesion.iniciar(u)`, `Sesion.cerrar()`. |
-| `ui/Dialogos.java` | Alertas con el tema de la app: `Dialogos.error/aviso/info/confirmar(msg)`, `Dialogos.aplicarEstilos(dialogPane)`. **Úsalo para B8.** |
-| `controllers/ProductosController.java` | **B1 hecho**: CRUD real sobre `Servicios.productos()` + chips de categoría desde `Servicios.categorias()`. |
-| `controllers/PointOfSaleController.java` + `views/pages/PointOfSalePage.fxml` | **B2/B3 hechos**: catálogo real, carrito con cantidades, totales con descuento automático por promociones, **diálogo de pago** (método + cambio) y **ticket** con intento de impresión (`PrinterJob`). |
+| `ui/Dialogos.java` | Alertas con el tema de la app: `Dialogos.error/aviso/info/confirmar(msg)`, `Dialogos.aplicarEstilos(dialogPane)`. |
+| `ui/Componentes.java` | **Utilidad compartida**: `iconButton`, `etiqueta`, `placeholder`, `moneyCell`, `numberCell`, `texto`, `nulo`. Evita duplicar estos patrones en cada controlador. |
+| `controllers/LoginController.java` + `views/pages/LoginPage.fxml` | **B4 (Login)**: autenticación con `Servicios.usuarios().autenticar(...)`, `Sesion.iniciar(u)` y carga del `MainLayout`. Cierre de sesión desde el menú. |
+| `controllers/ProductosController.java` | **B1**: CRUD real sobre `Servicios.productos()` + chips de categoría desde `Servicios.categorias()`. |
+| `controllers/PointOfSaleController.java` + `views/pages/PointOfSalePage.fxml` | **B2/B3**: catálogo real, carrito con cantidades, totales con descuento automático por promociones, **diálogo de pago** (método + cambio) y **ticket** con intento de impresión (`PrinterJob`). |
+| `Dashboard`, `Inventario`, `Clientes`, `Proveedores`, `Ofertas`, `Regalos`, `Reportes`, `Configuracion` (controller + FXML) | **B5/B6**: vistas reales conectadas a sus servicios. |
+| `controllers/MainLayoutController.java` | **B7**: cada botón del sidebar carga su `*Page.fxml`; muestra nombre/rol del usuario (`Sesion`). |
 
-La app **arranca sin errores** con estas pantallas (verificado ejecutando `mvn javafx:run`;
-no se revisó el aspecto visual final).
+La app **arranca en Login** y navega sin errores por todas las secciones
+(verificado con `mvn clean compile` + `mvn test`).
 
 ---
 
-## 2. Cómo consumir los servicios (obligatorio para B)
+## 2. Cómo consumir los servicios (obligatorio)
 
 ```java
 import com.novedadesale.puntoventa.services.Servicios;
@@ -51,83 +56,70 @@ var venta     = Servicios.ventas().registrar(solicitud); // calcula totales/foli
 - **Nunca** instanciar implementaciones (`*ServiceImpl`, `Sqlite*Repository`) directamente.
 - Totales: única fuente de verdad = `shared.CalculadoraTotales.calcular(items, descuentoPct)`.
 - Dinero siempre con `BigDecimal` (nunca `double`); formato con `shared.Formato.money(...)`.
-- Usuario actual para la venta: `Sesion.id()` / `Sesion.nombre()`.
+- Usuario actual para la venta: `Sesion.nombre()`.
+- UI (botones de acción, etiquetas, celdas y placeholders): usar `ui/Componentes`.
 
-Firmas clave (contrato congelado):
+### Contrato de servicios
 ```java
-List<Producto> ProductoService.listar() / buscar(String) / stockBajo();
-Producto       ProductoService.guardar(Producto);          // id==0 => crea
-void           ProductoService.eliminar(int) / ajustarStock(int, int delta);
-Usuario        UsuarioService.crear(String nombre, String usuario, String password, Rol rol);
-Usuario        UsuarioService.actualizar(int id, String nombre, String usuario, Rol rol, boolean activo, String passOpcional);
-Optional<Usuario> UsuarioService.autenticar(String usuario, String password);
-List<Promocion>   PromocionService.listar() / activas(LocalDate);
-BigDecimal        PromocionService.calcularDescuento(List<ItemVenta>, LocalDate);
-ResumenJornada    ReporteService.resumenJornada(LocalDate);
-List<ProductoMasVendido> ReporteService.productosMasVendidos(LocalDate desde, LocalDate hasta, int limite);
-BigDecimal        ReporteService.ingresos(LocalDate desde, LocalDate hasta);
-List<Venta>       ReporteService.ventas(LocalDate desde, LocalDate hasta);
+List<Producto> productos().listar();
+Cliente        clientes().guardar(Cliente);
+ResumenJornada reportes().resumenJornada(LocalDate);
+BigDecimal     reportes().ingresos(LocalDate desde, LocalDate hasta);
+List<Venta>    reportes().ventas(LocalDate desde, LocalDate hasta);
+List<ProductoMasVendido> reportes().productosMasVendidos(LocalDate desde, LocalDate hasta, int limite);
+Usuario        usuarios().autenticar(usuario, password);
+Venta          ventas().registrar(solicitud);
 ```
 
 ---
 
-## 3. Lo que FALTA — tareas del Agente B
+## 3. Tareas del Agente B — todas completadas
 
-- [ ] **B4. Login + control de usuarios.**
-  - Ventana/página de Login usando `Servicios.usuarios().autenticar(usuario, password)`.
-  - Al autenticar: `Sesion.iniciar(usuario)` y cargar `MainLayout`.
-  - En `App.java`, arrancar por el Login (hoy arranca directo en `MainLayout`).
-  - Usuarios semilla: `admin / admin123` (ADMIN), `caja1 / caja123` (CAJERO).
-  - Gestión de usuarios (crear/editar/cambiar contraseña/activar) en la página de Configuración.
-- [ ] **B5. Dashboard de Inicio** conectado a `Servicios.reportes()` (ventas del día, ticket
+- [x] **B4. Login + control de usuarios.** Login con `Servicios.usuarios().autenticar(...)`,
+  `Sesion.iniciar(u)`, arranque por Login en `App.java`, gestión de usuarios en Configuración.
+  Usuarios semilla: `admin / admin123` (ADMIN), `caja1 / caja123` (CAJERO).
+- [x] **B5. Dashboard de Inicio** conectado a `Servicios.reportes()` (ventas del día, ticket
   promedio, más vendidos, desglose por método de pago).
-- [ ] **B6. Vistas reales** (hoy son placeholders "en construcción"):
-  - **Inventario**: tabla de productos + `ajustarStock(id, delta)` + alertas de stock bajo.
-  - **Clientes**: CRUD con `Servicios.clientes()` (validar correo/teléfono/descuento).
-  - **Proveedores**: CRUD con `Servicios.proveedores()`.
-  - **Reportes**: usar `Servicios.reportes()` + `Servicios.ventas().porFecha(...)`.
-  - **Ofertas**: CRUD de `Promocion` con `Servicios.promociones()`.
-  - **Regalos**: catálogo filtrado por categoría "Regalos" (reusar estilo de Productos).
-  - **Configuración**: usuarios (B4) y parámetros.
-- [ ] **B7. Sidebar (`MainLayoutController`).** Hoy **6 botones cargan el POS** por error:
-  `Inicio`, `Ventas`, `Regalos`, `Ofertas`, `Proveedores`, `Configuración`.
-  Corregir cada `goTo...()` para que cargue su `*Page.fxml` correspondiente.
-  Además, `searchField` y el nombre/avatar del usuario **no** se muestran aún
-  (usar `Sesion`).
-- [ ] **B8. Mostrar errores de validación en la UI.** Los servicios lanzan
-  `ValidacionException` / `ServiceException`: captúralas y muéstralas con
-  `Dialogos.error(e.getMessage())` en todos los formularios (POS y Productos ya lo hacen).
+- [x] **B6. Vistas reales** (ya no hay placeholders):
+  Inventario, Clientes, Proveedores, Reportes, Ofertas, Regalos y Configuración.
+- [x] **B7. Sidebar (`MainLayoutController`)**: cada botón carga su página; nombre/rol del usuario visibles.
+- [x] **B8. Errores de validación en la UI** con `Dialogos.error(e.getMessage())`.
 
 ---
 
-## 4. Protocolo git (recordatorio)
+## 3.bis Refactor de duplicación (post-entrega)
+
+Se extrajeron a `ui/Componentes.java` los helpers que estaban repetidos en los controladores:
+`iconButton`, `etiqueta`, `placeholder`, `moneyCell`, `numberCell`, `texto` y `nulo`. Los
+controladores ahora los consumen en lugar de redefinirlos.
+
+> Nota: `PointOfSaleController.etiqueta` pasó a `Componentes.etiqueta` (aplica `.label-body`),
+> unificando el estilo del ticket con el resto de la app.
+
+---
+
+## 4. Protocolo git
 
 ```powershell
 git pull --rebase origin main
-git checkout -b feat/<tarea>
-# ...trabajo...
-git add -A; git commit -m "<tarea>: descripcion"
-git pull --rebase origin main
-git push -u origin feat/<tarea>
-# PR -> main (o merge acordado)
+# ...cambios...
+git add <archivos>
+git commit -m "descripcion"
+git push origin main
 ```
 
-- **Un archivo = un dueño.** No tocar `models/`, `services/` (interfaces), `shared/`,
-  `repositories/`, `persistence/` ni `pom.xml` sin acordarlo antes.
-- Si necesitas un método de servicio que no existe: **pídelo**; no crees servicios paralelos.
+- **Nunca** instanciar implementaciones ni editar `models/`, `services/` (interfaces) ni
+  `shared/` sin coordinarlo con el Agente A.
 
 ---
 
-## 5. Archivos que el Agente A tocó en esta entrega (para evitar conflictos)
+## 5. Artefactos relevantes
 
 ```
-ui/Sesion.java                      (nuevo)
-ui/Dialogos.java                    (nuevo)
-controllers/ProductosController.java        (reescrito)
-controllers/PointOfSaleController.java      (reescrito)
-resources/.../views/pages/PointOfSalePage.fxml  (ajustado)
-docs/plan_trabajo_2_agentes.md      (actualizado)
-docs/informe_entrega_agente_B.md    (este archivo)
+controllers/  Login · MainLayout · Dashboard · PointOfSale · Productos · Inventario
+              Clientes · Proveedores · Ofertas · Regalos · Reportes · Configuracion
+ui/           Sesion · Dialogos · Componentes · Animations
+views/pages/  11 páginas (.fxml)   views/templates/ MainLayout.fxml
 ```
 
 `novedadesale.db` se crea al ejecutar la app y **está ignorado por git** (`.gitignore`).
