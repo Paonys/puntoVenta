@@ -6,6 +6,7 @@ import com.novedadesale.puntoventa.models.ProductoMasVendido;
 import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
+import com.novedadesale.puntoventa.ui.Componentes;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -67,17 +68,17 @@ public class ReportesController implements Initializable {
     private void configurarTablas() {
         tblMasVendidos.setItems(masVendidos);
         tblMasVendidos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        tblMasVendidos.setPlaceholder(placeholder("Sin ventas en el periodo seleccionado"));
+        tblMasVendidos.setPlaceholder(Componentes.placeholder("Sin ventas en el periodo seleccionado"));
 
         colMvCodigo.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().codigo()));
         colMvProducto.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().nombre()));
         colMvCantidad.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().cantidad()));
         colMvImporte.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().importe()));
-        colMvImporte.setCellFactory(c -> moneyCell());
+        colMvImporte.setCellFactory(c -> Componentes.moneyCell());
 
         tblVentas.setItems(ventas);
         tblVentas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        tblVentas.setPlaceholder(placeholder("Sin ventas en el periodo seleccionado"));
+        tblVentas.setPlaceholder(Componentes.placeholder("Sin ventas en el periodo seleccionado"));
 
         colFolio.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().folio()));
         colFecha.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().fecha().format(FECHA)));
@@ -85,7 +86,7 @@ public class ReportesController implements Initializable {
                 cd.getValue().clienteNombre() == null ? "Público general" : cd.getValue().clienteNombre()));
         colMetodo.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().metodoPago().name()));
         colTotal.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().total()));
-        colTotal.setCellFactory(c -> moneyCell());
+        colTotal.setCellFactory(c -> Componentes.moneyCell());
 
         colEstado.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colEstado.setCellFactory(c -> new TableCell<>() {
@@ -141,24 +142,5 @@ public class ReportesController implements Initializable {
                 + fin.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
         masVendidos.setAll(Servicios.reportes().productosMasVendidos(inicio, fin, 10));
-    }
-
-    private Label placeholder(String texto) {
-        Label label = new Label(texto);
-        label.getStyleClass().add("text-tertiary");
-        return label;
-    }
-
-    private <T> TableCell<T, BigDecimal> moneyCell() {
-        return new TableCell<>() {
-            {
-                getStyleClass().add("num-cell");
-            }
-            @Override
-            protected void updateItem(BigDecimal valor, boolean empty) {
-                super.updateItem(valor, empty);
-                setText(empty || valor == null ? null : Formato.money(valor));
-            }
-        };
     }
 }

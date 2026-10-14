@@ -5,7 +5,9 @@ import com.novedadesale.puntoventa.models.Categoria;
 import com.novedadesale.puntoventa.models.Producto;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.AppConstants;
+import com.novedadesale.puntoventa.shared.CalculadoraTotales;
 import com.novedadesale.puntoventa.shared.Formato;
+import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -72,10 +74,7 @@ public class ProductosController implements Initializable {
         filtrados = new FilteredList<>(productos, p -> true);
         tblProductos.setItems(filtrados);
         tblProductos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-
-        Label placeholder = new Label("No se encontraron productos");
-        placeholder.getStyleClass().add("text-tertiary");
-        tblProductos.setPlaceholder(placeholder);
+        tblProductos.setPlaceholder(Componentes.placeholder("No se encontraron productos"));
 
         configurarColumnas();
         txtBuscar.textProperty().addListener((obs, old, nuevo) -> aplicarFiltros());
@@ -100,22 +99,10 @@ public class ProductosController implements Initializable {
         colCategoria.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().categoria()));
 
         colPrecio.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().precio()));
-        colPrecio.setCellFactory(c -> new TableCell<>() {
-            { getStyleClass().add("num-cell"); }
-            @Override protected void updateItem(BigDecimal valor, boolean empty) {
-                super.updateItem(valor, empty);
-                setText(empty || valor == null ? null : Formato.money(valor));
-            }
-        });
+        colPrecio.setCellFactory(c -> Componentes.moneyCell());
 
         colStock.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().stock()));
-        colStock.setCellFactory(c -> new TableCell<>() {
-            { getStyleClass().add("num-cell"); }
-            @Override protected void updateItem(Integer valor, boolean empty) {
-                super.updateItem(valor, empty);
-                setText(empty || valor == null ? null : String.valueOf(valor));
-            }
-        });
+        colStock.setCellFactory(c -> Componentes.numberCell());
 
         configurarEstado();
         configurarAcciones();
@@ -150,8 +137,8 @@ public class ProductosController implements Initializable {
     private void configurarAcciones() {
         colAcciones.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colAcciones.setCellFactory(c -> new TableCell<>() {
-            private final Button btnEditar = iconButton("mdi2p-pencil-outline", "Editar");
-            private final Button btnEliminar = iconButton("mdi2t-trash-can-outline", "Eliminar");
+            private final Button btnEditar = Componentes.iconButton("mdi2p-pencil-outline", "Editar");
+            private final Button btnEliminar = Componentes.iconButton("mdi2t-trash-can-outline", "Eliminar");
             private final HBox box = new HBox(8, btnEditar, btnEliminar);
             {
                 box.setAlignment(Pos.CENTER_LEFT);
@@ -164,16 +151,6 @@ public class ProductosController implements Initializable {
                 setGraphic(empty || producto == null ? null : box);
             }
         });
-    }
-
-    private Button iconButton(String iconLiteral, String tooltip) {
-        Button boton = new Button();
-        boton.getStyleClass().add("btn-icon");
-        FontIcon icono = new FontIcon(iconLiteral);
-        icono.setIconSize(16);
-        boton.setGraphic(icono);
-        boton.setTooltip(new Tooltip(tooltip));
-        return boton;
     }
 
     // ------------------------------------------------------------------
@@ -307,11 +284,11 @@ public class ProductosController implements Initializable {
         grid.setHgap(12);
         grid.setVgap(12);
         grid.setPadding(new Insets(8, 4, 4, 4));
-        grid.addRow(0, etiqueta("Código"), codigo);
-        grid.addRow(1, etiqueta("Nombre"), nombre);
-        grid.addRow(2, etiqueta("Categoría"), categoria);
-        grid.addRow(3, etiqueta("Precio"), precio);
-        grid.addRow(4, etiqueta("Stock"), stock);
+        grid.addRow(0, Componentes.etiqueta("Código"), codigo);
+        grid.addRow(1, Componentes.etiqueta("Nombre"), nombre);
+        grid.addRow(2, Componentes.etiqueta("Categoría"), categoria);
+        grid.addRow(3, Componentes.etiqueta("Precio"), precio);
+        grid.addRow(4, Componentes.etiqueta("Stock"), stock);
         panel.setContent(grid);
 
         Button btnOk = (Button) panel.lookupButton(ButtonType.OK);
@@ -346,12 +323,6 @@ public class ProductosController implements Initializable {
         });
 
         return dialogo.showAndWait().orElse(null);
-    }
-
-    private Label etiqueta(String texto) {
-        Label label = new Label(texto);
-        label.getStyleClass().add("label-body");
-        return label;
     }
 
     private String nextCodigo() {

@@ -2,6 +2,7 @@ package com.novedadesale.puntoventa.controllers;
 
 import com.novedadesale.puntoventa.models.Proveedor;
 import com.novedadesale.puntoventa.services.Servicios;
+import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -21,10 +22,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.Locale;
@@ -52,9 +51,7 @@ public class ProveedoresController implements Initializable {
         filtrados = new FilteredList<>(proveedores, p -> true);
         tblProveedores.setItems(filtrados);
         tblProveedores.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        Label placeholder = new Label("No se encontraron proveedores");
-        placeholder.getStyleClass().add("text-tertiary");
-        tblProveedores.setPlaceholder(placeholder);
+        tblProveedores.setPlaceholder(Componentes.placeholder("No se encontraron proveedores"));
 
         configurarColumnas();
         txtBuscar.textProperty().addListener((o, a, b) -> aplicarFiltro());
@@ -69,14 +66,14 @@ public class ProveedoresController implements Initializable {
 
     private void configurarColumnas() {
         colNombre.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().nombre()));
-        colContacto.setCellValueFactory(cd -> new ReadOnlyStringWrapper(nulo(cd.getValue().contacto())));
-        colTelefono.setCellValueFactory(cd -> new ReadOnlyStringWrapper(nulo(cd.getValue().telefono())));
-        colEmail.setCellValueFactory(cd -> new ReadOnlyStringWrapper(nulo(cd.getValue().email())));
+        colContacto.setCellValueFactory(cd -> new ReadOnlyStringWrapper(Componentes.nulo(cd.getValue().contacto())));
+        colTelefono.setCellValueFactory(cd -> new ReadOnlyStringWrapper(Componentes.nulo(cd.getValue().telefono())));
+        colEmail.setCellValueFactory(cd -> new ReadOnlyStringWrapper(Componentes.nulo(cd.getValue().email())));
 
         colAcciones.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colAcciones.setCellFactory(c -> new TableCell<>() {
-            private final Button btnEditar = iconButton("mdi2p-pencil-outline", "Editar");
-            private final Button btnEliminar = iconButton("mdi2t-trash-can-outline", "Eliminar");
+            private final Button btnEditar = Componentes.iconButton("mdi2p-pencil-outline", "Editar");
+            private final Button btnEliminar = Componentes.iconButton("mdi2t-trash-can-outline", "Eliminar");
             private final HBox box = new HBox(8, btnEditar, btnEliminar);
             {
                 box.setAlignment(Pos.CENTER_LEFT);
@@ -95,8 +92,8 @@ public class ProveedoresController implements Initializable {
         String q = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase(Locale.ROOT);
         filtrados.setPredicate(p -> q.isEmpty()
                 || p.nombre().toLowerCase(Locale.ROOT).contains(q)
-                || nulo(p.contacto()).toLowerCase(Locale.ROOT).contains(q)
-                || nulo(p.email()).toLowerCase(Locale.ROOT).contains(q));
+                || Componentes.nulo(p.contacto()).toLowerCase(Locale.ROOT).contains(q)
+                || Componentes.nulo(p.email()).toLowerCase(Locale.ROOT).contains(q));
     }
 
     private void actualizarMetricas() {
@@ -122,21 +119,21 @@ public class ProveedoresController implements Initializable {
         Dialogos.aplicarEstilos(panel);
 
         TextField nombre = new TextField(esNuevo ? "" : existente.nombre());
-        TextField contacto = new TextField(esNuevo ? "" : nulo(existente.contacto()));
-        TextField telefono = new TextField(esNuevo ? "" : nulo(existente.telefono()));
-        TextField email = new TextField(esNuevo ? "" : nulo(existente.email()));
+        TextField contacto = new TextField(esNuevo ? "" : Componentes.nulo(existente.contacto()));
+        TextField telefono = new TextField(esNuevo ? "" : Componentes.nulo(existente.telefono()));
+        TextField email = new TextField(esNuevo ? "" : Componentes.nulo(existente.email()));
 
         GridPane grid = new GridPane();
         grid.setHgap(12);
         grid.setVgap(12);
         grid.setPadding(new Insets(8, 4, 4, 4));
-        grid.add(etiqueta("Nombre"), 0, 0);
+        grid.add(Componentes.etiqueta("Nombre"), 0, 0);
         grid.add(nombre, 1, 0);
-        grid.add(etiqueta("Contacto"), 0, 1);
+        grid.add(Componentes.etiqueta("Contacto"), 0, 1);
         grid.add(contacto, 1, 1);
-        grid.add(etiqueta("Teléfono"), 0, 2);
+        grid.add(Componentes.etiqueta("Teléfono"), 0, 2);
         grid.add(telefono, 1, 2);
-        grid.add(etiqueta("Correo"), 0, 3);
+        grid.add(Componentes.etiqueta("Correo"), 0, 3);
         grid.add(email, 1, 3);
         panel.setContent(grid);
 
@@ -149,7 +146,8 @@ public class ProveedoresController implements Initializable {
 
         dialogo.setResultConverter(boton -> boton == ButtonType.OK
                 ? new Proveedor(esNuevo ? 0 : existente.id(),
-                        texto(nombre), texto(contacto), texto(telefono), texto(email))
+                        Componentes.texto(nombre), Componentes.texto(contacto),
+                        Componentes.texto(telefono), Componentes.texto(email))
                 : null);
 
         dialogo.showAndWait().ifPresent(proveedor -> {
@@ -174,29 +172,5 @@ public class ProveedoresController implements Initializable {
                 Dialogos.error(e.getMessage());
             }
         }
-    }
-
-    private Button iconButton(String icono, String tooltip) {
-        Button boton = new Button();
-        boton.getStyleClass().add("btn-icon");
-        FontIcon font = new FontIcon(icono);
-        font.setIconSize(16);
-        boton.setGraphic(font);
-        boton.setTooltip(new Tooltip(tooltip));
-        return boton;
-    }
-
-    private Label etiqueta(String texto) {
-        Label label = new Label(texto);
-        label.getStyleClass().add("label-body");
-        return label;
-    }
-
-    private String texto(TextField campo) {
-        return campo.getText() == null ? "" : campo.getText().trim();
-    }
-
-    private String nulo(String valor) {
-        return valor == null ? "" : valor;
     }
 }

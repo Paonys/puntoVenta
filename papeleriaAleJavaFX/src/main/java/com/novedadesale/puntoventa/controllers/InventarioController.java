@@ -3,6 +3,7 @@ package com.novedadesale.puntoventa.controllers;
 import com.novedadesale.puntoventa.models.Producto;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
+import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -22,10 +23,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -61,9 +60,7 @@ public class InventarioController implements Initializable {
         filtrados = new FilteredList<>(productos, p -> true);
         tblInventario.setItems(filtrados);
         tblInventario.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        Label placeholder = new Label("No se encontraron productos");
-        placeholder.getStyleClass().add("text-tertiary");
-        tblInventario.setPlaceholder(placeholder);
+        tblInventario.setPlaceholder(Componentes.placeholder("No se encontraron productos"));
 
         configurarColumnas();
         txtBuscar.textProperty().addListener((o, a, b) -> aplicarFiltros());
@@ -83,9 +80,9 @@ public class InventarioController implements Initializable {
         colNombre.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().nombre()));
         colCategoria.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().categoria()));
         colStock.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().stock()));
-        colStock.setCellFactory(c -> numberCell());
+        colStock.setCellFactory(c -> Componentes.numberCell());
         colMinimo.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().stockMinimo()));
-        colMinimo.setCellFactory(c -> numberCell());
+        colMinimo.setCellFactory(c -> Componentes.numberCell());
         colEstado.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colEstado.setCellFactory(c -> new TableCell<>() {
             @Override protected void updateItem(Producto p, boolean empty) {
@@ -111,8 +108,8 @@ public class InventarioController implements Initializable {
         });
         colAcciones.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colAcciones.setCellFactory(c -> new TableCell<>() {
-            private final Button btnReponer = iconButton("mdi2p-plus", "Reabastecer (+10)");
-            private final Button btnAjustar = iconButton("mdi2p-pencil-outline", "Ajustar existencias");
+            private final Button btnReponer = Componentes.iconButton("mdi2p-plus", "Reabastecer (+10)");
+            private final Button btnAjustar = Componentes.iconButton("mdi2p-pencil-outline", "Ajustar existencias");
             private final HBox box = new HBox(8, btnReponer, btnAjustar);
             {
                 box.setAlignment(Pos.CENTER_LEFT);
@@ -163,13 +160,12 @@ public class InventarioController implements Initializable {
     }
 
     private void actualizarMetricas() {
-        BigDecimal valor = productos.stream()
-                .map(p -> p.precio().multiply(BigDecimal.valueOf(p.stock())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
         lblTotal.setText(String.valueOf(productos.size()));
         lblStockBajo.setText(String.valueOf(productos.stream().filter(Producto::stockBajo).count()));
         lblAgotados.setText(String.valueOf(productos.stream().filter(Producto::agotado).count()));
-        lblValor.setText(Formato.money(valor));
+        lblValor.setText(Formato.money(productos.stream()
+                .map(p -> p.precio().multiply(BigDecimal.valueOf(p.stock())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)));
     }
 
     private void reponer(Producto p) {
@@ -201,8 +197,8 @@ public class InventarioController implements Initializable {
 
         VBox contenido = new VBox(10,
                 titulo,
-                etiqueta("Stock actual: " + producto.stock()),
-                etiqueta("Nueva cantidad"),
+                Componentes.etiqueta("Stock actual: " + producto.stock()),
+                Componentes.etiqueta("Nueva cantidad"),
                 cantidad);
         contenido.setPadding(new Insets(8, 4, 4, 4));
         panel.setContent(contenido);
@@ -229,33 +225,5 @@ public class InventarioController implements Initializable {
                 Dialogos.error(e.getMessage());
             }
         });
-    }
-
-    private Button iconButton(String icono, String tooltip) {
-        Button boton = new Button();
-        boton.getStyleClass().add("btn-icon");
-        FontIcon font = new FontIcon(icono);
-        font.setIconSize(16);
-        boton.setGraphic(font);
-        boton.setTooltip(new Tooltip(tooltip));
-        return boton;
-    }
-
-    private Label etiqueta(String texto) {
-        Label label = new Label(texto);
-        label.getStyleClass().add("label-body");
-        return label;
-    }
-
-    private <T> TableCell<T, Integer> numberCell() {
-        return new TableCell<>() {
-            {
-                getStyleClass().add("num-cell");
-            }
-            @Override protected void updateItem(Integer valor, boolean empty) {
-                super.updateItem(valor, empty);
-                setText(empty || valor == null ? null : String.valueOf(valor));
-            }
-        };
     }
 }

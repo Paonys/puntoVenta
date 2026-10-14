@@ -10,6 +10,7 @@ import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.CalculadoraTotales;
 import com.novedadesale.puntoventa.shared.Formato;
+import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
 import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.collections.FXCollections;
@@ -311,9 +312,9 @@ public class PointOfSaleController implements Initializable {
             actualizarCambio.run();
 
             VBox contenido = new VBox(12,
-                    etiqueta("Total a pagar: " + Formato.money(total)),
-                    etiqueta("Método de pago"), metodo,
-                    etiqueta("Monto recibido"), recibido,
+                    Componentes.etiqueta("Total a pagar: " + Formato.money(total)),
+                    Componentes.etiqueta("Método de pago"), metodo,
+                    Componentes.etiqueta("Monto recibido"), recibido,
                     cambio);
             contenido.setPadding(new Insets(8, 4, 4, 4));
             panel.setContent(contenido);
@@ -377,22 +378,22 @@ public class PointOfSaleController implements Initializable {
         ticket.setAlignment(Pos.TOP_LEFT);
         ticket.getChildren().addAll(
                 titulo("NOVEDADES ALE"),
-                etiqueta("Folio: " + venta.folio()),
-                etiqueta("Fecha: " + venta.fecha().format(FECHA)),
-                etiqueta("Atendió: " + venta.usuarioNombre()),
+                Componentes.etiqueta("Folio: " + venta.folio()),
+                Componentes.etiqueta("Fecha: " + venta.fecha().format(FECHA)),
+                Componentes.etiqueta("Atendió: " + venta.usuarioNombre()),
                 new javafx.scene.control.Separator());
         for (ItemVenta item : venta.items()) {
-            ticket.getChildren().add(etiqueta(item.cantidad() + " x " + item.nombre()
+            ticket.getChildren().add(Componentes.etiqueta(item.cantidad() + " x " + item.nombre()
                     + "  " + Formato.money(item.importe())));
         }
         ticket.getChildren().addAll(
                 new javafx.scene.control.Separator(),
-                etiqueta("Subtotal: " + Formato.money(venta.subtotal())),
-                etiqueta("Descuento: " + Formato.money(venta.descuento())),
-                etiqueta("IVA: " + Formato.money(venta.iva())),
+                Componentes.etiqueta("Subtotal: " + Formato.money(venta.subtotal())),
+                Componentes.etiqueta("Descuento: " + Formato.money(venta.descuento())),
+                Componentes.etiqueta("IVA: " + Formato.money(venta.iva())),
                 titulo("TOTAL: " + Formato.money(venta.total())),
-                etiqueta("Método: " + venta.metodoPago()),
-                etiqueta("Recibido: " + Formato.money(venta.montoRecibido())),
+                Componentes.etiqueta("Método: " + venta.metodoPago()),
+                Componentes.etiqueta("Recibido: " + Formato.money(venta.montoRecibido())),
                 titulo("Cambio: " + Formato.money(venta.cambio())));
         return ticket;
     }
@@ -423,10 +424,6 @@ public class PointOfSaleController implements Initializable {
         Label label = new Label(texto);
         label.getStyleClass().add("label-heading");
         return label;
-    }
-
-    private Label etiqueta(String texto) {
-        return new Label(texto);
     }
 
     /** Resultado del diálogo de pago. */

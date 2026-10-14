@@ -3,6 +3,7 @@ package com.novedadesale.puntoventa.controllers;
 import com.novedadesale.puntoventa.models.Rol;
 import com.novedadesale.puntoventa.models.Usuario;
 import com.novedadesale.puntoventa.services.Servicios;
+import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -25,10 +26,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.Locale;
@@ -56,9 +55,7 @@ public class ConfiguracionController implements Initializable {
         filtrados = new FilteredList<>(usuarios, u -> true);
         tblUsuarios.setItems(filtrados);
         tblUsuarios.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        Label placeholder = new Label("No se encontraron usuarios");
-        placeholder.getStyleClass().add("text-tertiary");
-        tblUsuarios.setPlaceholder(placeholder);
+        tblUsuarios.setPlaceholder(Componentes.placeholder("No se encontraron usuarios"));
 
         configurarColumnas();
         txtBuscar.textProperty().addListener((o, a, b) -> aplicarFiltro());
@@ -75,7 +72,6 @@ public class ConfiguracionController implements Initializable {
         colNombre.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().nombre()));
         colUsuario.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().usuario()));
         colRol.setCellValueFactory(cd -> new ReadOnlyStringWrapper(rol(cd.getValue().rol())));
-
         colEstado.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colEstado.setCellFactory(c -> new TableCell<>() {
             @Override protected void updateItem(Usuario u, boolean empty) {
@@ -85,16 +81,15 @@ public class ConfiguracionController implements Initializable {
                     return;
                 }
                 Label badge = new Label(u.activo() ? "Activo" : "Inactivo");
-                badge.getStyleClass().add("badge");
-                badge.getStyleClass().add(u.activo() ? "success" : "secondary");
+                badge.getStyleClass().addAll("badge", u.activo() ? "success" : "secondary");
                 setGraphic(badge);
             }
         });
 
         colAcciones.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colAcciones.setCellFactory(c -> new TableCell<>() {
-            private final Button btnEditar = iconButton("mdi2p-pencil-outline", "Editar");
-            private final Button btnEliminar = iconButton("mdi2t-trash-can-outline", "Eliminar");
+            private final Button btnEditar = Componentes.iconButton("mdi2p-pencil-outline", "Editar");
+            private final Button btnEliminar = Componentes.iconButton("mdi2t-trash-can-outline", "Eliminar");
             private final HBox box = new HBox(8, btnEditar, btnEliminar);
             {
                 box.setAlignment(Pos.CENTER_LEFT);
@@ -151,13 +146,13 @@ public class ConfiguracionController implements Initializable {
         grid.setHgap(12);
         grid.setVgap(12);
         grid.setPadding(new Insets(8, 4, 4, 4));
-        grid.add(etiqueta("Nombre"), 0, 0);
+        grid.add(Componentes.etiqueta("Nombre"), 0, 0);
         grid.add(nombre, 1, 0);
-        grid.add(etiqueta("Usuario"), 0, 1);
+        grid.add(Componentes.etiqueta("Usuario"), 0, 1);
         grid.add(usuario, 1, 1);
-        grid.add(etiqueta("Contraseña"), 0, 2);
+        grid.add(Componentes.etiqueta("Contraseña"), 0, 2);
         grid.add(password, 1, 2);
-        grid.add(etiqueta("Rol"), 0, 3);
+        grid.add(Componentes.etiqueta("Rol"), 0, 3);
         grid.add(rol, 1, 3);
         grid.add(activo, 1, 4);
         panel.setContent(grid);
@@ -175,10 +170,12 @@ public class ConfiguracionController implements Initializable {
             String pass = password.getText() == null ? "" : password.getText();
             try {
                 if (esNuevo) {
-                    Servicios.usuarios().crear(texto(nombre), texto(usuario), pass, rol.getValue());
+                    Servicios.usuarios().crear(Componentes.texto(nombre), Componentes.texto(usuario),
+                            pass, rol.getValue());
                 } else {
-                    Servicios.usuarios().actualizar(existente.id(), texto(nombre), texto(usuario),
-                            rol.getValue(), activo.isSelected(), pass.isEmpty() ? null : pass);
+                    Servicios.usuarios().actualizar(existente.id(), Componentes.texto(nombre),
+                            Componentes.texto(usuario), rol.getValue(), activo.isSelected(),
+                            pass.isEmpty() ? null : pass);
                 }
                 recargar();
             } catch (RuntimeException e) {
@@ -203,25 +200,5 @@ public class ConfiguracionController implements Initializable {
 
     private String rol(Rol rol) {
         return rol == Rol.ADMIN ? "Administrador" : "Cajero";
-    }
-
-    private Button iconButton(String icono, String tooltip) {
-        Button boton = new Button();
-        boton.getStyleClass().add("btn-icon");
-        FontIcon font = new FontIcon(icono);
-        font.setIconSize(16);
-        boton.setGraphic(font);
-        boton.setTooltip(new Tooltip(tooltip));
-        return boton;
-    }
-
-    private Label etiqueta(String texto) {
-        Label label = new Label(texto);
-        label.getStyleClass().add("label-body");
-        return label;
-    }
-
-    private String texto(TextField campo) {
-        return campo.getText() == null ? "" : campo.getText().trim();
     }
 }

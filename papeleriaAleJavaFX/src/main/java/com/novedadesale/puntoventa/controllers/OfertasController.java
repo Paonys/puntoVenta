@@ -5,6 +5,7 @@ import com.novedadesale.puntoventa.models.Promocion;
 import com.novedadesale.puntoventa.models.TipoPromocion;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
+import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -28,9 +29,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -63,9 +62,7 @@ public class OfertasController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         tblOfertas.setItems(ofertas);
         tblOfertas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        Label placeholder = new Label("No hay ofertas registradas");
-        placeholder.getStyleClass().add("text-tertiary");
-        tblOfertas.setPlaceholder(placeholder);
+        tblOfertas.setPlaceholder(Componentes.placeholder("No hay ofertas registradas"));
 
         configurarColumnas();
         recargar();
@@ -115,8 +112,8 @@ public class OfertasController implements Initializable {
 
         colAcciones.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
         colAcciones.setCellFactory(c -> new TableCell<>() {
-            private final Button btnEditar = iconButton("mdi2p-pencil-outline", "Editar");
-            private final Button btnEliminar = iconButton("mdi2t-trash-can-outline", "Eliminar");
+            private final Button btnEditar = Componentes.iconButton("mdi2p-pencil-outline", "Editar");
+            private final Button btnEliminar = Componentes.iconButton("mdi2t-trash-can-outline", "Eliminar");
             private final HBox box = new HBox(8, btnEditar, btnEliminar);
             {
                 box.setAlignment(Pos.CENTER_LEFT);
@@ -178,17 +175,17 @@ public class OfertasController implements Initializable {
         grid.setHgap(12);
         grid.setVgap(12);
         grid.setPadding(new Insets(8, 4, 4, 4));
-        grid.add(etiqueta("Nombre"), 0, 0);
+        grid.add(Componentes.etiqueta("Nombre"), 0, 0);
         grid.add(nombre, 1, 0);
-        grid.add(etiqueta("Tipo"), 0, 1);
+        grid.add(Componentes.etiqueta("Tipo"), 0, 1);
         grid.add(tipo, 1, 1);
-        grid.add(etiqueta("Valor"), 0, 2);
+        grid.add(Componentes.etiqueta("Valor"), 0, 2);
         grid.add(valor, 1, 2);
-        grid.add(etiqueta("Categoría"), 0, 3);
+        grid.add(Componentes.etiqueta("Categoría"), 0, 3);
         grid.add(categoria, 1, 3);
-        grid.add(etiqueta("Inicio"), 0, 4);
+        grid.add(Componentes.etiqueta("Inicio"), 0, 4);
         grid.add(inicio, 1, 4);
-        grid.add(etiqueta("Fin"), 0, 5);
+        grid.add(Componentes.etiqueta("Fin"), 0, 5);
         grid.add(fin, 1, 5);
         grid.add(activa, 1, 6);
         panel.setContent(grid);
@@ -208,7 +205,7 @@ public class OfertasController implements Initializable {
                     .filter(c -> c.nombre().equals(categoria.getValue()))
                     .map(Categoria::id).findFirst().orElse(null);
             return new Promocion(esNuevo ? 0 : existente.id(),
-                    nombre.getText() == null ? "" : nombre.getText().trim(),
+                    Componentes.texto(nombre),
                     tipo.getValue(), Formato.decimal(valor.getText()),
                     inicio.getValue(), fin.getValue(), activa.isSelected(), categoriaId);
         });
@@ -256,21 +253,5 @@ public class OfertasController implements Initializable {
 
     private String fecha(LocalDate valor) {
         return valor == null ? "—" : valor.format(FECHA);
-    }
-
-    private Button iconButton(String icono, String tooltip) {
-        Button boton = new Button();
-        boton.getStyleClass().add("btn-icon");
-        FontIcon font = new FontIcon(icono);
-        font.setIconSize(16);
-        boton.setGraphic(font);
-        boton.setTooltip(new javafx.scene.control.Tooltip(tooltip));
-        return boton;
-    }
-
-    private Label etiqueta(String texto) {
-        Label label = new Label(texto);
-        label.getStyleClass().add("label-body");
-        return label;
     }
 }

@@ -5,6 +5,7 @@ import com.novedadesale.puntoventa.models.ResumenJornada;
 import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
+import com.novedadesale.puntoventa.ui.Componentes;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -60,16 +61,16 @@ public class DashboardController implements Initializable {
     private void configurarTablas() {
         tblMasVendidos.setItems(masVendidos);
         tblMasVendidos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        tblMasVendidos.setPlaceholder(placeholder("Aún no hay ventas registradas"));
+        tblMasVendidos.setPlaceholder(Componentes.placeholder("Aún no hay ventas registradas"));
 
         colMvProducto.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().nombre()));
         colMvCantidad.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().cantidad()));
         colMvImporte.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().importe()));
-        colMvImporte.setCellFactory(c -> moneyCell());
+        colMvImporte.setCellFactory(c -> Componentes.moneyCell());
 
         tblVentas.setItems(ventas);
         tblVentas.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
-        tblVentas.setPlaceholder(placeholder("No hay ventas el día de hoy"));
+        tblVentas.setPlaceholder(Componentes.placeholder("No hay ventas el día de hoy"));
 
         colFolio.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().folio()));
         colFecha.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().fecha().format(HORA)));
@@ -77,7 +78,7 @@ public class DashboardController implements Initializable {
                 cd.getValue().clienteNombre() == null ? "Público general" : cd.getValue().clienteNombre()));
         colMetodo.setCellValueFactory(cd -> new ReadOnlyStringWrapper(cd.getValue().metodoPago().name()));
         colTotal.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue().total()));
-        colTotal.setCellFactory(c -> moneyCell());
+        colTotal.setCellFactory(c -> Componentes.moneyCell());
     }
 
     @FXML
@@ -97,24 +98,5 @@ public class DashboardController implements Initializable {
 
         List<Venta> recientes = Servicios.reportes().ventas(hoy, hoy);
         ventas.setAll(recientes.size() > 12 ? recientes.subList(0, 12) : recientes);
-    }
-
-    private Label placeholder(String texto) {
-        Label label = new Label(texto);
-        label.getStyleClass().add("text-tertiary");
-        return label;
-    }
-
-    private <T> TableCell<T, BigDecimal> moneyCell() {
-        return new TableCell<>() {
-            {
-                getStyleClass().add("num-cell");
-            }
-            @Override
-            protected void updateItem(BigDecimal valor, boolean empty) {
-                super.updateItem(valor, empty);
-                setText(empty || valor == null ? null : Formato.money(valor));
-            }
-        };
     }
 }
