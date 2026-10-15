@@ -14,7 +14,7 @@
             <Label text="Configuración" styleClass="label-title"/>
             <Label text="Administra los usuarios y accesos del sistema" styleClass="label-subtitle"/>
         </VBox>
-        <Button text="Nuevo usuario" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoUsuario">
+        <Button fx:id="btnNuevoUsuario" text="Nuevo usuario" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoUsuario">
             <graphic><FontIcon iconLiteral="mdi2a-account-plus-outline" iconSize="18"/></graphic>
         </Button>
     </HBox>

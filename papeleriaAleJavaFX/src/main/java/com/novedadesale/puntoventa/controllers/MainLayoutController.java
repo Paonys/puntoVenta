@@ -60,8 +60,20 @@ public class MainLayoutController implements Initializable {
             }
         }
         mostrarUsuario();
+        aplicarPermisos();
         goToInicio();
         Animations.enableMicroInteractions(root);
+    }
+
+    private void aplicarPermisos() {
+        if (!Sesion.esAdmin()) {
+            ocultar(btnConfiguracion);
+        }
+    }
+
+    private void ocultar(Node node) {
+        node.setVisible(false);
+        node.setManaged(false);
     }
 
     private void mostrarUsuario() {

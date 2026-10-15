@@ -5,6 +5,7 @@ import com.novedadesale.puntoventa.models.Usuario;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -43,6 +44,7 @@ public class ConfiguracionController implements Initializable {
     @FXML private TableColumn<Usuario, Usuario> colEstado;
     @FXML private TableColumn<Usuario, Usuario> colAcciones;
     @FXML private TextField txtBuscar;
+    @FXML private Button btnNuevoUsuario;
     @FXML private Label lblTotal;
     @FXML private Label lblAdmins;
     @FXML private Label lblActivos;
@@ -59,7 +61,12 @@ public class ConfiguracionController implements Initializable {
 
         configurarColumnas();
         txtBuscar.textProperty().addListener((o, a, b) -> aplicarFiltro());
+        aplicarPermisos();
         recargar();
+    }
+
+    private void aplicarPermisos() {
+        btnNuevoUsuario.setDisable(!Sesion.esAdmin());
     }
 
     private void recargar() {
@@ -93,6 +100,7 @@ public class ConfiguracionController implements Initializable {
             private final HBox box = new HBox(8, btnEditar, btnEliminar);
             {
                 box.setAlignment(Pos.CENTER_LEFT);
+                box.setDisable(!Sesion.esAdmin());
                 btnEliminar.getStyleClass().add("danger");
                 btnEditar.setOnAction(e -> editar(getItem()));
                 btnEliminar.setOnAction(e -> eliminar(getItem()));
