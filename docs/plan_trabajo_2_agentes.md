@@ -120,7 +120,7 @@ Fuente: `docs/pendientes_sugerencia_agente_b.md` (inventario de B) + `docs/pendi
 | **A7** | `VentaServiceImpl`: releer precios del catálogo, envolver venta+items+stock+pago en **transacción**, folio robusto y resolver **promociones dentro del servicio** | A | Alta |
 | **A8** | Autorización por rol en servicios + impedir quedarse sin `ADMIN` o auto-eliminarse | A | Alta |
 | **A9** | `Pago` con FK a `venta`; usar `ReporteService.ingresos` como fuente única | A | Media |
-| **B9** | *Gating* por rol en la UI (ocultar Configuración y acciones destructivas a `CAJERO`) | B | Alta |
+| **B9** ✅ | *Gating* por rol en la UI (ocultar Configuración y acciones destructivas a `CAJERO`) — **hecho** (`746488f`) | B | Alta |
 | **B10** | POS: seleccionar cliente, aplicar **descuento de cliente** y **cancelar venta** (usa `ventas().cancelar`) | B | Alta |
 | **B11** | Reportes: exportar (CSV/PDF) e imprimir | B | Media |
 | **B12** | Configuración: parámetros de negocio (requiere acuerdo con A sobre las constantes congeladas) | B/A | Media |
