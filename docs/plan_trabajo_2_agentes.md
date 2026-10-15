@@ -120,7 +120,7 @@ Fuente: `docs/pendientes_sugerencia_agente_b.md` (inventario de B) + `docs/pendi
 | **A7** | `VentaServiceImpl`: releer precios del catálogo, envolver venta+items+stock+pago en **transacción**, folio robusto y resolver **promociones dentro del servicio** | A | Alta |
 | **A8** | Autorización por rol en servicios + impedir quedarse sin `ADMIN` o auto-eliminarse | A | Alta |
 | **A9** | `Pago` con FK a `venta`; usar `ReporteService.ingresos` como fuente única | A | Media |
-| **B9** ✅ | *Gating* por rol en la UI (ocultar Configuración y acciones destructivas a `CAJERO`) — **hecho** (`746488f`) | B | Alta |
+| **B9** ✅ | *Gating* por rol en la UI (**política: CAJERO solo vende/consulta; ADMIN crea/edita catálogo**): oculta Configuración, botones "Nuevo" y columnas de acciones (Productos, Clientes, Proveedores, Ofertas, Inventario, Reportes) a `CAJERO`. Unificado con `Componentes.soloAdmin` + columna oculta — **hecho** (`746488f`, `fe92245`) | B | Alta |
 | **B10** ✅ | POS: seleccionar cliente, aplicar **descuento de cliente** y **cancelar venta** (usa `ventas().cancelar`) — **hecho** (`018832f`) | B | Alta |
 | **B11** ✅ | Reportes: exportar **CSV** e **imprimir** — **hecho** (`415d9ad`). PDF queda pendiente: requeriría una dependencia en `pom.xml` (propiedad de A) | B | Media |
 | **B12** | Configuración: parámetros de negocio (requiere acuerdo con A sobre las constantes congeladas) | B/A | Media |
