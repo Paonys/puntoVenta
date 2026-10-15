@@ -8,6 +8,7 @@ import com.novedadesale.puntoventa.shared.AppConstants;
 import com.novedadesale.puntoventa.shared.Formato;
 import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -56,6 +57,7 @@ public class ProductosController implements Initializable {
     @FXML private Label lblStockBajo;
     @FXML private Label lblValorInventario;
     @FXML private Label lblCategorias;
+    @FXML private Button btnNuevo;
 
     private static final String TODOS = "Todos";
     private static final int UMBRAL_STOCK_BAJO = AppConstants.UMBRAL_STOCK_BAJO;
@@ -74,6 +76,7 @@ public class ProductosController implements Initializable {
         tblProductos.setPlaceholder(Componentes.placeholder("No se encontraron productos"));
 
         configurarColumnas();
+        Componentes.soloAdmin(btnNuevo);
         txtBuscar.textProperty().addListener((obs, old, nuevo) -> aplicarFiltros());
         recargar();
     }
@@ -149,7 +152,6 @@ public class ProductosController implements Initializable {
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 btnEliminar.getStyleClass().add("danger");
-                Componentes.soloAdmin(btnEliminar);
                 btnEditar.setOnAction(e -> onEditar(getItem()));
                 btnEliminar.setOnAction(e -> onEliminar(getItem()));
             }
@@ -158,6 +160,7 @@ public class ProductosController implements Initializable {
                 setGraphic(empty || producto == null ? null : box);
             }
         });
+        colAcciones.setVisible(Sesion.esAdmin());
     }
 
     // ------------------------------------------------------------------

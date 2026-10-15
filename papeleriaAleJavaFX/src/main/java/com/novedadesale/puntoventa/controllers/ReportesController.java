@@ -136,6 +136,7 @@ public class ReportesController implements Initializable {
                 setGraphic(btnCancelar);
             }
         });
+        colAcciones.setVisible(Sesion.esAdmin());
     }
 
     private void cancelar(Venta venta) {

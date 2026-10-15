@@ -14,7 +14,7 @@
             <Label text="Clientes" styleClass="label-title"/>
             <Label text="Administra tu cartera de clientes y sus descuentos" styleClass="label-subtitle"/>
         </VBox>
-        <Button text="Nuevo cliente" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoCliente">
+        <Button fx:id="btnNuevo" text="Nuevo cliente" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoCliente">
             <graphic><FontIcon iconLiteral="mdi2a-account-plus-outline" iconSize="18"/></graphic>
         </Button>
     </HBox>

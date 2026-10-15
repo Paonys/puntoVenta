@@ -87,7 +87,8 @@ public final class Componentes {
     /**
      * Oculta el nodo (y lo retira del layout) cuando el usuario en sesión no
      * es {@code ADMIN}. Patrón de control de acceso (RBAC) para acciones
-     * destructivas: eliminar, ajustar o cualquier operación administrativa.
+     * exclusivas de administrador: crear, editar, eliminar, ajustar stock,
+     * gestionar usuarios o cancelar ventas.
      */
     public static void soloAdmin(Node nodo) {
         if (nodo != null && !Sesion.esAdmin()) {

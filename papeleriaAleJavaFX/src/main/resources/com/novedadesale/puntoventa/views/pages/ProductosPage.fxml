@@ -14,7 +14,7 @@
             <Label text="Productos" styleClass="label-title"/>
             <Label text="Gestiona tu catálogo: registra, edita y elimina productos" styleClass="label-subtitle"/>
         </VBox>
-        <Button text="Nuevo producto" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoProducto">
+        <Button fx:id="btnNuevo" text="Nuevo producto" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoProducto">
             <graphic><FontIcon iconLiteral="mdi2p-plus" iconSize="18"/></graphic>
         </Button>
     </HBox>

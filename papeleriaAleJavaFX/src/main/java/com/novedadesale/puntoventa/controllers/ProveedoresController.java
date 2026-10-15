@@ -4,6 +4,7 @@ import com.novedadesale.puntoventa.models.Proveedor;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -42,6 +43,7 @@ public class ProveedoresController implements Initializable {
     @FXML private Label lblTotal;
     @FXML private Label lblContacto;
     @FXML private Label lblCorreo;
+    @FXML private Button btnNuevo;
 
     private final ObservableList<Proveedor> proveedores = FXCollections.observableArrayList();
     private FilteredList<Proveedor> filtrados;
@@ -54,6 +56,7 @@ public class ProveedoresController implements Initializable {
         tblProveedores.setPlaceholder(Componentes.placeholder("No se encontraron proveedores"));
 
         configurarColumnas();
+        Componentes.soloAdmin(btnNuevo);
         txtBuscar.textProperty().addListener((o, a, b) -> aplicarFiltro());
         recargar();
     }
@@ -78,7 +81,6 @@ public class ProveedoresController implements Initializable {
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 btnEliminar.getStyleClass().add("danger");
-                Componentes.soloAdmin(btnEliminar);
                 btnEditar.setOnAction(e -> editar(getItem()));
                 btnEliminar.setOnAction(e -> eliminar(getItem()));
             }
@@ -87,6 +89,7 @@ public class ProveedoresController implements Initializable {
                 setGraphic(empty || p == null ? null : box);
             }
         });
+        colAcciones.setVisible(Sesion.esAdmin());
     }
 
     private void aplicarFiltro() {

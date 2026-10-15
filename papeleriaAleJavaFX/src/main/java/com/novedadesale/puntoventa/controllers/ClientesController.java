@@ -5,6 +5,7 @@ import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
 import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -45,6 +46,7 @@ public class ClientesController implements Initializable {
     @FXML private Label lblTotal;
     @FXML private Label lblConDescuento;
     @FXML private Label lblPromedio;
+    @FXML private Button btnNuevo;
 
     private final ObservableList<Cliente> clientes = FXCollections.observableArrayList();
     private FilteredList<Cliente> filtrados;
@@ -59,6 +61,7 @@ public class ClientesController implements Initializable {
         tblClientes.setPlaceholder(placeholder);
 
         configurarColumnas();
+        Componentes.soloAdmin(btnNuevo);
         txtBuscar.textProperty().addListener((o, a, b) -> aplicarFiltro());
         recargar();
     }
@@ -88,7 +91,6 @@ public class ClientesController implements Initializable {
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 btnEliminar.getStyleClass().add("danger");
-                Componentes.soloAdmin(btnEliminar);
                 btnEditar.setOnAction(e -> editar(getItem()));
                 btnEliminar.setOnAction(e -> eliminar(getItem()));
             }
@@ -97,6 +99,7 @@ public class ClientesController implements Initializable {
                 setGraphic(empty || c == null ? null : box);
             }
         });
+        colAcciones.setVisible(Sesion.esAdmin());
     }
 
     private void aplicarFiltro() {

@@ -66,7 +66,7 @@ public class ConfiguracionController implements Initializable {
     }
 
     private void aplicarPermisos() {
-        btnNuevoUsuario.setDisable(!Sesion.esAdmin());
+        Componentes.soloAdmin(btnNuevoUsuario);
     }
 
     private void recargar() {
@@ -100,7 +100,6 @@ public class ConfiguracionController implements Initializable {
             private final HBox box = new HBox(8, btnEditar, btnEliminar);
             {
                 box.setAlignment(Pos.CENTER_LEFT);
-                box.setDisable(!Sesion.esAdmin());
                 btnEliminar.getStyleClass().add("danger");
                 btnEditar.setOnAction(e -> editar(getItem()));
                 btnEliminar.setOnAction(e -> eliminar(getItem()));
@@ -110,6 +109,7 @@ public class ConfiguracionController implements Initializable {
                 setGraphic(empty || u == null ? null : box);
             }
         });
+        colAcciones.setVisible(Sesion.esAdmin());
     }
 
     private void aplicarFiltro() {

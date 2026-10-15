@@ -7,6 +7,7 @@ import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
 import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -54,6 +55,7 @@ public class OfertasController implements Initializable {
     @FXML private Label lblTotal;
     @FXML private Label lblActivas;
     @FXML private Label lblVigentes;
+    @FXML private Button btnNuevo;
 
     private final ObservableList<Promocion> ofertas = FXCollections.observableArrayList();
     private List<Categoria> categorias = List.of();
@@ -65,6 +67,7 @@ public class OfertasController implements Initializable {
         tblOfertas.setPlaceholder(Componentes.placeholder("No hay ofertas registradas"));
 
         configurarColumnas();
+        Componentes.soloAdmin(btnNuevo);
         recargar();
     }
 
@@ -118,7 +121,6 @@ public class OfertasController implements Initializable {
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 btnEliminar.getStyleClass().add("danger");
-                Componentes.soloAdmin(btnEliminar);
                 btnEditar.setOnAction(e -> editar(getItem()));
                 btnEliminar.setOnAction(e -> eliminar(getItem()));
             }
@@ -127,6 +129,7 @@ public class OfertasController implements Initializable {
                 setGraphic(empty || p == null ? null : box);
             }
         });
+        colAcciones.setVisible(Sesion.esAdmin());
     }
 
     private void actualizarMetricas() {

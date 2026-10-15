@@ -14,7 +14,7 @@
             <Label text="Proveedores" styleClass="label-title"/>
             <Label text="Administra tus proveedores y contactos de compra" styleClass="label-subtitle"/>
         </VBox>
-        <Button text="Nuevo proveedor" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoProveedor">
+        <Button fx:id="btnNuevo" text="Nuevo proveedor" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevoProveedor">
             <graphic><FontIcon iconLiteral="mdi2p-plus" iconSize="18"/></graphic>
         </Button>
     </HBox>

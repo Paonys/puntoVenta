@@ -5,6 +5,7 @@ import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
 import com.novedadesale.puntoventa.ui.Componentes;
 import com.novedadesale.puntoventa.ui.Dialogos;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -121,6 +122,7 @@ public class InventarioController implements Initializable {
                 setGraphic(empty || p == null ? null : box);
             }
         });
+        colAcciones.setVisible(Sesion.esAdmin());
     }
 
     private void crearChips() {

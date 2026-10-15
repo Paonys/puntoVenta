@@ -14,7 +14,7 @@
             <Label text="Ofertas" styleClass="label-title"/>
             <Label text="Promociones y descuentos por temporada" styleClass="label-subtitle"/>
         </VBox>
-        <Button text="Nueva oferta" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevaOferta">
+        <Button fx:id="btnNuevo" text="Nueva oferta" styleClass="btn-primary" graphicTextGap="8" onAction="#onNuevaOferta">
             <graphic><FontIcon iconLiteral="mdi2p-plus" iconSize="18"/></graphic>
         </Button>
     </HBox>
