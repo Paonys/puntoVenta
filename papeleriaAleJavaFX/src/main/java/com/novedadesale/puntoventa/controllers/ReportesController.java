@@ -1,5 +1,6 @@
 package com.novedadesale.puntoventa.controllers;
 
+import com.novedadesale.puntoventa.App;
 import com.novedadesale.puntoventa.models.EstadoVenta;
 import com.novedadesale.puntoventa.models.ItemVenta;
 import com.novedadesale.puntoventa.models.ProductoMasVendido;
@@ -15,16 +16,26 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.print.PrinterJob;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -181,5 +192,110 @@ public class ReportesController implements Initializable {
                 + fin.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
         masVendidos.setAll(Servicios.reportes().productosMasVendidos(inicio, fin, 10));
+    }
+
+    @FXML
+    private void exportarCsv() {
+        if (ventas.isEmpty()) {
+            Dialogos.aviso("No hay ventas para exportar en el periodo seleccionado.");
+            return;
+        }
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Exportar reporte a CSV");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo CSV", "*.csv"));
+        chooser.setInitialFileName("reporte_" + LocalDate.now() + ".csv");
+        File archivo = chooser.showSaveDialog(App.getPrimaryStage());
+        if (archivo == null) {
+            return;
+        }
+        try (Writer writer = Files.newBufferedWriter(archivo.toPath(), StandardCharsets.UTF_8)) {
+            writer.write('\uFEFF');
+            writer.write("Folio,Fecha,Cliente,Método,Estado,Total\n");
+            for (Venta venta : ventas) {
+                writer.write(String.join(",",
+                        csv(venta.folio()),
+                        csv(venta.fecha().format(FECHA)),
+                        csv(venta.clienteNombre() == null ? "Público general" : venta.clienteNombre()),
+                        csv(venta.metodoPago().name()),
+                        csv(venta.estado() == EstadoVenta.COMPLETADA ? "Completada" : "Cancelada"),
+                        csv(Formato.money(venta.total()))));
+                writer.write("\n");
+            }
+            Dialogos.info("Reporte exportado en:\n" + archivo.getAbsolutePath());
+        } catch (IOException e) {
+            Dialogos.error("No se pudo exportar el reporte: " + e.getMessage());
+        }
+    }
+
+    private String csv(String valor) {
+        String texto = valor == null ? "" : valor;
+        if (texto.contains(",") || texto.contains("\"") || texto.contains("\n")) {
+            return "\"" + texto.replace("\"", "\"\"") + "\"";
+        }
+        return texto;
+    }
+
+    @FXML
+    private void imprimir() {
+        PrinterJob job = PrinterJob.createPrinterJob();
+        if (job == null) {
+            Dialogos.aviso("No hay impresora disponible.");
+            return;
+        }
+        if (!job.showPrintDialog(App.getPrimaryStage())) {
+            job.endJob();
+            return;
+        }
+        try {
+            if (job.printPage(construirReporte())) {
+                job.endJob();
+            } else {
+                Dialogos.error("No se pudo imprimir el reporte.");
+            }
+        } catch (RuntimeException e) {
+            Dialogos.error("No se pudo imprimir: " + e.getMessage());
+        }
+    }
+
+    private VBox construirReporte() {
+        VBox doc = new VBox(4);
+        doc.setPadding(new Insets(24));
+        doc.getChildren().addAll(
+                titulo("NOVEDADES ALE"),
+                Componentes.etiqueta("Reporte de ventas"),
+                Componentes.etiqueta("Periodo: " + lblRango.getText()),
+                Componentes.etiqueta("Generado: " + LocalDate.now()),
+                new Separator(),
+                Componentes.etiqueta("Total vendido: " + lblTotalVendido.getText()),
+                Componentes.etiqueta("Tickets: " + lblTickets.getText()),
+                Componentes.etiqueta("Ticket promedio: " + lblTicketPromedio.getText()),
+                Componentes.etiqueta("Productos vendidos: " + lblUnidades.getText()),
+                new Separator(),
+                titulo("Productos más vendidos"));
+        if (masVendidos.isEmpty()) {
+            doc.getChildren().add(Componentes.etiqueta("Sin datos"));
+        }
+        for (ProductoMasVendido producto : masVendidos) {
+            doc.getChildren().add(Componentes.etiqueta(producto.cantidad() + " x " + producto.nombre()
+                    + "  " + Formato.money(producto.importe())));
+        }
+        doc.getChildren().addAll(new Separator(), titulo("Detalle de ventas"));
+        int limite = Math.min(ventas.size(), 30);
+        for (int i = 0; i < limite; i++) {
+            Venta venta = ventas.get(i);
+            doc.getChildren().add(Componentes.etiqueta(venta.folio() + "  " + venta.fecha().format(FECHA)
+                    + "  " + (venta.clienteNombre() == null ? "Público general" : venta.clienteNombre())
+                    + "  " + Formato.money(venta.total())));
+        }
+        if (ventas.size() > limite) {
+            doc.getChildren().add(Componentes.etiqueta("... y " + (ventas.size() - limite) + " ventas más"));
+        }
+        return doc;
+    }
+
+    private Label titulo(String texto) {
+        Label label = new Label(texto);
+        label.getStyleClass().add("label-heading");
+        return label;
     }
 }

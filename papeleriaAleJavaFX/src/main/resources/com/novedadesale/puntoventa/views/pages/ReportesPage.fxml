@@ -21,6 +21,12 @@
         <Button text="Generar" styleClass="btn-primary" graphicTextGap="8" onAction="#generar">
             <graphic><FontIcon iconLiteral="mdi2m-magnify" iconSize="18"/></graphic>
         </Button>
+        <Button text="Exportar CSV" styleClass="btn-secondary" graphicTextGap="8" onAction="#exportarCsv">
+            <graphic><FontIcon iconLiteral="mdi2f-file-delimited-outline" iconSize="18"/></graphic>
+        </Button>
+        <Button text="Imprimir" styleClass="btn-secondary" graphicTextGap="8" onAction="#imprimir">
+            <graphic><FontIcon iconLiteral="mdi2p-printer-outline" iconSize="18"/></graphic>
+        </Button>
     </HBox>
 
     <!-- Metrics -->
