@@ -88,6 +88,7 @@ public class ClientesController implements Initializable {
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 btnEliminar.getStyleClass().add("danger");
+                Componentes.soloAdmin(btnEliminar);
                 btnEditar.setOnAction(e -> editar(getItem()));
                 btnEliminar.setOnAction(e -> eliminar(getItem()));
             }

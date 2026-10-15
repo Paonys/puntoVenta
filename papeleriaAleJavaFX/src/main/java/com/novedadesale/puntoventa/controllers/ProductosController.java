@@ -149,6 +149,7 @@ public class ProductosController implements Initializable {
             {
                 box.setAlignment(Pos.CENTER_LEFT);
                 btnEliminar.getStyleClass().add("danger");
+                Componentes.soloAdmin(btnEliminar);
                 btnEditar.setOnAction(e -> onEditar(getItem()));
                 btnEliminar.setOnAction(e -> onEliminar(getItem()));
             }

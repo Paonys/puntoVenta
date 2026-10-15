@@ -1,6 +1,7 @@
 package com.novedadesale.puntoventa.ui;
 
 import com.novedadesale.puntoventa.shared.Formato;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -81,5 +82,17 @@ public final class Componentes {
     /** Devuelve cadena vacía si el valor es nulo. */
     public static String nulo(String valor) {
         return valor == null ? "" : valor;
+    }
+
+    /**
+     * Oculta el nodo (y lo retira del layout) cuando el usuario en sesión no
+     * es {@code ADMIN}. Patrón de control de acceso (RBAC) para acciones
+     * destructivas: eliminar, ajustar o cualquier operación administrativa.
+     */
+    public static void soloAdmin(Node nodo) {
+        if (nodo != null && !Sesion.esAdmin()) {
+            nodo.setVisible(false);
+            nodo.setManaged(false);
+        }
     }
 }
