@@ -1,6 +1,7 @@
 package com.novedadesale.puntoventa.controllers;
 
 import com.novedadesale.puntoventa.App;
+import com.novedadesale.puntoventa.models.Cliente;
 import com.novedadesale.puntoventa.models.ItemVenta;
 import com.novedadesale.puntoventa.models.MetodoPago;
 import com.novedadesale.puntoventa.models.Producto;
@@ -31,12 +32,14 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -56,19 +59,51 @@ public class PointOfSaleController implements Initializable {
     @FXML private Label lblDescuentoTexto;
     @FXML private Label lblTotal;
     @FXML private TextField txtBuscarProducto;
+    @FXML private ComboBox<Cliente> cmbCliente;
 
     private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final Cliente PUBLICO_GENERAL =
+            new Cliente(0, "Público general", "", "", BigDecimal.ZERO);
 
     private final ObservableList<ItemVenta> carrito = FXCollections.observableArrayList();
+    private Cliente clienteSeleccionado;
     private BigDecimal descuentoPct = BigDecimal.ZERO;
     private Totales totales = CalculadoraTotales.calcular(List.of(), BigDecimal.ZERO);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         txtBuscarProducto.textProperty().addListener((obs, old, nuevo) -> cargarProductos(nuevo));
+        cargarClientes();
         cargarProductos("");
         cargarMetricas();
         recalcular();
+    }
+
+    private void cargarClientes() {
+        List<Cliente> clientes = new ArrayList<>();
+        clientes.add(PUBLICO_GENERAL);
+        clientes.addAll(Servicios.clientes().listar());
+        cmbCliente.setItems(FXCollections.observableArrayList(clientes));
+        cmbCliente.setConverter(new StringConverter<>() {
+            @Override public String toString(Cliente cliente) {
+                if (cliente == null) {
+                    return "";
+                }
+                if (cliente.id() == 0 || cliente.descuento() == null || cliente.descuento().signum() <= 0) {
+                    return cliente.nombre();
+                }
+                return cliente.nombre() + " (" + cliente.descuento().stripTrailingZeros().toPlainString() + "%)";
+            }
+            @Override public Cliente fromString(String texto) {
+                return null;
+            }
+        });
+        cmbCliente.setValue(PUBLICO_GENERAL);
+        clienteSeleccionado = null;
+        cmbCliente.valueProperty().addListener((obs, old, nuevo) -> {
+            clienteSeleccionado = (nuevo == null || nuevo.id() == 0) ? null : nuevo;
+            recalcular();
+        });
     }
 
     // ------------------------------------------------------------------
@@ -156,9 +191,16 @@ public class PointOfSaleController implements Initializable {
     // Carrito y totales
     // ------------------------------------------------------------------
     private void recalcular() {
-        descuentoPct = carrito.isEmpty()
+        BigDecimal promoPct = carrito.isEmpty()
                 ? BigDecimal.ZERO
                 : Servicios.promociones().calcularDescuento(carrito, LocalDate.now());
+        BigDecimal clientePct = (clienteSeleccionado != null && clienteSeleccionado.descuento() != null)
+                ? clienteSeleccionado.descuento()
+                : BigDecimal.ZERO;
+        descuentoPct = promoPct.add(clientePct);
+        if (descuentoPct.compareTo(BigDecimal.valueOf(100)) > 0) {
+            descuentoPct = BigDecimal.valueOf(100);
+        }
         totales = CalculadoraTotales.calcular(carrito, descuentoPct);
 
         lblSubtotal.setText(Formato.money(totales.subtotal()));
@@ -263,10 +305,14 @@ public class PointOfSaleController implements Initializable {
         }
         try {
             SolicitudVenta solicitud = new SolicitudVenta(
-                    List.copyOf(carrito), null, null, descuentoPct,
+                    List.copyOf(carrito),
+                    clienteSeleccionado != null ? clienteSeleccionado.id() : null,
+                    clienteSeleccionado != null ? clienteSeleccionado.nombre() : null,
+                    descuentoPct,
                     pago.metodo(), pago.recibido(), Sesion.id(), Sesion.nombre());
             Venta venta = Servicios.ventas().registrar(solicitud);
             carrito.clear();
+            cmbCliente.setValue(PUBLICO_GENERAL);
             recalcular();
             cargarProductos(txtBuscarProducto.getText());
             cargarMetricas();

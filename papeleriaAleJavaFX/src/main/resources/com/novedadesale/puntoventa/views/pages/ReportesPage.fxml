@@ -75,6 +75,7 @@
                     <TableColumn fx:id="colMetodo" text="Pago" prefWidth="110"/>
                     <TableColumn fx:id="colEstado" text="Estado" prefWidth="110"/>
                     <TableColumn fx:id="colTotal" text="Total" prefWidth="110"/>
+                    <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="100"/>
                 </columns>
             </TableView>
         </VBox>

@@ -7,12 +7,15 @@ import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.Formato;
 import com.novedadesale.puntoventa.ui.Componentes;
+import com.novedadesale.puntoventa.ui.Dialogos;
+import com.novedadesale.puntoventa.ui.Sesion;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -53,6 +56,7 @@ public class ReportesController implements Initializable {
     @FXML private TableColumn<Venta, String> colMetodo;
     @FXML private TableColumn<Venta, Venta> colEstado;
     @FXML private TableColumn<Venta, BigDecimal> colTotal;
+    @FXML private TableColumn<Venta, Venta> colAcciones;
 
     private final ObservableList<ProductoMasVendido> masVendidos = FXCollections.observableArrayList();
     private final ObservableList<Venta> ventas = FXCollections.observableArrayList();
@@ -102,6 +106,41 @@ public class ReportesController implements Initializable {
                 setGraphic(badge);
             }
         });
+
+        colAcciones.setCellValueFactory(cd -> new ReadOnlyObjectWrapper<>(cd.getValue()));
+        colAcciones.setCellFactory(c -> new TableCell<>() {
+            private final Button btnCancelar = Componentes.iconButton("mdi2c-close-circle-outline", "Cancelar venta");
+            {
+                btnCancelar.getStyleClass().add("danger");
+                btnCancelar.setOnAction(e -> cancelar(getItem()));
+            }
+            @Override protected void updateItem(Venta venta, boolean empty) {
+                super.updateItem(venta, empty);
+                if (empty || venta == null) {
+                    setGraphic(null);
+                    return;
+                }
+                boolean puedeCancelar = venta.estado() == EstadoVenta.COMPLETADA && Sesion.esAdmin();
+                btnCancelar.setDisable(!puedeCancelar);
+                setGraphic(btnCancelar);
+            }
+        });
+    }
+
+    private void cancelar(Venta venta) {
+        if (venta == null) {
+            return;
+        }
+        if (!Dialogos.confirmar("¿Cancelar la venta " + venta.folio()
+                + "?\nSe repondrá el stock de los productos.")) {
+            return;
+        }
+        try {
+            Servicios.ventas().cancelar(venta.id());
+            generar();
+        } catch (RuntimeException e) {
+            Dialogos.error(e.getMessage());
+        }
     }
 
     @FXML

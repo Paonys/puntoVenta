@@ -63,8 +63,9 @@
 
         <!-- Cart -->
         <VBox styleClass="cart" minWidth="340" maxWidth="380" spacing="0">
-            <VBox styleClass="cart-header" spacing="6">
+            <VBox styleClass="cart-header" spacing="8">
                 <Label text="Carrito de compras" styleClass="cart-title"/>
+                <ComboBox fx:id="cmbCliente" maxWidth="Infinity" promptText="Cliente"/>
             </VBox>
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
                 <VBox fx:id="cartItemsContainer" styleClass="cart-items"/>
