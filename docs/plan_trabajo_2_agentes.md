@@ -121,7 +121,7 @@ Fuente: `docs/pendientes_sugerencia_agente_b.md` (inventario de B) + `docs/pendi
 | **A8** | Autorización por rol en servicios + impedir quedarse sin `ADMIN` o auto-eliminarse | A | Alta |
 | **A9** | `Pago` con FK a `venta`; usar `ReporteService.ingresos` como fuente única | A | Media |
 | **B9** ✅ | *Gating* por rol en la UI (ocultar Configuración y acciones destructivas a `CAJERO`) — **hecho** (`746488f`) | B | Alta |
-| **B10** | POS: seleccionar cliente, aplicar **descuento de cliente** y **cancelar venta** (usa `ventas().cancelar`) | B | Alta |
+| **B10** ✅ | POS: seleccionar cliente, aplicar **descuento de cliente** y **cancelar venta** (usa `ventas().cancelar`) — **hecho** (`018832f`) | B | Alta |
 | **B11** | Reportes: exportar (CSV/PDF) e imprimir | B | Media |
 | **B12** | Configuración: parámetros de negocio (requiere acuerdo con A sobre las constantes congeladas) | B/A | Media |
 | **A10/B13** | Empaquetado (`jpackage`/`jlink`) y pruebas de UI | A/B | Media/Baja |
