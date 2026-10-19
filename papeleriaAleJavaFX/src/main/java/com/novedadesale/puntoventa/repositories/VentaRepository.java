@@ -27,4 +27,10 @@ public interface VentaRepository {
 
     /** Cantidad de ventas registradas (para el folio). */
     int contar();
+
+    /**
+     * Siguiente número de folio: {@code MAX(id) + 1}. Es monótono y tolera
+     * huecos por filas eliminadas (a diferencia de {@link #contar()}).
+     */
+    int proximoNumero();
 }

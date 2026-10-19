@@ -6,7 +6,7 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      styleClass="layout-page pos-container" VBox.vgrow="ALWAYS" spacing="18"
+      styleClass="layout-page" VBox.vgrow="ALWAYS"
       fx:controller="com.novedadesale.puntoventa.controllers.PointOfSaleController">
 
     <!-- Header -->

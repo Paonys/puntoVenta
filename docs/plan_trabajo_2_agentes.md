@@ -117,7 +117,7 @@ Fuente: `docs/pendientes_sugerencia_agente_b.md` (inventario de B) + `docs/pendi
 
 | ID | Tarea | Dueño | Prioridad |
 |---|---|---|---|
-| **A7** | `VentaServiceImpl`: releer precios del catálogo, envolver venta+items+stock+pago en **transacción**, folio robusto y resolver **promociones dentro del servicio** | A | Alta |
+| **A7** ✅ | `VentaServiceImpl`: relee precios del catálogo, envuelve venta+items+stock+pago en **transacción**, folio robusto (`MAX(id)+1`) y resuelve **promociones dentro del servicio** — **hecho** | A | Alta |
 | **A8** | Autorización por rol en servicios + impedir quedarse sin `ADMIN` o auto-eliminarse | A | Alta |
 | **A9** | `Pago` con FK a `venta`; usar `ReporteService.ingresos` como fuente única | A | Media |
 | **B9** ✅ | *Gating* por rol en la UI (**política: CAJERO solo vende/consulta; ADMIN crea/edita catálogo**): oculta Configuración, botones "Nuevo" y columnas de acciones (Productos, Clientes, Proveedores, Ofertas, Inventario, Reportes) a `CAJERO`. Unificado con `Componentes.soloAdmin` + columna oculta — **hecho** (`746488f`, `fe92245`) | B | Alta |
@@ -128,6 +128,11 @@ Fuente: `docs/pendientes_sugerencia_agente_b.md` (inventario de B) + `docs/pendi
 
 > **Acuerdo pendiente:** declarar si la Fase 2 entra en el **alcance de entrega**. Hasta que no se
 > decida, no se considera "terminado" el proyecto (evita trabajar "a ciegas").
+>
+> **Nota A7 ↔ B10:** con A7, `SolicitudVenta.descuentoPorcentaje` pasó a ser **solo el descuento del
+> cliente**; las promociones las resuelve el servicio. El POS (`PointOfSaleController`) se ajustó
+> para enviar únicamente el descuento de cliente y evitar el **doble conteo**. Cualquier otro
+> llamador debe hacer lo mismo.
 
 ---
 

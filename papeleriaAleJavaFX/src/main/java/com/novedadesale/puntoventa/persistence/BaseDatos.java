@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.function.Supplier;
 
 /**
  * Conexión única a la base de datos SQLite y creación del esquema.
@@ -76,5 +77,47 @@ public final class BaseDatos {
             conexion = null;
         }
         esquemaCreado = false;
+    }
+
+    /**
+     * Ejecuta {@code trabajo} dentro de una transacción sobre la conexión compartida:
+     * confirma si termina sin excepciones y revierte ante cualquier error. La
+     * conexión vuelve siempre a modo autocommit para no afectar a las operaciones
+     * posteriores.
+     *
+     * @return el resultado del trabajo (puede ser {@code null}).
+     */
+    public static <T> T enTransaccion(Supplier<T> trabajo) {
+        return ejecutarEnTransaccion(trabajo);
+    }
+
+    private static synchronized <T> T ejecutarEnTransaccion(Supplier<T> trabajo) {
+        Connection c = conexion();
+        try {
+            c.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new ServiceException("No se pudo iniciar la transacción: " + e.getMessage(), e);
+        }
+        try {
+            T resultado = trabajo.get();
+            c.commit();
+            return resultado;
+        } catch (Exception e) {
+            try {
+                c.rollback();
+            } catch (SQLException rollbackError) {
+                e.addSuppressed(rollbackError);
+            }
+            if (e instanceof RuntimeException runtime) {
+                throw runtime;
+            }
+            throw new ServiceException("Error en la transacción: " + e.getMessage(), e);
+        } finally {
+            try {
+                c.setAutoCommit(true);
+            } catch (SQLException ignored) {
+                // sin acción
+            }
+        }
     }
 }

@@ -31,8 +31,8 @@
     -fx-border-color: ${ui.color.border-light};
     -fx-border-width: 1px;
     -fx-border-radius: ${ui.radius.xl};
-    -fx-padding: 20px;
-    -fx-spacing: 6px;
+    -fx-padding: 22px 24px;
+    -fx-spacing: 8px;
     -fx-min-width: 200px;
     -fx-pref-width: 240px;
     -fx-max-width: Infinity;
@@ -107,8 +107,8 @@
     -fx-border-color: ${ui.color.border-light};
     -fx-border-width: 1px;
     -fx-border-radius: ${ui.radius.xl};
-    -fx-padding: 22px;
-    -fx-spacing: ${ui.space.lg};
+    -fx-padding: 24px;
+    -fx-spacing: 18px;
 }
 
 .section-header {

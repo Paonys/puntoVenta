@@ -70,13 +70,16 @@ class PersistenciaTest {
         Producto antes = Servicios.productos().porCodigo("P-001").orElseThrow();
         int stockAntes = antes.stock();
 
+        // P-001 (Escolares) tiene una promoción sembrada del 10% que el servicio
+        // aplica por sí mismo; la solicitud no lleva descuento de cliente.
         SolicitudVenta solicitud = new SolicitudVenta(
                 List.of(new ItemVenta(antes.id(), antes.codigo(), antes.nombre(), antes.precio(), 2)),
-                null, null, new BigDecimal("10"), MetodoPago.EFECTIVO, new BigDecimal("100"), 1, "Administrador");
+                null, null, BigDecimal.ZERO, MetodoPago.EFECTIVO, new BigDecimal("100"), 1, "Administrador");
 
         Venta venta = Servicios.ventas().registrar(solicitud);
 
         assertTrue(venta.folio().startsWith("V-"));
+        assertEquals(0, venta.descuento().compareTo(new BigDecimal("5.10")));
         assertEquals(0, venta.total().compareTo(new BigDecimal("53.24")));
         assertEquals(0, venta.cambio().compareTo(new BigDecimal("46.76")));
 

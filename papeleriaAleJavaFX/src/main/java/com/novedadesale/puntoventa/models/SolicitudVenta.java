@@ -7,7 +7,9 @@ import java.util.List;
  * Comando de entrada para registrar una venta. El servicio se encarga de
  * calcular totales, cambio, folio y de descontar existencias.
  *
- * @param descuentoPorcentaje porcentaje de descuento (0-100).
+ * @param descuentoPorcentaje descuento adicional del cliente (0-100). Las
+ *                            promociones vigentes las resuelve el propio
+ *                            servicio y se suman a este porcentaje.
  * @param montoRecibido       efectivo/importe entregado por el cliente (para el cambio).
  */
 public record SolicitudVenta(

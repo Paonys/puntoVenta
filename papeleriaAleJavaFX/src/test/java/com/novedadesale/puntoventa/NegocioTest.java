@@ -184,19 +184,58 @@ class NegocioTest {
     }
 
     /**
-     * Caracteriza una limitación conocida: el servicio registra la venta con el
-     * precio que llega en la {@code SolicitudVenta} en lugar de releerlo del
-     * catálogo. Si se endurece {@code VentaServiceImpl}, esta prueba debe fallar.
+     * El servicio ignora el precio que llega en la {@code SolicitudVenta} y
+     * siempre relee el del catálogo (endurecimiento A7).
      */
     @Test
-    void ventaUsaElPrecioDeLaSolicitudNoElDelCatalogo() {
-        Producto cuaderno = producto("P-001");
-        assertTrue(cuaderno.precio().compareTo(new BigDecimal("0.01")) > 0);
+    void ventaUsaElPrecioDelCatalogo() {
+        Producto plumas = producto("P-002");
+        ItemVenta manipulado = new ItemVenta(plumas.id(), plumas.codigo(), plumas.nombre(),
+                new BigDecimal("0.01"), 1);
 
-        Venta venta = registrar(new ItemVenta(cuaderno.id(), cuaderno.codigo(),
-                cuaderno.nombre(), new BigDecimal("0.01"), 1), null, MetodoPago.EFECTIVO, new BigDecimal("0.01"));
+        Venta venta = registrar(manipulado, null, MetodoPago.EFECTIVO, new BigDecimal("200"));
 
-        assertEquals(0, venta.total().compareTo(new BigDecimal("0.01")));
+        assertEquals(0, venta.items().get(0).precioUnitario().compareTo(plumas.precio()));
+        assertEquals(0, venta.total().compareTo(new BigDecimal("104.28")));
+    }
+
+    /**
+     * Las promociones las resuelve el servicio, no la UI: con descuento de
+     * cliente nulo, la venta aún recibe la promoción vigente de la categoría.
+     */
+    @Test
+    void ventaAplicaPromocionDelServicioSinDescuentoDeCliente() {
+        Venta venta = registrar(item(producto("P-001"), 2), null, MetodoPago.EFECTIVO, new BigDecimal("100"));
+
+        assertEquals(0, venta.descuento().compareTo(new BigDecimal("5.10")));
+        assertEquals(0, venta.total().compareTo(new BigDecimal("53.24")));
+    }
+
+    /** El descuento del cliente se suma a la promoción (10% + 5% = 15%). */
+    @Test
+    void ventaSumaDescuentoDeClienteAlaPromocion() {
+        Venta venta = registrar(item(producto("P-001"), 2), new BigDecimal("5"), MetodoPago.EFECTIVO, new BigDecimal("100"));
+
+        assertEquals(0, venta.subtotal().compareTo(new BigDecimal("51.00")));
+        assertEquals(0, venta.descuento().compareTo(new BigDecimal("7.65")));
+        assertEquals(0, venta.total().compareTo(new BigDecimal("50.29")));
+    }
+
+    /** Una venta que falla no debe dejar datos parciales (atomicidad). */
+    @Test
+    void ventaConErrorNoDejaDatosParciales() {
+        int stockAntes = producto("P-002").stock();
+
+        assertThrows(ValidacionException.class, () -> {
+            SolicitudVenta solicitud = new SolicitudVenta(
+                    List.of(item(producto("P-002"), 1), item(producto("P-004"), 1)),
+                    null, null, null, MetodoPago.EFECTIVO, new BigDecimal("500"), 1, "Administrador");
+            Servicios.ventas().registrar(solicitud);
+        });
+
+        assertTrue(Servicios.ventas().listar().isEmpty());
+        assertTrue(Servicios.pagos().listar().isEmpty());
+        assertEquals(stockAntes, producto("P-002").stock());
     }
 
     // ------------------------------------------------------------------
@@ -211,11 +250,10 @@ class NegocioTest {
         var resumen = Servicios.reportes().resumenJornada(LocalDate.now());
 
         assertEquals(2, resumen.numeroVentas());
-        // El descuento por promoción NO lo calcula el servicio: viaja como
-        // porcentaje en la SolicitudVenta (lo calcula la UI). Sin descuento:
-        // P-001 x2 = 59.16 (51.00 + IVA) y P-003 = 172.84 (149.00 + IVA).
-        assertEquals(0, resumen.totalVentas().compareTo(new BigDecimal("232.00")));
-        assertEquals(0, resumen.totalEfectivo().compareTo(new BigDecimal("59.16")));
+        // P-001 (Escolares) recibe la promoción sembrada del 10% que resuelve
+        // el servicio: 51.00 - 5.10 + IVA = 53.24. P-003 sin promoción: 172.84.
+        assertEquals(0, resumen.totalVentas().compareTo(new BigDecimal("226.08")));
+        assertEquals(0, resumen.totalEfectivo().compareTo(new BigDecimal("53.24")));
         assertEquals(0, resumen.totalTarjeta().compareTo(new BigDecimal("172.84")));
         assertEquals(0, resumen.totalTransferencia().compareTo(BigDecimal.ZERO));
     }

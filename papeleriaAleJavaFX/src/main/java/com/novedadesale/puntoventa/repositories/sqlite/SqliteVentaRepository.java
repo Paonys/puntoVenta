@@ -221,4 +221,14 @@ public class SqliteVentaRepository implements VentaRepository {
             throw new ServiceException("Error al contar ventas", e);
         }
     }
+
+    @Override
+    public int proximoNumero() {
+        try (PreparedStatement ps = BaseDatos.conexion().prepareStatement("SELECT COALESCE(MAX(id), 0) + 1 FROM ventas");
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 1;
+        } catch (SQLException e) {
+            throw new ServiceException("Error al calcular el siguiente folio", e);
+        }
+    }
 }

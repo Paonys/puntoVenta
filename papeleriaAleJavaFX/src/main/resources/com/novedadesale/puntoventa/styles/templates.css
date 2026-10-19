@@ -22,8 +22,8 @@
 
 .layout-page {
     -fx-background-color: transparent;
-    -fx-padding: 28px 28px 24px 28px;
-    -fx-spacing: 20px;
+    -fx-padding: 32px 32px 28px 32px;
+    -fx-spacing: 24px;
 }
 
 .page-header {

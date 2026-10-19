@@ -68,6 +68,7 @@ public class PointOfSaleController implements Initializable {
     private final ObservableList<ItemVenta> carrito = FXCollections.observableArrayList();
     private Cliente clienteSeleccionado;
     private BigDecimal descuentoPct = BigDecimal.ZERO;
+    private BigDecimal descuentoClientePct = BigDecimal.ZERO;
     private Totales totales = CalculadoraTotales.calcular(List.of(), BigDecimal.ZERO);
 
     @Override
@@ -197,6 +198,9 @@ public class PointOfSaleController implements Initializable {
         BigDecimal clientePct = (clienteSeleccionado != null && clienteSeleccionado.descuento() != null)
                 ? clienteSeleccionado.descuento()
                 : BigDecimal.ZERO;
+        descuentoClientePct = clientePct;
+        // Solo para la vista previa: el servicio vuelve a resolver las promociones
+        // y suma este descuento de cliente al registrar la venta.
         descuentoPct = promoPct.add(clientePct);
         if (descuentoPct.compareTo(BigDecimal.valueOf(100)) > 0) {
             descuentoPct = BigDecimal.valueOf(100);
@@ -308,7 +312,7 @@ public class PointOfSaleController implements Initializable {
                     List.copyOf(carrito),
                     clienteSeleccionado != null ? clienteSeleccionado.id() : null,
                     clienteSeleccionado != null ? clienteSeleccionado.nombre() : null,
-                    descuentoPct,
+                    descuentoClientePct,
                     pago.metodo(), pago.recibido(), Sesion.id(), Sesion.nombre());
             Venta venta = Servicios.ventas().registrar(solicitud);
             carrito.clear();
