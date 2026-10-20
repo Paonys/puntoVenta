@@ -53,7 +53,10 @@ Se abre la ventana **"Punto de Venta - Papelería Novedades Ale"**. La base SQLi
 
 - **PDF** en Reportes (CSV e impresión sí existen; falta exportar PDF — requiere dependencia en `pom.xml`).
 - **Parámetros de negocio** en Configuración (IVA y umbral de stock aún fijos en `AppConstants`).
-- **Autorización por rol en la capa de servicio** (A8): hoy el gating es solo visual en la UI.
 - Empaquetado/distribución (`jpackage`/`jlink`) — la app corre solo desde Maven.
+
+> La **autorización por rol en la capa de servicio (A8)** ya está hecha: además del gating visual,
+> los servicios lanzan `ServiceException` si un `CAJERO` intenta mutar catálogo/usuarios o cancelar
+> ventas, y el sistema impide auto-eliminarse o quedar sin `ADMIN` activo (prueba: `AutorizacionTest`).
 
 > Estado detallado de la Fase 2: `docs/plan_trabajo_2_agentes.md` (sección 4.bis).

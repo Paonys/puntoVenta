@@ -3,7 +3,7 @@
 **Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-20
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B clean test` → **BUILD SUCCESS** · **27/27 tests OK**
+**Build:** `mvn -B clean test` → **BUILD SUCCESS** · **39/39 tests OK**
 
 ---
 
@@ -17,10 +17,11 @@ Se pasó de un frontend con 3 páginas placeholder y 7 botones apuntando al Punt
 aplicación con **cada sección cargando su propia página** conectada a datos reales.
 
 > **Alcance pendiente (Fase 2).** Ya están cerradas: transacciones/folio/promociones en la venta
-> (A7), *gating* por rol en la UI (B9), cliente + descuento y **cancelar venta** en el POS (B10), y
-> **exportar CSV / imprimir** reportes (B11). Queda por hacer: **autorización por rol en los
-> servicios** (A8), **FK `pago`→`venta` y fuente única de ingresos** (A9), **parámetros de negocio**
-> en Configuración (B12), **PDF** de reportes, **empaquetado y pruebas de UI** (A10/B13). Detalle en
+> (A7), *gating* por rol en la UI (B9), cliente + descuento y **cancelar venta** en el POS (B10),
+> **exportar CSV / imprimir** reportes (B11), **autorización por rol en los servicios** con
+> invariante de último `ADMIN` (A8) y **FK `pago`→`venta` + fuente única de ingresos** (A9, con
+> migración automática de bases existentes). Queda: **parámetros de negocio** en Configuración
+> (B12), **PDF** de reportes, **empaquetado y pruebas de UI** (A10/B13). Detalle en
 > `docs/plan_trabajo_2_agentes.md` (sección **4.bis**). **Falta decidir si la Fase 2 entra en la entrega.**
 
 ---
@@ -42,7 +43,7 @@ puntoVenta/
         │   │                    Categoria, Promocion, Proveedor, Pago, Rol, EstadoVenta, …)
         │   ├── persistence/    BaseDatos · Esquema · Seeder
         │   ├── repositories/   (8 interfaces) + repositories/sqlite/ (8 DAO + SqlUtil)
-        │   ├── services/       (10 interfaces) + services/impl/ (9 implementaciones)
+        │   ├── services/       (10 interfaces) + services/impl/ (9 implementaciones + Autorizacion)
         │   ├── shared/         AppConstants · CalculadoraTotales · Formato · Seguridad · Validadores
         │   └── ui/             Sesion · Dialogos · Componentes · Animations
         └── resources/com/novedadesale/puntoventa/
@@ -133,10 +134,11 @@ conserva íntegra:
 | **Inventario** | ✅ Stock, alertas y ajustes |
 | **Clientes** | ✅ CRUD + descuentos |
 | **Proveedores** | ✅ CRUD |
-| **Reportes** | ✅ Ingresos, más vendidos, corte por fechas · ✅ exportar CSV e imprimir · ⚠️ PDF pendiente |
+| **Reportes** | ✅ Ingresos (fuente única: pagos), más vendidos, corte por fechas · ✅ exportar CSV e imprimir · ⚠️ PDF pendiente |
 | **Ofertas / Promociones** | ✅ Reglas de descuento por temporada |
 | **Regalos** | ✅ Catálogo filtrado |
 | **Configuración** | ✅ Usuarios · ⚠️ parámetros de negocio pendientes (B12) |
+| **Seguridad / RBAC** | ✅ Gating en UI (B9) + **autorización en servicios** (A8): ADMIN gestiona catálogo/usuarios/cancela; CAJERO solo vende/consulta · ✅ sin auto-eliminación ni quedar sin ADMIN activo |
 
 **Leyenda:** ✅ implementado · ⚠️ parcial / pendiente en Fase 2.
 
@@ -169,18 +171,15 @@ controladores ahora los consumen, eliminando helpers privados duplicados.
 ## 8. Próximos pasos recomendados
 
 Ejecutar lo que queda de la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (sección 4.bis).
-**Ya hecho:** A7, B9, B10, B11 (CSV + imprimir). **Pendiente:**
+**Ya hecho:** A7, A8, A9, B9, B10, B11 (CSV + imprimir) + rediseño de confirmaciones de venta.
+**Pendiente:**
 
-1. **Backend (A, alta):** **A8** — autorización por rol **en los servicios** e impedir quedarse sin
-   `ADMIN` o auto-eliminarse (hoy el RBAC es solo visual en la UI).
-2. **Backend (A, media):** **A9** — `FOREIGN KEY` de `pagos.venta_id` → `ventas(id)` y usar
-   `ReporteService.ingresos(...)` como fuente única (hoy `ReportesController` suma a mano).
-3. **Frontend (B, media):** **B12** — parámetros de negocio en Configuración (IVA, umbral de stock
+1. **Frontend (B, media):** **B12** — parámetros de negocio en Configuración (IVA, umbral de stock
    bajo) sacándolos de `shared/AppConstants`; **requiere acuerdo con A** por ser contrato congelado.
-4. **Reportes (B, baja):** **PDF**, que requiere una dependencia nueva en `pom.xml` (propiedad de A).
-5. **Empaquetado y pruebas (A/B):** **A10/B13** — `jpackage`/`jlink` y pruebas de UI/FXML (hoy solo
-   hay 3 clases de test de lógica: **27/27**).
-6. **Decisión de alcance:** confirmar si todo lo anterior entra en la entrega.
+2. **Reportes (B, baja):** **PDF**, que requiere una dependencia nueva en `pom.xml` (propiedad de A).
+3. **Empaquetado y pruebas (A/B):** **A10/B13** — `jpackage`/`jlink` y pruebas de UI/FXML (hoy
+   4 clases de test de lógica: **39/39**, incluye `AutorizacionTest`).
+4. **Decisión de alcance:** confirmar si todo lo anterior entra en la entrega.
 
 ---
 
