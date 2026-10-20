@@ -1,9 +1,9 @@
 # Reporte de Estado y Pendientes — Punto de Venta "Novedades Ale"
 
-**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-14
+**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-20
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B clean compile` → **BUILD SUCCESS** · `mvn -B test` → **24/24 OK**
+**Build:** `mvn -B clean test` → **BUILD SUCCESS** · **27/27 tests OK**
 
 ---
 
@@ -16,11 +16,12 @@ conectada y utilidades compartidas.
 Se pasó de un frontend con 3 páginas placeholder y 7 botones apuntando al Punto de Venta, a una
 aplicación con **cada sección cargando su propia página** conectada a datos reales.
 
-> **Alcance pendiente (Fase 2).** Una revisión cruzada entre agentes (`docs/pendientes_sugerencia_agente_b.md`
-> y `docs/pendientes_sugerencia_agente_a.md`) identificó endurecimiento de backend y funciones de UI
-> aún no cerradas (RBAC, cancelar venta en POS, descuento de cliente, exportar/imprimir reportes,
-> parámetros de configuración, transacciones, empaquetado). Están listadas en
-> `docs/plan_trabajo_2_agentes.md` (sección **4.bis**). **Falta decidir si entran en la entrega.**
+> **Alcance pendiente (Fase 2).** Ya están cerradas: transacciones/folio/promociones en la venta
+> (A7), *gating* por rol en la UI (B9), cliente + descuento y **cancelar venta** en el POS (B10), y
+> **exportar CSV / imprimir** reportes (B11). Queda por hacer: **autorización por rol en los
+> servicios** (A8), **FK `pago`→`venta` y fuente única de ingresos** (A9), **parámetros de negocio**
+> en Configuración (B12), **PDF** de reportes, **empaquetado y pruebas de UI** (A10/B13). Detalle en
+> `docs/plan_trabajo_2_agentes.md` (sección **4.bis**). **Falta decidir si la Fase 2 entra en la entrega.**
 
 ---
 
@@ -34,7 +35,7 @@ puntoVenta/
     └── src/main/
         ├── java/com/novedadesale/puntoventa/
         │   ├── App.java
-        │   ├── controllers/    (13: Login, MainLayout, Dashboard, POS, Productos, Inventario,
+        │   ├── controllers/    (12: Login, MainLayout, Dashboard, POS, Productos, Inventario,
         │   │                    Clientes, Proveedores, Ofertas, Regalos, Reportes, Configuracion)
         │   ├── exceptions/     ServiceException · ValidacionException
         │   ├── models/         (18 records/enums: Producto, Venta, ItemVenta, Cliente, Usuario,
@@ -54,7 +55,7 @@ puntoVenta/
                 └── templates/ MainLayout.fxml
 ```
 
-**Conteo real:** 11 Page FXML · 1 Template FXML · 13 controllers · 8 CSS · 2 imágenes.
+**Conteo real:** 11 Page FXML · 1 Template FXML · 12 controllers · 8 CSS · 2 imágenes.
 
 ---
 
@@ -110,7 +111,7 @@ conserva íntegra:
 - Módulo de **cobro rápido** (totales y cambios) ✅
 - **Inventario dinámico** categorizado, con descuento automático y **alertas de stock bajo** ✅
 - **Acceso seguro** con contraseñas individuales (PBKDF2 + salt) ✅
-- **Reportes de ventas** de fin de jornada (ingresos, más vendidos, corte) ✅ · impresión/exportación ⚠️
+- **Reportes de ventas** de fin de jornada (ingresos, más vendidos, corte) ✅ · **exportar CSV e imprimir** ✅ · PDF ⚠️ pendiente
 
 ### 5.3 Requerimientos adicionales
 - **Volátiles:** promociones, métodos de pago, descuentos a clientes frecuentes ✅
@@ -125,17 +126,17 @@ conserva íntegra:
 | **Inicio de sesión** | ✅ Login + validación de credenciales |
 | **Control de usuarios** | ✅ CRUD de usuarios en Configuración |
 | **Inicio / Dashboard** | ✅ Métricas, más vendidos y ventas recientes |
-| **Ventas / Cobro rápido** | ✅ Carrito, total y cambio |
+| **Ventas / Cobro rápido** | ✅ Carrito, total y cambio · ✅ cliente + descuento · ✅ cancelar venta (ADMIN) |
 | **Pagos** | ✅ Diálogo de pago con métodos |
-| **Ticket / Comprobante** | ✅ Generación + intento de impresión |
+| **Ticket / Comprobante** | ✅ Generación + impresión · ✅ rediseño de confirmación de cobro/ticket |
 | **Productos** | ✅ CRUD real + búsqueda |
 | **Inventario** | ✅ Stock, alertas y ajustes |
 | **Clientes** | ✅ CRUD + descuentos |
 | **Proveedores** | ✅ CRUD |
-| **Reportes** | ✅ Ingresos, más vendidos, corte por fechas · ⚠️ sin exportar/imprimir |
+| **Reportes** | ✅ Ingresos, más vendidos, corte por fechas · ✅ exportar CSV e imprimir · ⚠️ PDF pendiente |
 | **Ofertas / Promociones** | ✅ Reglas de descuento por temporada |
 | **Regalos** | ✅ Catálogo filtrado |
-| **Configuración** | ✅ Usuarios · ⚠️ parámetros de negocio pendientes (Fase 2) |
+| **Configuración** | ✅ Usuarios · ⚠️ parámetros de negocio pendientes (B12) |
 
 **Leyenda:** ✅ implementado · ⚠️ parcial / pendiente en Fase 2.
 
@@ -167,14 +168,19 @@ controladores ahora los consumen, eliminando helpers privados duplicados.
 
 ## 8. Próximos pasos recomendados
 
-Ejecutar la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (sección 4.bis):
+Ejecutar lo que queda de la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (sección 4.bis).
+**Ya hecho:** A7, B9, B10, B11 (CSV + imprimir). **Pendiente:**
 
-1. **Backend (A):** transacciones en el registro de venta, precios desde el catálogo, autorización
-   por rol, folio robusto, `Pago` con FK.
-2. **Frontend (B):** RBAC visual, cliente + descuento y **cancelar venta** en POS, exportar/imprimir
-   reportes.
-2. Ampliar la cobertura de pruebas (flujos de caja y controladores) — ya hay **24/24**.
-3. Empaquetado/distribución del cliente JavaFX (`jpackage`/`jlink`).
+1. **Backend (A, alta):** **A8** — autorización por rol **en los servicios** e impedir quedarse sin
+   `ADMIN` o auto-eliminarse (hoy el RBAC es solo visual en la UI).
+2. **Backend (A, media):** **A9** — `FOREIGN KEY` de `pagos.venta_id` → `ventas(id)` y usar
+   `ReporteService.ingresos(...)` como fuente única (hoy `ReportesController` suma a mano).
+3. **Frontend (B, media):** **B12** — parámetros de negocio en Configuración (IVA, umbral de stock
+   bajo) sacándolos de `shared/AppConstants`; **requiere acuerdo con A** por ser contrato congelado.
+4. **Reportes (B, baja):** **PDF**, que requiere una dependencia nueva en `pom.xml` (propiedad de A).
+5. **Empaquetado y pruebas (A/B):** **A10/B13** — `jpackage`/`jlink` y pruebas de UI/FXML (hoy solo
+   hay 3 clases de test de lógica: **27/27**).
+6. **Decisión de alcance:** confirmar si todo lo anterior entra en la entrega.
 
 ---
 
