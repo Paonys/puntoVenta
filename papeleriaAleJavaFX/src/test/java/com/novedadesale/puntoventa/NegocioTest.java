@@ -1,9 +1,11 @@
 package com.novedadesale.puntoventa;
 
+import com.novedadesale.puntoventa.exceptions.ServiceException;
 import com.novedadesale.puntoventa.exceptions.ValidacionException;
 import com.novedadesale.puntoventa.models.EstadoVenta;
 import com.novedadesale.puntoventa.models.ItemVenta;
 import com.novedadesale.puntoventa.models.MetodoPago;
+import com.novedadesale.puntoventa.models.Pago;
 import com.novedadesale.puntoventa.models.Producto;
 import com.novedadesale.puntoventa.models.ProductoMasVendido;
 import com.novedadesale.puntoventa.models.Promocion;
@@ -14,6 +16,7 @@ import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.persistence.BaseDatos;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.CalculadoraTotales;
+import com.novedadesale.puntoventa.ui.Sesion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,10 +46,13 @@ class NegocioTest {
         db = Files.createTempFile("novedadesale-negocio-", ".db");
         Files.deleteIfExists(db);
         BaseDatos.usarRuta(db.toString());
+        // A8: promociones y cancelación de ventas exigen sesión ADMIN.
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
     }
 
     @AfterEach
     void limpiar() throws Exception {
+        Sesion.cerrar();
         BaseDatos.cerrar();
         Files.deleteIfExists(db);
     }
@@ -281,6 +288,17 @@ class NegocioTest {
         assertEquals(0, Servicios.reportes().ingresos(LocalDate.now(), LocalDate.now())
                 .compareTo(BigDecimal.ZERO));
         assertTrue(Servicios.reportes().ventas(LocalDate.now(), LocalDate.now()).isEmpty());
+    }
+
+    /**
+     * A9: los pagos tienen FK a ventas; registrar un pago de una venta
+     * inexistente debe fallar en la base de datos.
+     */
+    @Test
+    void pagoConVentaInexistenteEsRechazadoPorForeignKeys() {
+        Pago pago = new Pago(0, 999999, MetodoPago.EFECTIVO, new BigDecimal("50.00"), LocalDateTime.now());
+
+        assertThrows(ServiceException.class, () -> Servicios.pagos().registrar(pago));
     }
 
     // ------------------------------------------------------------------

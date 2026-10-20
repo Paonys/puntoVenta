@@ -28,12 +28,14 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public Categoria guardar(Categoria categoria) {
+        Autorizacion.exigirAdmin("guardar categorías");
         String nombre = Validadores.requerido(categoria.nombre(), "Nombre");
         return repo.guardar(new Categoria(categoria.id(), nombre));
     }
 
     @Override
     public void eliminar(int id) {
+        Autorizacion.exigirAdmin("eliminar categorías");
         repo.eliminar(id);
     }
 }

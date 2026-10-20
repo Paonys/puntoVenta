@@ -36,12 +36,14 @@ public class PromocionServiceImpl implements PromocionService {
 
     @Override
     public Promocion guardar(Promocion promocion) {
+        Autorizacion.exigirAdmin("guardar promociones");
         Validadores.requerido(promocion.nombre(), "Nombre");
         return repo.guardar(promocion);
     }
 
     @Override
     public void eliminar(int id) {
+        Autorizacion.exigirAdmin("eliminar promociones");
         repo.eliminar(id);
     }
 

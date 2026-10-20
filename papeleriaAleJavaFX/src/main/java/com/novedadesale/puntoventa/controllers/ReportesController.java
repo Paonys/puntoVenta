@@ -175,10 +175,7 @@ public class ReportesController implements Initializable {
                 .toList();
         ventas.setAll(resultado);
 
-        BigDecimal total = resultado.stream()
-                .filter(v -> v.estado() == EstadoVenta.COMPLETADA)
-                .map(Venta::total)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = Servicios.reportes().ingresos(inicio, fin);
         long tickets = resultado.stream().filter(v -> v.estado() == EstadoVenta.COMPLETADA).count();
         long unidades = resultado.stream().filter(v -> v.estado() == EstadoVenta.COMPLETADA)
                 .flatMap(v -> v.items().stream())

@@ -133,6 +133,7 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     public void cancelar(int ventaId) {
+        Autorizacion.exigirAdmin("cancelar ventas");
         Venta venta = ventaRepo.porId(ventaId)
                 .orElseThrow(() -> new ServiceException("Venta no encontrada: " + ventaId));
         if (venta.estado() == EstadoVenta.CANCELADA) {

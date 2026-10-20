@@ -3,9 +3,11 @@ package com.novedadesale.puntoventa.services.impl;
 import com.novedadesale.puntoventa.models.EstadoVenta;
 import com.novedadesale.puntoventa.models.ItemVenta;
 import com.novedadesale.puntoventa.models.MetodoPago;
+import com.novedadesale.puntoventa.models.Pago;
 import com.novedadesale.puntoventa.models.ProductoMasVendido;
 import com.novedadesale.puntoventa.models.ResumenJornada;
 import com.novedadesale.puntoventa.models.Venta;
+import com.novedadesale.puntoventa.repositories.PagoRepository;
 import com.novedadesale.puntoventa.repositories.VentaRepository;
 import com.novedadesale.puntoventa.services.ReporteService;
 
@@ -20,9 +22,11 @@ import java.util.stream.Collectors;
 public class ReporteServiceImpl implements ReporteService {
 
     private final VentaRepository ventaRepo;
+    private final PagoRepository pagoRepo;
 
-    public ReporteServiceImpl(VentaRepository ventaRepo) {
+    public ReporteServiceImpl(VentaRepository ventaRepo, PagoRepository pagoRepo) {
         this.ventaRepo = ventaRepo;
+        this.pagoRepo = pagoRepo;
     }
 
     private List<Venta> completadasEntre(LocalDate desde, LocalDate hasta) {
@@ -77,8 +81,10 @@ public class ReporteServiceImpl implements ReporteService {
 
     @Override
     public BigDecimal ingresos(LocalDate desde, LocalDate hasta) {
-        return completadasEntre(desde, hasta).stream()
-                .map(Venta::total)
+        // A9: los pagos son la fuente única de ingresos (suma de pagos de
+        // ventas COMPLETADA en el rango).
+        return pagoRepo.entre(desde, hasta).stream()
+                .map(Pago::monto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

@@ -33,6 +33,7 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     public Proveedor guardar(Proveedor proveedor) {
+        Autorizacion.exigirAdmin("guardar proveedores");
         Validadores.requerido(proveedor.nombre(), "Nombre");
         Validadores.opcionalEmail(proveedor.email(), "Correo");
         Validadores.opcionalTelefono(proveedor.telefono(), "Teléfono");
@@ -41,6 +42,7 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     public void eliminar(int id) {
+        Autorizacion.exigirAdmin("eliminar proveedores");
         repo.eliminar(id);
     }
 }

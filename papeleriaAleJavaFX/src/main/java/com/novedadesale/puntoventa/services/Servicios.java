@@ -53,7 +53,7 @@ public final class Servicios {
     private static final PromocionService PROMOCIONES = new PromocionServiceImpl(PROMOCION_REPO, PRODUCTO_REPO);
     private static final VentaService VENTAS = new VentaServiceImpl(VENTA_REPO, PRODUCTO_REPO, PAGO_REPO, PROMOCIONES);
     private static final PagoService PAGOS = new PagoServiceImpl(PAGO_REPO);
-    private static final ReporteService REPORTES = new ReporteServiceImpl(VENTA_REPO);
+    private static final ReporteService REPORTES = new ReporteServiceImpl(VENTA_REPO, PAGO_REPO);
 
     private Servicios() {
     }

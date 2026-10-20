@@ -103,7 +103,8 @@ final class Esquema {
                 venta_id  INTEGER NOT NULL,
                 metodo    TEXT NOT NULL,
                 monto     TEXT NOT NULL DEFAULT '0',
-                fecha     TEXT NOT NULL
+                fecha     TEXT NOT NULL,
+                FOREIGN KEY (venta_id) REFERENCES ventas(id)
             )
             """
     };

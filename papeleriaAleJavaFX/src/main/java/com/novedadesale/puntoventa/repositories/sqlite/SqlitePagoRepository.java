@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,27 @@ public class SqlitePagoRepository implements PagoRepository {
             return lista;
         } catch (SQLException e) {
             throw new ServiceException("Error al listar pagos de la venta " + ventaId, e);
+        }
+    }
+
+    @Override
+    public List<Pago> entre(LocalDate desde, LocalDate hasta) {
+        List<Pago> lista = new ArrayList<>();
+        String sql = "SELECT p.id, p.venta_id, p.metodo, p.monto, p.fecha FROM pagos p "
+                + "JOIN ventas v ON v.id = p.venta_id "
+                + "WHERE v.estado = 'COMPLETADA' AND date(v.fecha) >= ? AND date(v.fecha) <= ? "
+                + "ORDER BY p.id";
+        try (PreparedStatement ps = BaseDatos.conexion().prepareStatement(sql)) {
+            ps.setString(1, desde.toString());
+            ps.setString(2, hasta.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapear(rs));
+                }
+            }
+            return lista;
+        } catch (SQLException e) {
+            throw new ServiceException("Error al consultar pagos entre " + desde + " y " + hasta, e);
         }
     }
 

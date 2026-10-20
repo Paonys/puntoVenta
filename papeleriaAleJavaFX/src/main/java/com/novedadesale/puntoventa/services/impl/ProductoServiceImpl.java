@@ -45,6 +45,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public Producto guardar(Producto producto) {
+        Autorizacion.exigirAdmin("guardar productos");
         Validadores.requerido(producto.codigo(), "Código");
         Validadores.requerido(producto.nombre(), "Nombre");
         Validadores.estrictamentePositivo(producto.precio(), "Precio");
@@ -61,11 +62,13 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void eliminar(int id) {
+        Autorizacion.exigirAdmin("eliminar productos");
         repo.eliminar(id);
     }
 
     @Override
     public void ajustarStock(int productoId, int delta) {
+        Autorizacion.exigirAdmin("ajustar stock");
         Producto p = repo.porId(productoId)
                 .orElseThrow(() -> new ServiceException("Producto no encontrado: " + productoId));
         int nuevo = p.stock() + delta;

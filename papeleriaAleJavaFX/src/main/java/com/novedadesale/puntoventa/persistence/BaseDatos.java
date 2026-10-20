@@ -4,6 +4,7 @@ import com.novedadesale.puntoventa.exceptions.ServiceException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.function.Supplier;
@@ -58,6 +59,46 @@ public final class BaseDatos {
             for (String ddl : Esquema.DDL) {
                 st.execute(ddl);
             }
+        }
+        migrarPagosSiFaltaForeignKeys(c);
+    }
+
+    /**
+     * A9: bases creadas antes de la tarea A9 tenían {@code pagos} sin FK a
+     * {@code ventas}; reconstruye la tabla para añadirla. Idempotente: solo
+     * actúa si la tabla existente no tiene ninguna foreign key.
+     */
+    private static void migrarPagosSiFaltaForeignKeys(Connection c) throws SQLException {
+        try (Statement st = c.createStatement();
+             ResultSet rs = st.executeQuery("PRAGMA foreign_key_list(pagos)")) {
+            if (rs.next()) {
+                return;
+            }
+        }
+        try (Statement st = c.createStatement()) {
+            st.execute("PRAGMA foreign_keys = OFF");
+            st.execute("""
+                    CREATE TABLE pagos_tmp (
+                        id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                        venta_id  INTEGER NOT NULL,
+                        metodo    TEXT NOT NULL,
+                        monto     TEXT NOT NULL DEFAULT '0',
+                        fecha     TEXT NOT NULL,
+                        FOREIGN KEY (venta_id) REFERENCES ventas(id)
+                    )
+                    """);
+            st.execute("INSERT INTO pagos_tmp (id, venta_id, metodo, monto, fecha) "
+                    + "SELECT id, venta_id, metodo, monto, fecha FROM pagos");
+            st.execute("DROP TABLE pagos");
+            st.execute("ALTER TABLE pagos_tmp RENAME TO pagos");
+            st.execute("PRAGMA foreign_keys = ON");
+        } catch (SQLException e) {
+            try (Statement st = c.createStatement()) {
+                st.execute("PRAGMA foreign_keys = ON");
+            } catch (SQLException ignorada) {
+                e.addSuppressed(ignorada);
+            }
+            throw e;
         }
     }
 

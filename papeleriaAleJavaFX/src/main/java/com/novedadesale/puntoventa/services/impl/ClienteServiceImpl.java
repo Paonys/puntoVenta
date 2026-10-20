@@ -33,6 +33,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public Cliente guardar(Cliente cliente) {
+        Autorizacion.exigirAdmin("guardar clientes");
         Validadores.requerido(cliente.nombre(), "Nombre");
         Validadores.opcionalEmail(cliente.email(), "Correo");
         Validadores.opcionalTelefono(cliente.telefono(), "Teléfono");
@@ -42,6 +43,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public void eliminar(int id) {
+        Autorizacion.exigirAdmin("eliminar clientes");
         repo.eliminar(id);
     }
 }
