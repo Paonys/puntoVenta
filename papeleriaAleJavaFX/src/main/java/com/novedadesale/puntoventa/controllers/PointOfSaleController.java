@@ -343,13 +343,19 @@ public class PointOfSaleController implements Initializable {
             metodo.setMaxWidth(Double.MAX_VALUE);
             TextField recibido = new TextField(total.toPlainString());
             recibido.setPromptText("Monto recibido");
-            Label cambio = new Label();
-            cambio.getStyleClass().add("label-heading");
+
+            Label cambioTitulo = new Label("Cambio");
+            cambioTitulo.getStyleClass().add("ticket-change-caption");
+            Label cambioMonto = new Label();
+            cambioMonto.getStyleClass().add("ticket-change-amount");
+            VBox cambioCard = new VBox(cambioTitulo, cambioMonto);
+            cambioCard.getStyleClass().add("ticket-change-card");
+            cambioCard.setAlignment(Pos.CENTER);
 
             Runnable actualizarCambio = () -> {
                 BigDecimal r = Formato.decimal(recibido.getText());
                 BigDecimal c = r.subtract(total);
-                cambio.setText("Cambio: " + Formato.money(c.max(BigDecimal.ZERO)));
+                cambioMonto.setText(Formato.money(c.max(BigDecimal.ZERO)));
             };
             recibido.textProperty().addListener((o, a, b) -> actualizarCambio.run());
             metodo.valueProperty().addListener((o, a, b) -> {
@@ -361,12 +367,26 @@ public class PointOfSaleController implements Initializable {
             });
             actualizarCambio.run();
 
+            Label totalTitulo = new Label("TOTAL A PAGAR");
+            totalTitulo.getStyleClass().add("ticket-total-caption");
+            Label totalMonto = new Label(Formato.money(total));
+            totalMonto.getStyleClass().add("ticket-total-amount");
+            VBox totalCard = new VBox(totalTitulo, totalMonto);
+            totalCard.getStyleClass().add("ticket-total-card");
+            totalCard.setAlignment(Pos.CENTER);
+
+            Label lblMetodo = new Label("MÉTODO DE PAGO");
+            lblMetodo.getStyleClass().add("dialog-field-label");
+            Label lblRecibido = new Label("MONTO RECIBIDO");
+            lblRecibido.getStyleClass().add("dialog-field-label");
+
             VBox contenido = new VBox(12,
-                    Componentes.etiqueta("Total a pagar: " + Formato.money(total)),
-                    Componentes.etiqueta("Método de pago"), metodo,
-                    Componentes.etiqueta("Monto recibido"), recibido,
-                    cambio);
+                    totalCard,
+                    lblMetodo, metodo,
+                    lblRecibido, recibido,
+                    cambioCard);
             contenido.setPadding(new Insets(8, 4, 4, 4));
+            contenido.setMinWidth(360);
             panel.setContent(contenido);
 
             Button btnOk = (Button) panel.lookupButton(ButtonType.OK);
@@ -423,6 +443,87 @@ public class PointOfSaleController implements Initializable {
     }
 
     private VBox construirTicket(Venta venta) {
+        FontIcon iconoExito = new FontIcon("mdi2c-check-circle");
+        iconoExito.setIconSize(26);
+        VBox disco = new VBox(iconoExito);
+        disco.getStyleClass().add("ticket-check");
+        disco.setAlignment(Pos.CENTER);
+
+        Label tituloLabel = new Label("Venta registrada");
+        tituloLabel.getStyleClass().add("ticket-title");
+        Label folio = new Label("Folio " + venta.folio());
+        folio.getStyleClass().add("ticket-folio");
+        VBox encabezadoTexto = new VBox(4, tituloLabel, folio);
+        HBox encabezado = new HBox(12, disco, encabezadoTexto);
+        encabezado.getStyleClass().add("ticket-header");
+        encabezado.setAlignment(Pos.CENTER_LEFT);
+
+        Label seccionVenta = new Label("VENTA");
+        seccionVenta.getStyleClass().add("ticket-section");
+        Label seccionArticulos = new Label("ARTÍCULOS (" + venta.items().size() + ")");
+        seccionArticulos.getStyleClass().add("ticket-section");
+        Label seccionPago = new Label("PAGO");
+        seccionPago.getStyleClass().add("ticket-section");
+
+        VBox ticket = new VBox(8,
+                encabezado,
+                seccionVenta,
+                filaTicket("ticket-meta", "Fecha", venta.fecha().format(FECHA)),
+                filaTicket("ticket-meta", "Atendió", venta.usuarioNombre()),
+                seccionArticulos);
+        for (ItemVenta item : venta.items()) {
+            ticket.getChildren().add(filaTicket("ticket-item",
+                    item.cantidad() + " × " + item.nombre(), Formato.money(item.importe())));
+        }
+        ticket.getChildren().addAll(
+                seccionPago,
+                filaTicket("ticket-total", "Subtotal", Formato.money(venta.subtotal())),
+                filaTicket("ticket-total", "Descuento", "-" + Formato.money(venta.descuento())),
+                filaTicket("ticket-total", "IVA (16%)", Formato.money(venta.iva())));
+
+        Label totalTitulo = new Label("TOTAL");
+        totalTitulo.getStyleClass().add("ticket-total-caption");
+        Label totalMonto = new Label(Formato.money(venta.total()));
+        totalMonto.getStyleClass().add("ticket-total-amount");
+        VBox totalCard = new VBox(totalTitulo, totalMonto);
+        totalCard.getStyleClass().add("ticket-total-card");
+        totalCard.setAlignment(Pos.CENTER);
+
+        Label cambioTitulo = new Label("Cambio");
+        cambioTitulo.getStyleClass().add("ticket-change-caption");
+        Label cambioMonto = new Label(Formato.money(venta.cambio()));
+        cambioMonto.getStyleClass().add("ticket-change-amount");
+        VBox cambioCard = new VBox(cambioTitulo, cambioMonto);
+        cambioCard.getStyleClass().add("ticket-change-card");
+        cambioCard.setAlignment(Pos.CENTER);
+
+        ticket.getChildren().addAll(
+                filaTicket("ticket-meta", "Método", String.valueOf(venta.metodoPago())),
+                filaTicket("ticket-meta", "Recibido", Formato.money(venta.montoRecibido())),
+                totalCard,
+                cambioCard);
+        ticket.setPadding(new Insets(8, 4, 4, 4));
+        ticket.setMinWidth(420);
+        ticket.setAlignment(Pos.TOP_LEFT);
+        return ticket;
+    }
+
+    /** Fila etiqueta/valor: etiqueta discreta a la izquierda, importe destacado a la derecha. */
+    private HBox filaTicket(String clase, String etiqueta, String valor) {
+        Label lbl = new Label(etiqueta);
+        lbl.getStyleClass().add(clase + "-label");
+        Label val = new Label(valor);
+        val.getStyleClass().add(clase + "-value");
+        HBox.setHgrow(val, Priority.ALWAYS);
+        val.setMaxWidth(Double.MAX_VALUE);
+        val.setAlignment(Pos.CENTER_RIGHT);
+        HBox fila = new HBox(lbl, val);
+        fila.getStyleClass().add(clase + "-row");
+        return fila;
+    }
+
+    /** Versión en texto plano para la impresión (sin depender de hojas de estilo). */
+    private VBox construirTicketImpresion(Venta venta) {
         VBox ticket = new VBox(4);
         ticket.setPadding(new Insets(12));
         ticket.setAlignment(Pos.TOP_LEFT);
@@ -459,7 +560,7 @@ public class PointOfSaleController implements Initializable {
             return false;
         }
         try {
-            boolean ok = job.printPage(construirTicket(venta));
+            boolean ok = job.printPage(construirTicketImpresion(venta));
             if (ok) {
                 job.endJob();
             }

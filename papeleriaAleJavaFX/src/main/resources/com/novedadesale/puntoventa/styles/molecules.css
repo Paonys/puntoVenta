@@ -149,3 +149,150 @@
     -fx-font-weight: 700;
     -fx-font-size: 18px;
 }
+
+/* =========================
+   Diálogos de venta (cobro y ticket)
+   Prefijo .dialog-pane para ganarle especificidad a la regla
+   genérica ".dialog-pane .label" de theme.css
+   ========================= */
+
+.dialog-pane .dialog-field-label {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.dialog-pane .ticket-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 12px;
+}
+
+.dialog-pane .ticket-check {
+    -fx-background-color: ${ui.color.success};
+    -fx-background-radius: ${ui.radius.full};
+    -fx-min-width: 48px;
+    -fx-max-width: 48px;
+    -fx-min-height: 48px;
+    -fx-max-height: 48px;
+    -fx-alignment: center;
+}
+
+.dialog-pane .ticket-check .ikonli-font-icon {
+    -fx-icon-color: ${ui.color.text-inverse};
+}
+
+.dialog-pane .ticket-title {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 700;
+    -fx-font-size: 18px;
+}
+
+.dialog-pane .ticket-folio {
+    -fx-text-fill: ${ui.color.primary-dark};
+    -fx-background-color: ${ui.color.surface-variant};
+    -fx-font-weight: 600;
+    -fx-font-size: 11px;
+    -fx-padding: 3px 10px;
+    -fx-background-radius: ${ui.radius.full};
+}
+
+.dialog-pane .ticket-section {
+    -fx-text-fill: ${ui.color.text-tertiary};
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+}
+
+.dialog-pane .ticket-meta-row {
+    -fx-spacing: 8px;
+    -fx-padding: 2px 0;
+    -fx-alignment: center-left;
+}
+
+.dialog-pane .ticket-meta-label {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-size: 12px;
+}
+
+.dialog-pane .ticket-meta-value {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 600;
+    -fx-font-size: 12px;
+}
+
+.dialog-pane .ticket-item-row {
+    -fx-spacing: 8px;
+    -fx-padding: 3px 0;
+    -fx-alignment: center-left;
+}
+
+.dialog-pane .ticket-item-name {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .ticket-item-amount {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .ticket-total-row {
+    -fx-spacing: 8px;
+    -fx-padding: 2px 0;
+    -fx-alignment: center-left;
+}
+
+.dialog-pane .ticket-total-label {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .ticket-total-value {
+    -fx-text-fill: ${ui.color.text-primary};
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .ticket-total-card {
+    -fx-background-color: ${ui.gradients.brand};
+    -fx-background-radius: ${ui.radius.xl};
+    -fx-padding: 16px 20px;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+    -fx-effect: ${ui.shadow.md};
+}
+
+.dialog-pane .ticket-total-caption {
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.dialog-pane .ticket-total-amount {
+    -fx-text-fill: ${ui.color.text-inverse};
+    -fx-font-size: 26px;
+    -fx-font-weight: 700;
+}
+
+.dialog-pane .ticket-change-card {
+    -fx-background-color: ${ui.color.surface-variant};
+    -fx-background-radius: ${ui.radius.lg};
+    -fx-border-color: ${ui.color.success};
+    -fx-border-width: 1.5px;
+    -fx-border-radius: ${ui.radius.lg};
+    -fx-padding: 10px 16px;
+    -fx-alignment: center;
+    -fx-spacing: 2px;
+}
+
+.dialog-pane .ticket-change-caption {
+    -fx-text-fill: ${ui.color.text-secondary};
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+.dialog-pane .ticket-change-amount {
+    -fx-text-fill: ${ui.color.success};
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
