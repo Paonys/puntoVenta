@@ -3,7 +3,7 @@
 **Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-20
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B clean test` → **BUILD SUCCESS** · **39/39 tests OK**
+**Build:** `mvn -B clean test` → **BUILD SUCCESS** · **40/40 tests OK**
 
 ---
 
@@ -134,7 +134,7 @@ conserva íntegra:
 | **Inventario** | ✅ Stock, alertas y ajustes |
 | **Clientes** | ✅ CRUD + descuentos |
 | **Proveedores** | ✅ CRUD |
-| **Reportes** | ✅ Ingresos (fuente única: pagos), más vendidos, corte por fechas · ✅ exportar CSV e imprimir · ⚠️ PDF pendiente |
+| **Reportes** | ✅ Ingresos (fuente única: ventas `COMPLETADA`), más vendidos, corte por fechas · ✅ exportar CSV e imprimir · ⚠️ PDF pendiente |
 | **Ofertas / Promociones** | ✅ Reglas de descuento por temporada |
 | **Regalos** | ✅ Catálogo filtrado |
 | **Configuración** | ✅ Usuarios · ⚠️ parámetros de negocio pendientes (B12) |

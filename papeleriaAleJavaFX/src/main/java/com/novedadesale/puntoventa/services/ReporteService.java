@@ -15,6 +15,10 @@ public interface ReporteService {
 
     List<ProductoMasVendido> productosMasVendidos(LocalDate desde, LocalDate hasta, int limite);
 
+    /**
+     * Dinero cobrado en el rango (inclusive). Mide lo mismo que
+     * {@link #resumenJornada(LocalDate)}: las ventas COMPLETADA del periodo.
+     */
     BigDecimal ingresos(LocalDate desde, LocalDate hasta);
 
     List<Venta> ventas(LocalDate desde, LocalDate hasta);

@@ -291,6 +291,23 @@ class NegocioTest {
     }
 
     /**
+     * El dinero del día se mide una sola vez: Reportes y Dashboard deben dar
+     * el mismo total para el mismo periodo (fuente única: ventas COMPLETADA).
+     */
+    @Test
+    void ingresosYResumenDeJornadaCoinciden() {
+        registrar(item(producto("P-001"), 2), null, MetodoPago.EFECTIVO, new BigDecimal("100"));
+        registrar(item(producto("P-003"), 1), null, MetodoPago.TARJETA, null);
+
+        var resumen = Servicios.reportes().resumenJornada(LocalDate.now());
+        BigDecimal ingresos = Servicios.reportes().ingresos(LocalDate.now(), LocalDate.now());
+
+        assertEquals(0, ingresos.compareTo(resumen.totalVentas()));
+        assertEquals(0, ingresos.compareTo(new BigDecimal("226.08")));
+        assertEquals(2, resumen.numeroVentas());
+    }
+
+    /**
      * A9: los pagos tienen FK a ventas; registrar un pago de una venta
      * inexistente debe fallar en la base de datos.
      */
