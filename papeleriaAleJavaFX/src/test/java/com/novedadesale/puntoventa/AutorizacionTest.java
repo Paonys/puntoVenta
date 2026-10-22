@@ -58,7 +58,7 @@ class AutorizacionTest {
 
         assertThrows(ServiceException.class, () -> Servicios.productos().guardar(
                 new com.novedadesale.puntoventa.models.Producto(0, "X-901", "Producto nuevo",
-                        1, null, new BigDecimal("25.00"), 10, 2)));
+                        1, null, null, null, new BigDecimal("25.00"), 10, 2, null)));
     }
 
     @Test
@@ -122,7 +122,7 @@ class AutorizacionTest {
         entrarComoAdmin();
 
         var producto = Servicios.productos().guardar(new com.novedadesale.puntoventa.models.Producto(
-                0, "X-902", "Producto admin", 1, null, new BigDecimal("30.00"), 5, 1));
+                0, "X-902", "Producto admin", 1, null, null, null, new BigDecimal("30.00"), 5, 1, null));
         assertTrue(Servicios.productos().porCodigo("X-902").isPresent());
 
         Venta venta = registrarVentaComoAdmin();

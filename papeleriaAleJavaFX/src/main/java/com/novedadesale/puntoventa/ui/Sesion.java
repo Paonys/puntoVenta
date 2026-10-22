@@ -2,6 +2,7 @@ package com.novedadesale.puntoventa.ui;
 
 import com.novedadesale.puntoventa.models.Rol;
 import com.novedadesale.puntoventa.models.Usuario;
+import com.novedadesale.puntoventa.persistence.BaseDatos;
 
 /** Sesión del usuario que inició sesión (estado en memoria de la UI). */
 public final class Sesion {
@@ -17,10 +18,20 @@ public final class Sesion {
 
     public static void iniciar(Usuario u) {
         usuario = u;
+        registrarAuditoria(u == null ? "Sistema" : u.nombre());
     }
 
     public static void cerrar() {
         usuario = null;
+        registrarAuditoria("Sistema");
+    }
+
+    private static void registrarAuditoria(String nombre) {
+        try {
+            BaseDatos.registrarUsuarioAuditoria(nombre);
+        } catch (RuntimeException ignored) {
+            // La auditoría no debe impedir iniciar o cerrar sesión.
+        }
     }
 
     public static boolean activa() {

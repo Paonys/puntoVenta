@@ -9,6 +9,7 @@ import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.persistence.BaseDatos;
 import com.novedadesale.puntoventa.services.Servicios;
 import com.novedadesale.puntoventa.shared.CalculadoraTotales;
+import com.novedadesale.puntoventa.ui.Sesion;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Pruebas de humo de la capa de persistencia + servicios (SQLite temporal). */
@@ -45,6 +47,70 @@ class PersistenciaTest {
         assertTrue(Servicios.productos().listar().size() >= 8);
         assertTrue(Servicios.categorias().listar().size() >= 4);
         assertTrue(Servicios.productos().porCodigo("P-001").isPresent());
+    }
+
+    @Test
+    void productosSembradosQuedanAsociadosAProveedor() {
+        Producto producto = Servicios.productos().porCodigo("P-001").orElseThrow();
+
+        assertTrue(producto.proveedorId() != null && producto.proveedorId() > 0);
+        assertFalse(producto.proveedor().isBlank());
+    }
+
+    @Test
+    void guardarProductoConProveedorEImagenLosPersisteYActualiza() {
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        try {
+            var proveedor = Servicios.proveedores().listar().get(0);
+            String imagen = "C:/referencias/cuaderno.png";
+
+            Producto creado = Servicios.productos().guardar(new Producto(
+                    0, "X-903", "Producto con proveedor", 1, null,
+                    proveedor.id(), null, new BigDecimal("15.00"), 3, 1, imagen));
+
+            Producto leido = Servicios.productos().porId(creado.id()).orElseThrow();
+            assertEquals(proveedor.id(), leido.proveedorId());
+            assertEquals(proveedor.nombre(), leido.proveedor());
+            assertEquals(imagen, leido.imagen());
+
+            Servicios.productos().guardar(new Producto(
+                    leido.id(), leido.codigo(), leido.nombre(), leido.categoriaId(), leido.categoria(),
+                    null, null, leido.precio(), leido.stock(), leido.stockMinimo(), null));
+
+            Producto limpiado = Servicios.productos().porId(leido.id()).orElseThrow();
+            assertNull(limpiado.proveedorId());
+            assertNull(limpiado.imagen());
+        } finally {
+            Sesion.cerrar();
+        }
+    }
+
+    @Test
+    void guardarProductoRegistraHistorialConUsuarioYFecha() {
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        try {
+            Producto creado = Servicios.productos().guardar(new Producto(
+                    0, "X-904", "Producto con historial", 1, null,
+                    null, null, new BigDecimal("10.00"), 5, 2, null));
+
+            var historial = Servicios.productos().historial(creado.id());
+            assertEquals(1, historial.size());
+            assertEquals("CREADO", historial.get(0).accion());
+            assertEquals("Administrador", historial.get(0).usuario());
+            assertFalse(historial.get(0).fecha().isBlank());
+
+            Servicios.productos().guardar(new Producto(
+                    creado.id(), "X-904", "Producto editado", 1, null,
+                    null, null, new BigDecimal("12.00"), 5, 2, null));
+
+            var actualizado = Servicios.productos().historial(creado.id());
+            assertEquals(2, actualizado.size());
+            assertEquals("ACTUALIZADO", actualizado.get(0).accion());
+            assertTrue(actualizado.get(0).detalle().contains("Nombre"));
+            assertTrue(actualizado.get(0).detalle().contains("Precio"));
+        } finally {
+            Sesion.cerrar();
+        }
     }
 
     @Test

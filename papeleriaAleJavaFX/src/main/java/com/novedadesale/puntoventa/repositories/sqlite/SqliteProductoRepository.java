@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,19 +18,26 @@ public class SqliteProductoRepository implements ProductoRepository {
 
     private static final String SELECT_BASE =
             "SELECT p.id, p.codigo, p.nombre, p.categoria_id, " +
-            "COALESCE(c.nombre, '') AS categoria, p.precio, p.stock, p.stock_minimo " +
-            "FROM productos p LEFT JOIN categorias c ON c.id = p.categoria_id ";
+            "COALESCE(c.nombre, '') AS categoria, p.proveedor_id, " +
+            "COALESCE(pr.nombre, '') AS proveedor, p.precio, p.stock, p.stock_minimo, p.imagen " +
+            "FROM productos p LEFT JOIN categorias c ON c.id = p.categoria_id " +
+            "LEFT JOIN proveedores pr ON pr.id = p.proveedor_id ";
 
     private Producto mapear(ResultSet rs) throws SQLException {
+        int proveedorId = rs.getInt("proveedor_id");
+        Integer proveedorIdNulo = rs.wasNull() ? null : proveedorId;
         return new Producto(
                 rs.getInt("id"),
                 rs.getString("codigo"),
                 rs.getString("nombre"),
                 rs.getInt("categoria_id"),
                 rs.getString("categoria"),
+                proveedorIdNulo,
+                rs.getString("proveedor"),
                 SqlUtil.bd(rs.getString("precio")),
                 rs.getInt("stock"),
-                rs.getInt("stock_minimo"));
+                rs.getInt("stock_minimo"),
+                rs.getString("imagen"));
     }
 
     @Override
@@ -108,33 +116,45 @@ public class SqliteProductoRepository implements ProductoRepository {
     public Producto guardar(Producto producto) {
         try {
             if (producto.id() <= 0) {
-                String sql = "INSERT INTO productos (codigo, nombre, categoria_id, precio, stock, stock_minimo) VALUES (?,?,?,?,?,?)";
+                String sql = "INSERT INTO productos (codigo, nombre, categoria_id, proveedor_id, imagen, precio, stock, stock_minimo) VALUES (?,?,?,?,?,?,?,?)";
                 try (PreparedStatement ps = BaseDatos.conexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                     ps.setString(1, producto.codigo());
                     ps.setString(2, producto.nombre());
                     ps.setInt(3, producto.categoriaId());
-                    ps.setString(4, SqlUtil.txt(producto.precio()));
-                    ps.setInt(5, producto.stock());
-                    ps.setInt(6, producto.stockMinimo());
+                    enlazarProveedor(ps, 4, producto.proveedorId());
+                    ps.setString(5, producto.imagen());
+                    ps.setString(6, SqlUtil.txt(producto.precio()));
+                    ps.setInt(7, producto.stock());
+                    ps.setInt(8, producto.stockMinimo());
                     ps.executeUpdate();
                     int id = SqlUtil.claveGenerada(ps);
                     return porId(id).orElse(producto);
                 }
             }
-            String sql = "UPDATE productos SET codigo = ?, nombre = ?, categoria_id = ?, precio = ?, stock = ?, stock_minimo = ? WHERE id = ?";
+            String sql = "UPDATE productos SET codigo = ?, nombre = ?, categoria_id = ?, proveedor_id = ?, imagen = ?, precio = ?, stock = ?, stock_minimo = ? WHERE id = ?";
             try (PreparedStatement ps = BaseDatos.conexion().prepareStatement(sql)) {
                 ps.setString(1, producto.codigo());
                 ps.setString(2, producto.nombre());
                 ps.setInt(3, producto.categoriaId());
-                ps.setString(4, SqlUtil.txt(producto.precio()));
-                ps.setInt(5, producto.stock());
-                ps.setInt(6, producto.stockMinimo());
-                ps.setInt(7, producto.id());
+                enlazarProveedor(ps, 4, producto.proveedorId());
+                ps.setString(5, producto.imagen());
+                ps.setString(6, SqlUtil.txt(producto.precio()));
+                ps.setInt(7, producto.stock());
+                ps.setInt(8, producto.stockMinimo());
+                ps.setInt(9, producto.id());
                 ps.executeUpdate();
                 return porId(producto.id()).orElse(producto);
             }
         } catch (SQLException e) {
             throw new ServiceException("Error al guardar producto (¿código duplicado?): " + e.getMessage(), e);
+        }
+    }
+
+    private void enlazarProveedor(PreparedStatement ps, int indice, Integer proveedorId) throws SQLException {
+        if (proveedorId == null) {
+            ps.setNull(indice, Types.INTEGER);
+        } else {
+            ps.setInt(indice, proveedorId);
         }
     }
 

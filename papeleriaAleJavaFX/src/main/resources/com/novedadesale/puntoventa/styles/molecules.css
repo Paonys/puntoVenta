@@ -26,6 +26,15 @@
     -fx-max-height: 120px;
 }
 
+.detail-image {
+    -fx-background-color: ${ui.color.surface-variant};
+    -fx-background-radius: ${ui.radius.lg};
+    -fx-min-width: 240px;
+    -fx-max-width: 240px;
+    -fx-min-height: 240px;
+    -fx-max-height: 240px;
+}
+
 .product-name {
     -fx-text-fill: ${ui.color.text-primary};
     -fx-font-weight: 600;

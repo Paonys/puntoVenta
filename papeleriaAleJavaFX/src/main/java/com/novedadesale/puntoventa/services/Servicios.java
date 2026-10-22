@@ -2,6 +2,7 @@ package com.novedadesale.puntoventa.services;
 
 import com.novedadesale.puntoventa.repositories.CategoriaRepository;
 import com.novedadesale.puntoventa.repositories.ClienteRepository;
+import com.novedadesale.puntoventa.repositories.HistorialProductoRepository;
 import com.novedadesale.puntoventa.repositories.PagoRepository;
 import com.novedadesale.puntoventa.repositories.ProductoRepository;
 import com.novedadesale.puntoventa.repositories.PromocionRepository;
@@ -10,6 +11,7 @@ import com.novedadesale.puntoventa.repositories.UsuarioRepository;
 import com.novedadesale.puntoventa.repositories.VentaRepository;
 import com.novedadesale.puntoventa.repositories.sqlite.SqliteCategoriaRepository;
 import com.novedadesale.puntoventa.repositories.sqlite.SqliteClienteRepository;
+import com.novedadesale.puntoventa.repositories.sqlite.SqliteHistorialProductoRepository;
 import com.novedadesale.puntoventa.repositories.sqlite.SqlitePagoRepository;
 import com.novedadesale.puntoventa.repositories.sqlite.SqliteProductoRepository;
 import com.novedadesale.puntoventa.repositories.sqlite.SqlitePromocionRepository;
@@ -38,6 +40,7 @@ public final class Servicios {
 
     private static final CategoriaRepository CATEGORIA_REPO = new SqliteCategoriaRepository();
     private static final ProductoRepository PRODUCTO_REPO = new SqliteProductoRepository();
+    private static final HistorialProductoRepository HISTORIAL_PRODUCTO_REPO = new SqliteHistorialProductoRepository();
     private static final ClienteRepository CLIENTE_REPO = new SqliteClienteRepository();
     private static final ProveedorRepository PROVEEDOR_REPO = new SqliteProveedorRepository();
     private static final UsuarioRepository USUARIO_REPO = new SqliteUsuarioRepository();
@@ -46,7 +49,7 @@ public final class Servicios {
     private static final PagoRepository PAGO_REPO = new SqlitePagoRepository();
 
     private static final CategoriaService CATEGORIAS = new CategoriaServiceImpl(CATEGORIA_REPO);
-    private static final ProductoService PRODUCTOS = new ProductoServiceImpl(PRODUCTO_REPO);
+    private static final ProductoService PRODUCTOS = new ProductoServiceImpl(PRODUCTO_REPO, HISTORIAL_PRODUCTO_REPO);
     private static final UsuarioService USUARIOS = new UsuarioServiceImpl(USUARIO_REPO);
     private static final ClienteService CLIENTES = new ClienteServiceImpl(CLIENTE_REPO);
     private static final ProveedorService PROVEEDORES = new ProveedorServiceImpl(PROVEEDOR_REPO);

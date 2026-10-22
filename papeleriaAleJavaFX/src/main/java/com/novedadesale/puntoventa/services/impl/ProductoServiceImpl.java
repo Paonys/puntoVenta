@@ -2,7 +2,9 @@ package com.novedadesale.puntoventa.services.impl;
 
 import com.novedadesale.puntoventa.exceptions.ServiceException;
 import com.novedadesale.puntoventa.exceptions.ValidacionException;
+import com.novedadesale.puntoventa.models.HistorialProducto;
 import com.novedadesale.puntoventa.models.Producto;
+import com.novedadesale.puntoventa.repositories.HistorialProductoRepository;
 import com.novedadesale.puntoventa.repositories.ProductoRepository;
 import com.novedadesale.puntoventa.services.ProductoService;
 import com.novedadesale.puntoventa.shared.Validadores;
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository repo;
+    private final HistorialProductoRepository historialRepo;
 
-    public ProductoServiceImpl(ProductoRepository repo) {
+    public ProductoServiceImpl(ProductoRepository repo, HistorialProductoRepository historialRepo) {
         this.repo = repo;
+        this.historialRepo = historialRepo;
     }
 
     @Override
@@ -41,6 +45,12 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public List<Producto> stockBajo() {
         return repo.stockBajo();
+    }
+
+    @Override
+    public List<HistorialProducto> historial(int productoId) {
+        Autorizacion.exigirAdmin("ver el historial de productos");
+        return historialRepo.porProducto(productoId);
     }
 
     @Override

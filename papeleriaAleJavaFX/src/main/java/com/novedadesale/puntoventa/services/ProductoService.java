@@ -1,5 +1,6 @@
 package com.novedadesale.puntoventa.services;
 
+import com.novedadesale.puntoventa.models.HistorialProducto;
 import com.novedadesale.puntoventa.models.Producto;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public interface ProductoService {
     List<Producto> buscar(String texto);
 
     List<Producto> stockBajo();
+
+    /** Cambios registrados para un producto, del más reciente al más antiguo. */
+    List<HistorialProducto> historial(int productoId);
 
     /** Crea (id == 0) o actualiza un producto. */
     Producto guardar(Producto producto);

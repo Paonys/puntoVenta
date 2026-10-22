@@ -12,9 +12,12 @@ public record Producto(
         String nombre,
         int categoriaId,
         String categoria,
+        Integer proveedorId,
+        String proveedor,
         BigDecimal precio,
         int stock,
-        int stockMinimo) {
+        int stockMinimo,
+        String imagen) {
 
     public boolean agotado() {
         return stock <= 0;
@@ -25,6 +28,6 @@ public record Producto(
     }
 
     public Producto conStock(int nuevoStock) {
-        return new Producto(id, codigo, nombre, categoriaId, categoria, precio, nuevoStock, stockMinimo);
+        return new Producto(id, codigo, nombre, categoriaId, categoria, proveedorId, proveedor, precio, nuevoStock, stockMinimo, imagen);
     }
 }

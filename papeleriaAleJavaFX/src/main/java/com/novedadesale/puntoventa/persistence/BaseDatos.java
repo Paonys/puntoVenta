@@ -4,6 +4,7 @@ import com.novedadesale.puntoventa.exceptions.ServiceException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -61,6 +62,33 @@ public final class BaseDatos {
             }
         }
         migrarPagosSiFaltaForeignKeys(c);
+        migrarProductosSiFaltanColumnas(c);
+    }
+
+    /**
+     * Bases creadas antes de asociar proveedores o guardar imágenes no tienen
+     * esas columnas. SQLite no permite agregar una FK con {@code ALTER TABLE},
+     * pero la columna basta para la asociación; las bases nuevas sí llevan la
+     * FK declarada en el DDL.
+     */
+    private static void migrarProductosSiFaltanColumnas(Connection c) throws SQLException {
+        agregarColumnaSiFalta(c, "productos", "proveedor_id", "INTEGER");
+        agregarColumnaSiFalta(c, "productos", "imagen", "TEXT");
+    }
+
+    private static void agregarColumnaSiFalta(Connection c, String tabla,
+                                              String columna, String tipo) throws SQLException {
+        try (Statement st = c.createStatement();
+             ResultSet rs = st.executeQuery("PRAGMA table_info(" + tabla + ")")) {
+            while (rs.next()) {
+                if (columna.equalsIgnoreCase(rs.getString("name"))) {
+                    return;
+                }
+            }
+        }
+        try (Statement st = c.createStatement()) {
+            st.execute("ALTER TABLE " + tabla + " ADD COLUMN " + columna + " " + tipo);
+        }
     }
 
     /**
@@ -99,6 +127,21 @@ public final class BaseDatos {
                 e.addSuppressed(ignorada);
             }
             throw e;
+        }
+    }
+
+    /**
+     * Fija el usuario que registran los triggers de auditoría. Los cambios hechos
+     * sin sesión quedan a nombre de "Sistema".
+     */
+    public static synchronized void registrarUsuarioAuditoria(String nombre) {
+        try (PreparedStatement ps = conexion().prepareStatement(
+                "INSERT INTO auditoria_contexto (id, usuario) VALUES (1, ?) "
+                + "ON CONFLICT(id) DO UPDATE SET usuario = excluded.usuario")) {
+            ps.setString(1, nombre);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new ServiceException("No se pudo registrar el usuario de auditoría", e);
         }
     }
 
