@@ -1,8 +1,8 @@
 # Guía de testeo visual — Punto de Venta "Novedades Ale"
 
-**Fecha:** 2026-10-16
+**Fecha:** 2026-10-16 (build actualizado: 2026-10-22)
 **Objetivo:** recorrido manual por la aplicación para verificar el avance real de la funcionalidad.
-**Build verificado:** `mvn -B test` → **BUILD SUCCESS · 27/27 pruebas OK**.
+**Build verificado:** `mvn -B test` → **BUILD SUCCESS · 43/43 pruebas OK**.
 
 ---
 
@@ -31,8 +31,12 @@ Se abre la ventana **"Punto de Venta - Papelería Novedades Ale"**. La base SQLi
 2. **Inicio / Dashboard**
    - Verificar métricas del día, más vendidos y ventas recientes (datos desde `ReporteService`).
 3. **Productos**
-   - Crear, editar y buscar productos.
-   - Cerrar sesión y entrar con `caja1`: el botón *Eliminar* debe desaparecer (gating por rol, B9).
+   - Crear, editar y buscar productos; asociar **proveedor** e **imagen** de referencia.
+   - Hacer clic en un producto: se abre el **detalle en la misma página** (campos bloqueados).
+   - Con `admin`: **Editar** → cambiar campos/imagen → **Guardar**; revisar la tabla
+     **Historial de cambios** al final (quién cambió qué y cuándo).
+   - Cerrar sesión y entrar con `caja1`: puede **consultar** el detalle pero no editar, eliminar
+     ni ver el historial (gating por rol, B9 + `Autorizacion.exigirAdmin`).
 4. **Ventas (Punto de Venta)**
    - Agregar productos al carrito, ajustar cantidades.
    - *Cobrar*: elegir **cliente** y aplicar su **descuento** (B10); el descuento de promociones lo

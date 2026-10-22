@@ -1,9 +1,9 @@
 # Reporte de Estado y Pendientes — Punto de Venta "Novedades Ale"
 
-**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-20
+**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-22
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B clean test` → **BUILD SUCCESS** · **40/40 tests OK**
+**Build:** `mvn -B test` → **BUILD SUCCESS** · **43/43 tests OK**
 
 ---
 
@@ -19,10 +19,16 @@ aplicación con **cada sección cargando su propia página** conectada a datos r
 > **Alcance pendiente (Fase 2).** Ya están cerradas: transacciones/folio/promociones en la venta
 > (A7), *gating* por rol en la UI (B9), cliente + descuento y **cancelar venta** en el POS (B10),
 > **exportar CSV / imprimir** reportes (B11), **autorización por rol en los servicios** con
-> invariante de último `ADMIN` (A8) y **FK `pago`→`venta` + fuente única de ingresos** (A9, con
-> migración automática de bases existentes). Queda: **parámetros de negocio** en Configuración
+> invariante de último `ADMIN` (A8), **FK `pago`→`venta` + fuente única de ingresos** (A9, con
+> migración automática de bases existentes) y **detalle de productos con historial de cambios**
+> (auditoría por triggers). Queda: **parámetros de negocio** en Configuración
 > (B12), **PDF** de reportes, **empaquetado y pruebas de UI** (A10/B13). Detalle en
 > `docs/plan_trabajo_2_agentes.md` (sección **4.bis**). **Falta decidir si la Fase 2 entra en la entrega.**
+>
+> **Seguridad RBAC (fases 1 y 2):** hay un análisis y un plan aprobados en
+> `docs/analisis_seguridad_rbac_y_plan_2026-10-22.md` y `docs/plan_trabajo_seguridad_fases_1_2.md`.
+> Cubre el endurecimiento de credenciales (cambio obligatorio, bloqueo por intentos, cierre por
+> inactividad) y cerrar huecos de autorización que A8 dejó abiertos. **Aún no se ha modificado código.**
 
 ---
 
@@ -130,7 +136,7 @@ conserva íntegra:
 | **Ventas / Cobro rápido** | ✅ Carrito, total y cambio · ✅ cliente + descuento · ✅ cancelar venta (ADMIN) |
 | **Pagos** | ✅ Diálogo de pago con métodos |
 | **Ticket / Comprobante** | ✅ Generación + impresión · ✅ rediseño de confirmación de cobro/ticket |
-| **Productos** | ✅ CRUD real + búsqueda |
+| **Productos** | ✅ CRUD real + búsqueda · ✅ detalle en página con **historial de cambios** (ADMIN) y asociación a proveedor + imagen |
 | **Inventario** | ✅ Stock, alertas y ajustes |
 | **Clientes** | ✅ CRUD + descuentos |
 | **Proveedores** | ✅ CRUD |
@@ -178,7 +184,7 @@ Ejecutar lo que queda de la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (secc
    bajo) sacándolos de `shared/AppConstants`; **requiere acuerdo con A** por ser contrato congelado.
 2. **Reportes (B, baja):** **PDF**, que requiere una dependencia nueva en `pom.xml` (propiedad de A).
 3. **Empaquetado y pruebas (A/B):** **A10/B13** — `jpackage`/`jlink` y pruebas de UI/FXML (hoy
-   4 clases de test de lógica: **39/39**, incluye `AutorizacionTest`).
+   4 clases de test de lógica: `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`; **43/43**).
 4. **Decisión de alcance:** confirmar si todo lo anterior entra en la entrega.
 
 ---
