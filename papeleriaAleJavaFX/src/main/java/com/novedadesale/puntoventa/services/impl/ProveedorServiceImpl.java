@@ -18,16 +18,19 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     @Override
     public List<Proveedor> listar() {
+        Autorizacion.exigirSesion("listar proveedores");
         return repo.listar();
     }
 
     @Override
     public Optional<Proveedor> porId(int id) {
+        Autorizacion.exigirSesion("consultar proveedores");
         return repo.porId(id);
     }
 
     @Override
     public List<Proveedor> buscar(String texto) {
+        Autorizacion.exigirSesion("buscar proveedores");
         return repo.buscar(texto);
     }
 

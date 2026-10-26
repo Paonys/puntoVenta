@@ -26,11 +26,13 @@ public class PromocionServiceImpl implements PromocionService {
 
     @Override
     public List<Promocion> listar() {
+        Autorizacion.exigirSesion("listar promociones");
         return repo.listar();
     }
 
     @Override
     public List<Promocion> activas(LocalDate fecha) {
+        Autorizacion.exigirSesion("consultar promociones");
         return repo.activas(fecha);
     }
 
@@ -49,6 +51,7 @@ public class PromocionServiceImpl implements PromocionService {
 
     @Override
     public BigDecimal calcularDescuento(List<ItemVenta> items, LocalDate fecha) {
+        Autorizacion.exigirSesion("calcular descuentos");
         if (items == null || items.isEmpty()) {
             return BigDecimal.ZERO;
         }

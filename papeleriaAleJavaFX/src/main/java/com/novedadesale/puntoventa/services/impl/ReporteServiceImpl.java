@@ -26,6 +26,7 @@ public class ReporteServiceImpl implements ReporteService {
     }
 
     private List<Venta> completadasEntre(LocalDate desde, LocalDate hasta) {
+        Autorizacion.exigirSesion("consultar reportes");
         return ventaRepo.entre(desde, hasta).stream()
                 .filter(v -> v.estado() == EstadoVenta.COMPLETADA)
                 .toList();

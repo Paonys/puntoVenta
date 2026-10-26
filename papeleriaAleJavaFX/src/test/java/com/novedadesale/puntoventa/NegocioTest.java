@@ -147,7 +147,7 @@ class NegocioTest {
     void ventaSinProductosFalla() {
         assertThrows(ValidacionException.class, () -> {
             SolicitudVenta solicitud = new SolicitudVenta(List.of(), null, null,
-                    BigDecimal.ZERO, MetodoPago.EFECTIVO, null, 1, "Cajero");
+                    BigDecimal.ZERO, MetodoPago.EFECTIVO, null);
             Servicios.ventas().registrar(solicitud);
         });
     }
@@ -221,6 +221,8 @@ class NegocioTest {
     /** El descuento del cliente se suma a la promoción (10% + 5% = 15%). */
     @Test
     void ventaSumaDescuentoDeClienteAlaPromocion() {
+        // Con la nueva política, el descuento adicional solo lo puede aplicar
+        // un ADMIN. Aquí la sesión ya es admin (preparar()).
         Venta venta = registrar(item(producto("P-001"), 2), new BigDecimal("5"), MetodoPago.EFECTIVO, new BigDecimal("100"));
 
         assertEquals(0, venta.subtotal().compareTo(new BigDecimal("51.00")));
@@ -236,7 +238,7 @@ class NegocioTest {
         assertThrows(ValidacionException.class, () -> {
             SolicitudVenta solicitud = new SolicitudVenta(
                     List.of(item(producto("P-002"), 1), item(producto("P-004"), 1)),
-                    null, null, null, MetodoPago.EFECTIVO, new BigDecimal("500"), 1, "Administrador");
+                    null, null, null, MetodoPago.EFECTIVO, new BigDecimal("500"));
             Servicios.ventas().registrar(solicitud);
         });
 
@@ -332,6 +334,6 @@ class NegocioTest {
 
     private Venta registrar(ItemVenta item, BigDecimal descuentoPct, MetodoPago metodo, BigDecimal recibido) {
         return Servicios.ventas().registrar(new SolicitudVenta(
-                List.of(item), null, null, descuentoPct, metodo, recibido, 1, "Administrador"));
+                List.of(item), null, null, descuentoPct, metodo, recibido));
     }
 }

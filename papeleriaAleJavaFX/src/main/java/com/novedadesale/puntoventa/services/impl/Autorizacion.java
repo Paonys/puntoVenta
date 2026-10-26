@@ -20,8 +20,16 @@ final class Autorizacion {
     private Autorizacion() {
     }
 
+    /** Exige una sesión activa, de cualquier rol. */
+    static void exigirSesion(String accion) {
+        if (!Sesion.activa()) {
+            throw new ServiceException("Requiere sesión activa: " + accion);
+        }
+    }
+
     /** Exige una sesión activa con rol {@code ADMIN}. */
     static void exigirAdmin(String accion) {
+        exigirSesion(accion);
         if (!Sesion.esAdmin()) {
             throw new ServiceException("Requiere sesión de administrador: " + accion);
         }

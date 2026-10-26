@@ -18,16 +18,19 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public List<Cliente> listar() {
+        Autorizacion.exigirSesion("listar clientes");
         return repo.listar();
     }
 
     @Override
     public Optional<Cliente> porId(int id) {
+        Autorizacion.exigirSesion("consultar clientes");
         return repo.porId(id);
     }
 
     @Override
     public List<Cliente> buscar(String texto) {
+        Autorizacion.exigirSesion("buscar clientes");
         return repo.buscar(texto);
     }
 

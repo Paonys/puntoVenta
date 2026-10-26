@@ -32,11 +32,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public List<Usuario> listar() {
+        Autorizacion.exigirSesion("listar usuarios");
         return repo.listar();
     }
 
     @Override
     public Optional<Usuario> porId(int id) {
+        Autorizacion.exigirSesion("consultar usuarios");
         return repo.porId(id);
     }
 

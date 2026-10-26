@@ -1,9 +1,9 @@
-# Reporte de Estado y Pendientes — Punto de Venta "Novedades Ale"
+﻿# Reporte de Estado y Pendientes — Punto de Venta "Novedades Ale"
 
-**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-22
+**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-23
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B test` → **BUILD SUCCESS** · **43/43 tests OK**
+**Build:** `mvn -B test` → **BUILD SUCCESS** · **49/49 tests OK**
 
 ---
 
@@ -190,3 +190,4 @@ Ejecutar lo que queda de la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (secc
 ---
 
 *Reporte actualizado a partir del análisis del código actual (backend + frontend completos).*
+

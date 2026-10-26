@@ -11,6 +11,7 @@ import com.novedadesale.puntoventa.models.SolicitudVenta;
 import com.novedadesale.puntoventa.models.Totales;
 import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.persistence.BaseDatos;
+import com.novedadesale.puntoventa.repositories.ClienteRepository;
 import com.novedadesale.puntoventa.repositories.PagoRepository;
 import com.novedadesale.puntoventa.repositories.ProductoRepository;
 import com.novedadesale.puntoventa.repositories.VentaRepository;
@@ -18,6 +19,7 @@ import com.novedadesale.puntoventa.services.PromocionService;
 import com.novedadesale.puntoventa.services.VentaService;
 import com.novedadesale.puntoventa.shared.CalculadoraTotales;
 import com.novedadesale.puntoventa.shared.Validadores;
+import com.novedadesale.puntoventa.ui.Sesion;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,21 +36,41 @@ public class VentaServiceImpl implements VentaService {
     private final ProductoRepository productoRepo;
     private final PagoRepository pagoRepo;
     private final PromocionService promociones;
+    private final ClienteRepository clienteRepo;
 
     public VentaServiceImpl(VentaRepository ventaRepo, ProductoRepository productoRepo,
-                            PagoRepository pagoRepo, PromocionService promociones) {
+                            PagoRepository pagoRepo, PromocionService promociones,
+                            ClienteRepository clienteRepo) {
         this.ventaRepo = ventaRepo;
         this.productoRepo = productoRepo;
         this.pagoRepo = pagoRepo;
         this.promociones = promociones;
+        this.clienteRepo = clienteRepo;
     }
 
     @Override
     public Venta registrar(SolicitudVenta solicitud) {
+        Autorizacion.exigirSesion("registrar ventas");
         if (solicitud == null || solicitud.items() == null || solicitud.items().isEmpty()) {
             throw new ValidacionException("La venta debe tener al menos un producto");
         }
         Validadores.rangoPorcentaje(solicitud.descuentoPorcentaje(), "Descuento");
+
+        // El descuento manual adicional es exclusivo del administrador; el
+        // descuento configurado del cliente lo resuelve el servicio.
+        BigDecimal manualPct = solicitud.descuentoPorcentaje() == null
+                ? BigDecimal.ZERO
+                : solicitud.descuentoPorcentaje();
+        if (manualPct.signum() > 0) {
+            Autorizacion.exigirAdmin("aplicar descuento manual");
+        }
+        BigDecimal clientePct = BigDecimal.ZERO;
+        if (solicitud.clienteId() != null) {
+            clientePct = clienteRepo.porId(solicitud.clienteId())
+                    .map(c -> c.descuento() == null ? BigDecimal.ZERO : c.descuento())
+                    .orElseThrow(() -> new ServiceException(
+                            "Cliente no encontrado: " + solicitud.clienteId()));
+        }
 
         // 1) Agrupa cantidades y relee precios/nombres del catálogo: nunca se
         //    confía en el precio que traiga la solicitud.
@@ -74,21 +96,20 @@ public class VentaServiceImpl implements VentaService {
         }
 
         // 2) Regla de negocio de descuentos: las promociones las resuelve el
-        //    servicio (no la UI) y se suman al descuento adicional del cliente,
+        //    servicio (no la UI); se suman al descuento del cliente y al manual,
         //    con tope del 100%.
         BigDecimal promoPct = promociones.calcularDescuento(items, LocalDate.now());
-        BigDecimal clientePct = solicitud.descuentoPorcentaje() == null
-                ? BigDecimal.ZERO
-                : solicitud.descuentoPorcentaje();
-        BigDecimal descuentoPct = promoPct.add(clientePct).min(BigDecimal.valueOf(100));
+        BigDecimal descuentoPct = promoPct.add(clientePct).add(manualPct)
+                .min(BigDecimal.valueOf(100));
 
         Totales totales = CalculadoraTotales.calcular(items, descuentoPct);
         MetodoPago metodo = solicitud.metodoPago() == null ? MetodoPago.EFECTIVO : solicitud.metodoPago();
         BigDecimal recibido = solicitud.montoRecibido() == null ? totales.total() : solicitud.montoRecibido();
         BigDecimal cambio = recibido.subtract(totales.total());
 
+        // La identidad sale de la sesión, nunca de la solicitud.
         Venta venta = new Venta(0, siguienteFolio(), LocalDateTime.now(),
-                solicitud.usuarioId(), solicitud.usuarioNombre(),
+                Sesion.id(), Sesion.nombre(),
                 solicitud.clienteId(), solicitud.clienteNombre(),
                 List.copyOf(items),
                 totales.subtotal(), totales.descuento(), totales.iva(), totales.total(),
@@ -108,26 +129,31 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     public List<Venta> listar() {
+        Autorizacion.exigirSesion("listar ventas");
         return ventaRepo.listar();
     }
 
     @Override
     public Optional<Venta> porId(int id) {
+        Autorizacion.exigirSesion("consultar ventas");
         return ventaRepo.porId(id);
     }
 
     @Override
     public Optional<Venta> porFolio(String folio) {
+        Autorizacion.exigirSesion("consultar ventas");
         return ventaRepo.porFolio(folio);
     }
 
     @Override
     public List<Venta> porFecha(LocalDate fecha) {
+        Autorizacion.exigirSesion("consultar ventas");
         return ventaRepo.porFecha(fecha);
     }
 
     @Override
     public String siguienteFolio() {
+        Autorizacion.exigirSesion("consultar folios");
         return String.format("V-%05d", ventaRepo.proximoNumero());
     }
 

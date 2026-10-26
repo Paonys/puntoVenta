@@ -34,10 +34,13 @@ class PersistenciaTest {
         db = Files.createTempFile("novedadesale-test-", ".db");
         Files.deleteIfExists(db);
         BaseDatos.usarRuta(db.toString());
+        // La fase 1 exige sesión en todos los servicios salvo autenticar.
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
     }
 
     @AfterAll
     static void limpiar() throws Exception {
+        Sesion.cerrar();
         BaseDatos.cerrar();
         Files.deleteIfExists(db);
     }
@@ -51,6 +54,9 @@ class PersistenciaTest {
 
     @Test
     void productosSembradosQuedanAsociadosAProveedor() {
+        if (!Sesion.activa()) {
+            Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        }
         Producto producto = Servicios.productos().porCodigo("P-001").orElseThrow();
 
         assertTrue(producto.proveedorId() != null && producto.proveedorId() > 0);
@@ -133,6 +139,9 @@ class PersistenciaTest {
 
     @Test
     void registrarVentaDescuentaStockYCalculaCambio() {
+        if (!Sesion.activa()) {
+            Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        }
         Producto antes = Servicios.productos().porCodigo("P-001").orElseThrow();
         int stockAntes = antes.stock();
 
@@ -140,7 +149,7 @@ class PersistenciaTest {
         // aplica por sí mismo; la solicitud no lleva descuento de cliente.
         SolicitudVenta solicitud = new SolicitudVenta(
                 List.of(new ItemVenta(antes.id(), antes.codigo(), antes.nombre(), antes.precio(), 2)),
-                null, null, BigDecimal.ZERO, MetodoPago.EFECTIVO, new BigDecimal("100"), 1, "Administrador");
+                null, null, BigDecimal.ZERO, MetodoPago.EFECTIVO, new BigDecimal("100"));
 
         Venta venta = Servicios.ventas().registrar(solicitud);
 

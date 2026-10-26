@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -106,11 +108,84 @@ class AutorizacionTest {
 
         Venta venta = Servicios.ventas().registrar(new SolicitudVenta(
                 List.of(item("P-001", 1)), null, null, null,
-                MetodoPago.EFECTIVO, new BigDecimal("100.00"), Sesion.id(), Sesion.nombre()));
+                MetodoPago.EFECTIVO, new BigDecimal("100.00")));
 
         assertEquals(EstadoVenta.COMPLETADA, venta.estado());
         assertFalse(Servicios.productos().listar().isEmpty());
-        assertFalse(Servicios.reportes().ventas(java.time.LocalDate.now(), java.time.LocalDate.now()).isEmpty());
+        assertFalse(Servicios.reportes().ventas(LocalDate.now(), LocalDate.now()).isEmpty());
+    }
+
+    // ------------------------------------------------------------------
+    // Sesión obligatoria, identidad de venta y descuentos
+    // ------------------------------------------------------------------
+
+    @Test
+    void sinSesionSeRechazanLecturasYVentas() {
+        assertThrows(ServiceException.class, () -> Servicios.productos().listar());
+        assertThrows(ServiceException.class, () -> Servicios.clientes().listar());
+        assertThrows(ServiceException.class, () -> Servicios.reportes().resumenJornada(LocalDate.now()));
+
+        // Item construido a mano: consultar el catálogo también exige sesión.
+        ItemVenta item = new ItemVenta(1, "P-001", "Cuaderno", new BigDecimal("25.50"), 1);
+        assertThrows(ServiceException.class, () -> Servicios.ventas().registrar(new SolicitudVenta(
+                List.of(item), null, null, null, MetodoPago.EFECTIVO, new BigDecimal("100.00"))));
+        assertThrows(ServiceException.class, () -> Servicios.ventas().listar());
+    }
+
+    @Test
+    void autenticarFuncionaSinSesion() {
+        assertTrue(Servicios.usuarios().autenticar("admin", "admin123").isPresent());
+    }
+
+    @Test
+    void laVentaQuedaANombreDeLaSesion() {
+        entrarComoCajero();
+
+        Venta venta = Servicios.ventas().registrar(new SolicitudVenta(
+                List.of(item("P-003", 1)), null, null, null,
+                MetodoPago.EFECTIVO, new BigDecimal("500.00")));
+
+        assertEquals(Sesion.id(), venta.usuarioId());
+        assertEquals(Sesion.nombre(), venta.usuarioNombre());
+        assertEquals("Caja 1", venta.usuarioNombre());
+    }
+
+    @Test
+    void cajeroConservaDescuentoDelClientePeroNoPuedeAgregarManual() {
+        entrarComoCajero();
+        var cliente = Servicios.clientes().listar().stream()
+                .filter(c -> c.descuento() != null && c.descuento().signum() > 0)
+                .findFirst().orElseThrow();
+
+        Venta conDescuentoCliente = Servicios.ventas().registrar(new SolicitudVenta(
+                List.of(item("P-003", 1)), cliente.id(), cliente.nombre(), BigDecimal.ZERO,
+                MetodoPago.EFECTIVO, new BigDecimal("500.00")));
+        assertEquals(0, conDescuentoCliente.descuento().compareTo(new BigDecimal("7.45")));
+
+        assertThrows(ServiceException.class, () -> Servicios.ventas().registrar(new SolicitudVenta(
+                List.of(item("P-003", 1)), cliente.id(), cliente.nombre(), new BigDecimal("10"),
+                MetodoPago.EFECTIVO, new BigDecimal("500.00"))));
+    }
+
+    @Test
+    void adminSiPuedeAplicarDescuentoManual() {
+        entrarComoAdmin();
+
+        Venta venta = Servicios.ventas().registrar(new SolicitudVenta(
+                List.of(item("P-003", 1)), null, null, new BigDecimal("10"),
+                MetodoPago.EFECTIVO, new BigDecimal("500.00")));
+
+        assertEquals(0, venta.descuento().compareTo(new BigDecimal("14.90")));
+    }
+
+    @Test
+    void cajeroNoPuedeRegistrarPagosDirectos() {
+        Venta venta = registrarVentaComoAdmin();
+        entrarComoCajero();
+
+        assertThrows(ServiceException.class, () -> Servicios.pagos().registrar(
+                new com.novedadesale.puntoventa.models.Pago(
+                        0, venta.id(), MetodoPago.EFECTIVO, BigDecimal.ONE, LocalDateTime.now())));
     }
 
     // ------------------------------------------------------------------
@@ -195,7 +270,7 @@ class AutorizacionTest {
         entrarComoAdmin();
         return Servicios.ventas().registrar(new SolicitudVenta(
                 List.of(item("P-001", 1)), null, null, null,
-                MetodoPago.EFECTIVO, new BigDecimal("100.00"), Sesion.id(), Sesion.nombre()));
+                MetodoPago.EFECTIVO, new BigDecimal("100.00")));
     }
 
     private ItemVenta item(String codigo, int cantidad) {

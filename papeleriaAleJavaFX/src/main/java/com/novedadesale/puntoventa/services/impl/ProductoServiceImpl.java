@@ -24,26 +24,31 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public List<Producto> listar() {
+        Autorizacion.exigirSesion("listar productos");
         return repo.listar();
     }
 
     @Override
     public Optional<Producto> porId(int id) {
+        Autorizacion.exigirSesion("consultar productos");
         return repo.porId(id);
     }
 
     @Override
     public Optional<Producto> porCodigo(String codigo) {
+        Autorizacion.exigirSesion("consultar productos");
         return repo.porCodigo(codigo);
     }
 
     @Override
     public List<Producto> buscar(String texto) {
+        Autorizacion.exigirSesion("buscar productos");
         return repo.buscar(texto);
     }
 
     @Override
     public List<Producto> stockBajo() {
+        Autorizacion.exigirSesion("consultar inventario");
         return repo.stockBajo();
     }
 

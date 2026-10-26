@@ -1,4 +1,4 @@
-package com.novedadesale.puntoventa.services.impl;
+﻿package com.novedadesale.puntoventa.services.impl;
 
 import com.novedadesale.puntoventa.models.Categoria;
 import com.novedadesale.puntoventa.repositories.CategoriaRepository;
@@ -18,11 +18,13 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public List<Categoria> listar() {
+        Autorizacion.exigirSesion("listar categorías");
         return repo.listar();
     }
 
     @Override
     public Optional<Categoria> porId(int id) {
+        Autorizacion.exigirSesion("consultar categorías");
         return repo.porId(id);
     }
 
