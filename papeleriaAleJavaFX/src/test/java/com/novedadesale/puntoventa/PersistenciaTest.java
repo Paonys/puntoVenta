@@ -19,11 +19,13 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Pruebas de humo de la capa de persistencia + servicios (SQLite temporal). */
@@ -49,6 +51,9 @@ class PersistenciaTest {
 
     @Test
     void catalogoSembrado() {
+        if (!Sesion.activa()) {
+            Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        }
         assertTrue(Servicios.productos().listar().size() >= 8);
         assertTrue(Servicios.categorias().listar().size() >= 4);
         assertTrue(Servicios.productos().porCodigo("P-001").isPresent());
@@ -291,6 +296,47 @@ class PersistenciaTest {
             Files.deleteIfExists(legado);
             BaseDatos.usarRuta(db.toString());
         }
+    }
+
+    /**
+     * Revisión ponytail #5: el stock se descuenta con aritmética SQL
+     * ({@code stock = stock - ? WHERE stock >= ?}), no con una lectura vieja.
+     */
+    @Test
+    void descontarStockNoSobrevendeYNuncaQuedaNegativo() {
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        var repo = new com.novedadesale.puntoventa.repositories.sqlite.SqliteProductoRepository();
+
+        Producto p = Servicios.productos().porCodigo("P-004").orElseThrow();
+        int original = p.stock();
+
+        repo.actualizarStock(p.id(), 5);
+        assertTrue(repo.descontarStock(p.id(), 3));
+        assertEquals(2, Servicios.productos().porId(p.id()).orElseThrow().stock());
+
+        assertFalse(repo.descontarStock(p.id(), 3), "sin stock suficiente no debe descontar");
+        assertEquals(2, Servicios.productos().porId(p.id()).orElseThrow().stock(),
+                "el stock no puede quedar negativo");
+
+        repo.actualizarStock(p.id(), original);
+    }
+
+    /** #5: una venta rechazada por stock no deja venta ni modifica el stock. */
+    @Test
+    void ventaSinStockNoDejaVentaNiModificaStock() {
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+
+        Producto p = Servicios.productos().porCodigo("P-004").orElseThrow();
+        assertEquals(0, p.stock(), "P-004 se siembra sin stock");
+        int ventasAntes = Servicios.reportes().ventas(LocalDate.now(), LocalDate.now()).size();
+
+        assertThrows(com.novedadesale.puntoventa.exceptions.ValidacionException.class,
+                () -> Servicios.ventas().registrar(new SolicitudVenta(
+                        List.of(new ItemVenta(p.id(), p.codigo(), p.nombre(), p.precio(), 1)),
+                        null, null, BigDecimal.ZERO, MetodoPago.EFECTIVO, new BigDecimal("100"))));
+
+        assertEquals(0, Servicios.productos().porId(p.id()).orElseThrow().stock());
+        assertEquals(ventasAntes, Servicios.reportes().ventas(LocalDate.now(), LocalDate.now()).size());
     }
 
     private int contarPagos() throws Exception {

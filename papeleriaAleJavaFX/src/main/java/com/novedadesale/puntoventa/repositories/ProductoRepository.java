@@ -23,4 +23,11 @@ public interface ProductoRepository {
     void eliminar(int id);
 
     void actualizarStock(int productoId, int nuevoStock);
+
+    /**
+     * Descuenta stock con aritmética en SQL ({@code stock = stock - ?}) y solo
+     * si queda disponible. Devuelve {@code false} si no había stock suficiente
+     * o el producto no existe.
+     */
+    boolean descontarStock(int productoId, int cantidad);
 }

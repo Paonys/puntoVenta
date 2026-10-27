@@ -61,6 +61,8 @@ A8 lleva las guardas de rol a la capa de servicios (`Autorizacion` + `ui.Sesion`
 
 ### 5. Folio y validación de stock ocurren fuera de la transacción — `services/impl/VentaServiceImpl.java:66-74, 90, 98-106`
 
+> **Estado (2026-10-27): CORREGIDO** — catálogo, validación de stock y folio se leen dentro de `BaseDatos.enTransaccion`, y el descuento de stock es aritmético en SQL (`ProductoRepository.descontarStock`: `stock = stock - ? WHERE stock >= ?`). Pruebas: `PersistenciaTest.descontarStockNoSobrevendeYNuncaQuedaNegativo` y `.ventaSinStockNoDejaVentaNiModificaStock` (65/65). Queda el atajo anotado en el código: con dos procesos a la vez el folio MAX+1 puede chocar por UNIQUE y toca reintentar (subir a `BEGIN IMMEDIATE` cuando haya terminales concurrentes).
+
 - **Qué es:** el servicio lee el catálogo y calcula el folio (`MAX(id)+1`) *antes* de abrir la transacción, y escribe el stock con un valor absoluto desde esa lectura vieja (`producto.stock() - cantidad`).
 - **Problema:** con dos terminales sobre el mismo .db (o un futuro hilo en segundo plano), las dos ventas pasan la validación de stock y el segundo INSERT muere por `UNIQUE constraint failed: ventas.folio` → se pierde la venta y el cajero tiene que reintentar; la escritura absoluta de stock además pisa un cambio si alguien movió el stock en medio.
 - **Fix:** mueve la relectura y el cálculo del folio dentro de `BaseDatos.enTransaccion`, y escribe el stock con aritmética SQL (`SET stock = stock - ? WHERE id = ? AND stock >= ?`).

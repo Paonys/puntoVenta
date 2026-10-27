@@ -178,4 +178,17 @@ public class SqliteProductoRepository implements ProductoRepository {
             throw new ServiceException("Error al actualizar stock del producto " + productoId, e);
         }
     }
+
+    @Override
+    public boolean descontarStock(int productoId, int cantidad) {
+        try (PreparedStatement ps = BaseDatos.conexion().prepareStatement(
+                "UPDATE productos SET stock = stock - ? WHERE id = ? AND stock >= ?")) {
+            ps.setInt(1, cantidad);
+            ps.setInt(2, productoId);
+            ps.setInt(3, cantidad);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new ServiceException("Error al descontar stock del producto " + productoId, e);
+        }
+    }
 }

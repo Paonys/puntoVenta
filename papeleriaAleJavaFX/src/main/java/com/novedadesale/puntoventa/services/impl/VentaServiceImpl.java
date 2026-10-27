@@ -64,16 +64,15 @@ public class VentaServiceImpl implements VentaService {
         if (manualPct.signum() > 0) {
             Autorizacion.exigirAdmin("aplicar descuento manual");
         }
-        BigDecimal clientePct = BigDecimal.ZERO;
-        if (solicitud.clienteId() != null) {
-            clientePct = clienteRepo.porId(solicitud.clienteId())
-                    .map(c -> c.descuento() == null ? BigDecimal.ZERO : c.descuento())
-                    .orElseThrow(() -> new ServiceException(
-                            "Cliente no encontrado: " + solicitud.clienteId()));
-        }
+        BigDecimal clientePct = solicitud.clienteId() == null
+                ? BigDecimal.ZERO
+                : clienteRepo.porId(solicitud.clienteId())
+                        .map(c -> c.descuento() == null ? BigDecimal.ZERO : c.descuento())
+                        .orElseThrow(() -> new ServiceException(
+                                "Cliente no encontrado: " + solicitud.clienteId()));
 
-        // 1) Agrupa cantidades y relee precios/nombres del catálogo: nunca se
-        //    confía en el precio que traiga la solicitud.
+        // 1) Agrupa cantidades; precios y stock se releen del catálogo, nunca
+        //    se confía en lo que traiga la solicitud.
         Map<Integer, Integer> cantidades = new LinkedHashMap<>();
         for (ItemVenta pedido : solicitud.items()) {
             if (pedido.cantidad() <= 0) {
@@ -82,45 +81,51 @@ public class VentaServiceImpl implements VentaService {
             cantidades.merge(pedido.productoId(), pedido.cantidad(), Integer::sum);
         }
 
-        List<ItemVenta> items = new ArrayList<>();
-        Map<Integer, Producto> catalogo = new LinkedHashMap<>();
-        for (Map.Entry<Integer, Integer> linea : cantidades.entrySet()) {
-            Producto producto = productoRepo.porId(linea.getKey())
-                    .orElseThrow(() -> new ServiceException("Producto no encontrado: " + linea.getKey()));
-            if (producto.stock() < linea.getValue()) {
-                throw new ValidacionException("Stock insuficiente para \"" + producto.nombre() + "\"");
-            }
-            catalogo.put(producto.id(), producto);
-            items.add(new ItemVenta(producto.id(), producto.codigo(), producto.nombre(),
-                    producto.precio(), linea.getValue()));
-        }
-
-        // 2) Regla de negocio de descuentos: las promociones las resuelve el
-        //    servicio (no la UI); se suman al descuento del cliente y al manual,
-        //    con tope del 100%.
-        BigDecimal promoPct = promociones.calcularDescuento(items, LocalDate.now());
-        BigDecimal descuentoPct = promoPct.add(clientePct).add(manualPct)
-                .min(BigDecimal.valueOf(100));
-
-        Totales totales = CalculadoraTotales.calcular(items, descuentoPct);
-        MetodoPago metodo = solicitud.metodoPago() == null ? MetodoPago.EFECTIVO : solicitud.metodoPago();
-        BigDecimal recibido = solicitud.montoRecibido() == null ? totales.total() : solicitud.montoRecibido();
-        BigDecimal cambio = recibido.subtract(totales.total());
-
-        // La identidad sale de la sesión, nunca de la solicitud.
-        Venta venta = new Venta(0, siguienteFolio(), LocalDateTime.now(),
-                Sesion.id(), Sesion.nombre(),
-                solicitud.clienteId(), solicitud.clienteNombre(),
-                List.copyOf(items),
-                totales.subtotal(), totales.descuento(), totales.iva(), totales.total(),
-                metodo, recibido, cambio, EstadoVenta.COMPLETADA);
-
-        // 3) Persistencia atómica: venta + renglones + descuento de stock + pago.
+        // 2) Catálogo, validación de stock y folio se leen dentro de la misma
+        //    transacción que los escribe, y el descuento de stock es aritmético
+        //    en SQL (`stock >= ?`): dos procesos sobre el mismo archivo no
+        //    pueden vender dos veces el mismo stock.
+        //    shortcut: el folio sigue siendo MAX+1, así que con dos procesos a
+        //    la vez el segundo muere por UNIQUE y debe reintentar; subir a
+        //    BEGIN IMMEDIATE cuando haya terminales concurrentes.
         return BaseDatos.enTransaccion(() -> {
+            List<ItemVenta> items = new ArrayList<>();
+            for (Map.Entry<Integer, Integer> linea : cantidades.entrySet()) {
+                Producto producto = productoRepo.porId(linea.getKey())
+                        .orElseThrow(() -> new ServiceException("Producto no encontrado: " + linea.getKey()));
+                if (producto.stock() < linea.getValue()) {
+                    throw new ValidacionException("Stock insuficiente para \"" + producto.nombre() + "\"");
+                }
+                items.add(new ItemVenta(producto.id(), producto.codigo(), producto.nombre(),
+                        producto.precio(), linea.getValue()));
+            }
+
+            // 3) Regla de negocio de descuentos: las promociones las resuelve el
+            //    servicio (no la UI); se suman al descuento del cliente y al manual,
+            //    con tope del 100%.
+            BigDecimal promoPct = promociones.calcularDescuento(items, LocalDate.now());
+            BigDecimal descuentoPct = promoPct.add(clientePct).add(manualPct)
+                    .min(BigDecimal.valueOf(100));
+
+            Totales totales = CalculadoraTotales.calcular(items, descuentoPct);
+            MetodoPago metodo = solicitud.metodoPago() == null ? MetodoPago.EFECTIVO : solicitud.metodoPago();
+            BigDecimal recibido = solicitud.montoRecibido() == null ? totales.total() : solicitud.montoRecibido();
+            BigDecimal cambio = recibido.subtract(totales.total());
+
+            // La identidad sale de la sesión, nunca de la solicitud.
+            Venta venta = new Venta(0, siguienteFolio(), LocalDateTime.now(),
+                    Sesion.id(), Sesion.nombre(),
+                    solicitud.clienteId(), solicitud.clienteNombre(),
+                    List.copyOf(items),
+                    totales.subtotal(), totales.descuento(), totales.iva(), totales.total(),
+                    metodo, recibido, cambio, EstadoVenta.COMPLETADA);
+
+            // 4) Persistencia atómica: venta + renglones + stock + pago.
             Venta guardada = ventaRepo.guardar(venta);
             for (ItemVenta item : items) {
-                Producto producto = catalogo.get(item.productoId());
-                productoRepo.actualizarStock(producto.id(), producto.stock() - item.cantidad());
+                if (!productoRepo.descontarStock(item.productoId(), item.cantidad())) {
+                    throw new ValidacionException("Stock insuficiente para \"" + item.nombre() + "\"");
+                }
             }
             pagoRepo.guardar(new Pago(0, guardada.id(), metodo, totales.total(), guardada.fecha()));
             return guardada;
