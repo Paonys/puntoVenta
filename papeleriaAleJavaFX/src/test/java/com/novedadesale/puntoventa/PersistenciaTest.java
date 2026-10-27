@@ -219,4 +219,108 @@ class PersistenciaTest {
             BaseDatos.usarRuta(db.toString());
         }
     }
+
+    /**
+     * Revisión ponytail #6: la migración de {@code pagos} es lo único que puede
+     * dañar la base del usuario y antes no tenía ninguna prueba.
+     */
+    @Test
+    void migracionDePagosAgregaForeignKeysSinPerderPagos() throws Exception {
+        Path legado = Files.createTempFile("novedadesale-pagos-", ".db");
+        Files.deleteIfExists(legado);
+        try (java.sql.Connection c = java.sql.DriverManager.getConnection("jdbc:sqlite:" + legado);
+             java.sql.Statement st = c.createStatement()) {
+            st.execute("CREATE TABLE pagos (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + "venta_id INTEGER NOT NULL, metodo TEXT NOT NULL, "
+                    + "monto TEXT NOT NULL DEFAULT '0', fecha TEXT NOT NULL)");
+            st.execute("INSERT INTO pagos (venta_id, metodo, monto, fecha) "
+                    + "VALUES (7, 'EFECTIVO', '10.00', '2026-10-20T10:00:00')");
+        }
+        BaseDatos.cerrar();
+        BaseDatos.usarRuta(legado.toString());
+        try {
+            BaseDatos.conexion();
+
+            assertTrue(pagosTieneForeignKeys(), "la tabla migrada debe llevar la FK a ventas");
+            assertEquals(1, contarPagos());
+            assertEquals("10.00", montoDePagos());
+            assertFalse(existeTabla("pagos_tmp"), "no debe quedar pagos_tmp huérfano");
+
+            BaseDatos.cerrar();
+            BaseDatos.conexion();
+            assertEquals(1, contarPagos(), "una segunda apertura no debe volver a migrar ni perder pagos");
+        } finally {
+            BaseDatos.cerrar();
+            Files.deleteIfExists(legado);
+            BaseDatos.usarRuta(db.toString());
+        }
+    }
+
+    /**
+     * Revisión ponytail #1: un intento que murió entre DROP y RENAME dejaba los
+     * pagos en {@code pagos_tmp} y DDL creaba un {@code pagos} vacío, perdiendo
+     * el historial. El rescate debe ocurrir antes del DDL.
+     */
+    @Test
+    void migracionRescataPagosDejadosEnPagosTmpPorUnIntentoInterrumpido() throws Exception {
+        Path legado = Files.createTempFile("novedadesale-pagos-tmp-", ".db");
+        Files.deleteIfExists(legado);
+        try (java.sql.Connection c = java.sql.DriverManager.getConnection("jdbc:sqlite:" + legado);
+             java.sql.Statement st = c.createStatement()) {
+            st.execute("CREATE TABLE ventas (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + "folio TEXT NOT NULL UNIQUE, fecha TEXT NOT NULL, metodo_pago TEXT NOT NULL, "
+                    + "estado TEXT NOT NULL)");
+            st.execute("CREATE TABLE pagos_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + "venta_id INTEGER NOT NULL, metodo TEXT NOT NULL, "
+                    + "monto TEXT NOT NULL DEFAULT '0', fecha TEXT NOT NULL, "
+                    + "FOREIGN KEY (venta_id) REFERENCES ventas(id))");
+            st.execute("INSERT INTO pagos_tmp (venta_id, metodo, monto, fecha) "
+                    + "VALUES (1, 'EFECTIVO', '25.50', '2026-10-20T11:00:00')");
+        }
+        BaseDatos.cerrar();
+        BaseDatos.usarRuta(legado.toString());
+        try {
+            BaseDatos.conexion();
+
+            assertEquals(1, contarPagos(), "los pagos del intento interrumpido deben recuperarse");
+            assertEquals("25.50", montoDePagos());
+            assertFalse(existeTabla("pagos_tmp"));
+            assertTrue(pagosTieneForeignKeys());
+        } finally {
+            BaseDatos.cerrar();
+            Files.deleteIfExists(legado);
+            BaseDatos.usarRuta(db.toString());
+        }
+    }
+
+    private int contarPagos() throws Exception {
+        try (java.sql.Statement st = BaseDatos.conexion().createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM pagos")) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
+    private String montoDePagos() throws Exception {
+        try (java.sql.Statement st = BaseDatos.conexion().createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT monto FROM pagos ORDER BY id LIMIT 1")) {
+            return rs.next() ? rs.getString(1) : null;
+        }
+    }
+
+    private boolean pagosTieneForeignKeys() throws Exception {
+        try (java.sql.Statement st = BaseDatos.conexion().createStatement();
+             java.sql.ResultSet rs = st.executeQuery("PRAGMA foreign_key_list(pagos)")) {
+            return rs.next();
+        }
+    }
+
+    private boolean existeTabla(String tabla) throws Exception {
+        try (java.sql.PreparedStatement ps = BaseDatos.conexion().prepareStatement(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?")) {
+            ps.setString(1, tabla);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 }

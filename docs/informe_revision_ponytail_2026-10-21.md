@@ -21,12 +21,16 @@ A8 lleva las guardas de rol a la capa de servicios (`Autorizacion` + `ui.Sesion`
 
 ### 1. La migración de `pagos` puede dejar la app inservible para siempre — `persistence/BaseDatos.java:71-103`
 
+> **Estado (2026-10-27): CORREGIDO** — rescate de `pagos_tmp` antes del DDL, `DROP`+`RENAME` dentro de una transacción y `PRAGMA foreign_keys` fuera de ella.
+
 - **Qué es:** una migración de una sola vez que reconstruye `pagos` para agregar la FK; se ejecuta en cada arranque (`BaseDatos.java:46-50`).
 - **Problema:** no es idempotente ante un fallo ni atómica. Reproduje el SQL exacto: si sobrevive un `pagos_tmp` de un intento fallido anterior → `table pagos_tmp already exists`; si la tabla vieja la creó a mano con otras columnas → `no such column: fecha` (imposible desde el historial de este repo: la tabla siempre tuvo `fecha`). En ambos casos `crearEsquema` lanza → `conexion()` lanza `ServiceException` → **la app ya no puede abrir la base y falla igual en cada reinicio**; la única salida es borrar el .db (y con él todas las ventas). Y si el proceso muere entre `DROP TABLE pagos` y el `RENAME`, el siguiente arranque crea un `pagos` vacío → **se pierde el historial de pagos en silencio** (los datos quedan huérfanos en `pagos_tmp`). El .db vive en una carpeta sincronizada por OneDrive, que bloquea archivos: un SQLITE_BUSY pasajero basta para disparar esto.
 - **Fix:** `DROP TABLE IF EXISTS pagos_tmp` antes de crearla; hacer primero la copia y el `DROP` + `RENAME` dentro de una transacción (SQLite tiene DDL transaccional) para que el intercambio sea atómico; no dejar `pagos_tmp` huérfano si falla la copia. El `PRAGMA foreign_keys` debe quedar fuera de esa transacción (dentro no hace nada).
 - **Si lo saltamos:** un error transitorio de la base convierte la app en un ladrillo que solo se arregla borrando el archivo de datos.
 
 ### 2. Cualquiera puede escribir pagos, y los pagos son ahora "el ingreso" — `services/impl/PagoServiceImpl.java:17-20` + `services/impl/ReporteServiceImpl.java:83-89`
+
+> **Estado: CORREGIDO** en la fase 1 RBAC (2026-10-23): `PagoServiceImpl.registrar` exige ADMIN.
 
 - **Qué es:** A9 volvió a `pagos` la fuente única de ingresos, pero `PagoService.registrar` es una vía pública de escritura a esa tabla **sin** `Autorizacion.exigirAdmin` — a diferencia de toda mutación en la capa.
 - **Problema:** cualquier llamador (una sesión de CAJERO, un script, un controlador futuro) puede insertar un pago de una venta existente → `ingresos` crece mientras `resumenJornada` (que suma ventas) no → la página de Reportes y el Dashboard muestran dinero distinto para el mismo día, y el ingreso reportado se puede inflar sin venta. Un segundo pago de la misma venta la cuenta dos veces: nada garantiza un pago por venta.
@@ -39,12 +43,16 @@ A8 lleva las guardas de rol a la capa de servicios (`Autorizacion` + `ui.Sesion`
 
 ### 3. El dinero del día se calcula desde dos tablas distintas — `services/impl/ReporteServiceImpl.java:39-53` vs `:83-89`, `controllers/ReportesController.java:178-187`
 
+> **Estado: CORREGIDO** (2026-10-21): fuente única del dinero = ventas `COMPLETADA` (`informe_fuente_unica_ingresos_2026-10-21.md`).
+
 - **Qué es:** el resumen del día suma ventas; el "Total vendido" de Reportes suma pagos; el promedio divide el total de pagos entre el número de ventas.
 - **Problema:** solo coinciden mientras toda venta tenga exactamente un pago. Una venta escrita por la versión previa a A9 no tiene fila en `pagos` → Reportes muestra "Total vendido $0.00 / 1 ticket" → promedio $0.00, mientras el Dashboard sí muestra esa venta. Dos pantallas, mismo día, respuestas distintas.
 - **Fix:** elige una fuente — que `resumenJornada` también use pagos (o que `ingresos` sume ventas). Son 2-3 líneas en `ReporteServiceImpl`, sin tocar el contrato; o inserta los pagos que falten.
 - **Si lo saltamos:** reporte y dashboard pueden discrepar sobre el dinero del día sin forma de saber cuál tiene razón.
 
 ### 4. `pagoRepo.entre` truena con fechas nulas y su DAO hermano las maneja — `repositories/sqlite/SqlitePagoRepository.java:61-79` vs `repositories/sqlite/SqliteVentaRepository.java:83-110`
+
+> **Estado: CORREGIDO** (2026-10-21): NPE con fechas nulas resuelto junto a la fuente única.
 
 - **Qué es:** `entre` hace `desde.toString()` sin revisar null; el DAO de ventas arma el WHERE condicionalmente.
 - **Problema:** `Servicios.reportes().ingresos(null, null)` lanza NullPointerException mientras `Servicios.reportes().ventas(null, null)` funciona. Hoy ninguna llamada de la UI pasa null (la página sale temprano), pero la interfaz nunca dijo que las fechas sean obligatorias.
@@ -59,6 +67,8 @@ A8 lleva las guardas de rol a la capa de servicios (`Autorizacion` + `ui.Sesion`
 - **Si lo saltamos:** con un solo proceso y el hilo de JavaFX haciendo todo, esto no puede pasar — solo muerde cuando aparece un segundo proceso o hilo.
 
 ### 6. La migración no tiene prueba — el código más riesgoso del cambio
+
+> **Estado (2026-10-27): CORREGIDO** — `PersistenciaTest.migracionDePagosAgregaForeignKeysSinPerderPagos` y `.migracionRescataPagosDejadosEnPagosTmpPorUnIntentoInterrumpido` (63/63).
 
 - **Qué es:** `migrarPagosSiFaltaForeignKeys` es lo único que puede dañar la base de un usuario, y nada lo ejercita.
 - **Problema:** todas las pruebas crean una base nueva cuyo DDL ya trae la FK, así que la ruta de migración nunca corre. Una regresión se envía sin que nadie la note — y falla al arrancar, en la máquina del usuario, con sus datos.

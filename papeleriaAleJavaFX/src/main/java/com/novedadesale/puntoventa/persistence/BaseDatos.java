@@ -57,6 +57,10 @@ public final class BaseDatos {
     }
 
     private static void crearEsquema(Connection c) throws SQLException {
+        // Antes del DDL: si un intento anterior de migración murió entre el
+        // DROP y el RENAME, los pagos siguen en pagos_tmp y DDL crearía un
+        // pagos vacío, dejando esos pagos huérfanos para siempre.
+        rescatarPagosTmp(c);
         try (Statement st = c.createStatement()) {
             for (String ddl : Esquema.DDL) {
                 st.execute(ddl);
@@ -126,40 +130,97 @@ public final class BaseDatos {
 
     /**
      * A9: bases creadas antes de la tarea A9 tenían {@code pagos} sin FK a
-     * {@code ventas}; reconstruye la tabla para añadirla. Idempotente: solo
-     * actúa si la tabla existente no tiene ninguna foreign key.
+     * {@code ventas}; reconstruye la tabla para añadirla.
+     *
+     * <p>Solo actúa si la tabla no tiene ninguna foreign key. La copia y el
+     * intercambio ({@code DROP} + {@code RENAME}) se hacen dentro de una
+     * transacción —SQLite admite DDL transaccional— así que un fallo deja la
+     * tabla vieja intacta y sin {@code pagos_tmp} huérfano; el rescate de un
+     * huérfano de un intento anterior lo hace {@link #crearEsquema}, antes del
+     * DDL. El {@code PRAGMA foreign_keys} queda fuera de la transacción, donde
+     * sí surte efecto.
      */
     private static void migrarPagosSiFaltaForeignKeys(Connection c) throws SQLException {
-        try (Statement st = c.createStatement();
-             ResultSet rs = st.executeQuery("PRAGMA foreign_key_list(pagos)")) {
-            if (rs.next()) {
-                return;
+        if (tablaTieneForeignKeys(c, "pagos")) {
+            return;
+        }
+        ejecutarPragma(c, "OFF");
+        boolean autocommit = c.getAutoCommit();
+        try {
+            c.setAutoCommit(false);
+            try {
+                try (Statement st = c.createStatement()) {
+                    st.execute("""
+                            CREATE TABLE pagos_tmp (
+                                id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                                venta_id  INTEGER NOT NULL,
+                                metodo    TEXT NOT NULL,
+                                monto     TEXT NOT NULL DEFAULT '0',
+                                fecha     TEXT NOT NULL,
+                                FOREIGN KEY (venta_id) REFERENCES ventas(id)
+                            )
+                            """);
+                    st.execute("INSERT INTO pagos_tmp (id, venta_id, metodo, monto, fecha) "
+                            + "SELECT id, venta_id, metodo, monto, fecha FROM pagos");
+                    st.execute("DROP TABLE pagos");
+                    st.execute("ALTER TABLE pagos_tmp RENAME TO pagos");
+                }
+                c.commit();
+            } catch (SQLException e) {
+                try {
+                    c.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
+                throw e;
+            } finally {
+                c.setAutoCommit(autocommit);
             }
+        } finally {
+            ejecutarPragma(c, "ON");
+        }
+    }
+
+    /**
+     * Un intento anterior interrumpido entre {@code DROP} y {@code RENAME}
+     * deja los pagos en {@code pagos_tmp} y la tabla principal ausente: se
+     * recupera antes de migrar. Si ambas existen, {@code pagos_tmp} es una
+     * copia vieja y se descarta.
+     */
+    private static void rescatarPagosTmp(Connection c) throws SQLException {
+        if (!existeTabla(c, "pagos_tmp")) {
+            return;
         }
         try (Statement st = c.createStatement()) {
-            st.execute("PRAGMA foreign_keys = OFF");
-            st.execute("""
-                    CREATE TABLE pagos_tmp (
-                        id        INTEGER PRIMARY KEY AUTOINCREMENT,
-                        venta_id  INTEGER NOT NULL,
-                        metodo    TEXT NOT NULL,
-                        monto     TEXT NOT NULL DEFAULT '0',
-                        fecha     TEXT NOT NULL,
-                        FOREIGN KEY (venta_id) REFERENCES ventas(id)
-                    )
-                    """);
-            st.execute("INSERT INTO pagos_tmp (id, venta_id, metodo, monto, fecha) "
-                    + "SELECT id, venta_id, metodo, monto, fecha FROM pagos");
-            st.execute("DROP TABLE pagos");
-            st.execute("ALTER TABLE pagos_tmp RENAME TO pagos");
-            st.execute("PRAGMA foreign_keys = ON");
-        } catch (SQLException e) {
-            try (Statement st = c.createStatement()) {
-                st.execute("PRAGMA foreign_keys = ON");
-            } catch (SQLException ignorada) {
-                e.addSuppressed(ignorada);
+            if (existeTabla(c, "pagos")) {
+                st.execute("DROP TABLE pagos_tmp");
+            } else {
+                st.execute("ALTER TABLE pagos_tmp RENAME TO pagos");
             }
-            throw e;
+        }
+    }
+
+    private static boolean tablaTieneForeignKeys(Connection c, String tabla) throws SQLException {
+        try (Statement st = c.createStatement();
+             ResultSet rs = st.executeQuery("PRAGMA foreign_key_list(" + tabla + ")")) {
+            return rs.next();
+        }
+    }
+
+    private static boolean existeTabla(Connection c, String tabla) throws SQLException {
+        try (PreparedStatement ps = c.prepareStatement(
+                "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?")) {
+            ps.setString(1, tabla);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    /** {@code PRAGMA foreign_keys} es un no-op dentro de una transacción. */
+    private static void ejecutarPragma(Connection c, String valor) throws SQLException {
+        try (Statement st = c.createStatement()) {
+            st.execute("PRAGMA foreign_keys = " + valor);
         }
     }
 
