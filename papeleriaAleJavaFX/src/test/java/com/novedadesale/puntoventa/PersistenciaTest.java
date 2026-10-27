@@ -3,8 +3,10 @@ package com.novedadesale.puntoventa;
 import com.novedadesale.puntoventa.models.ItemVenta;
 import com.novedadesale.puntoventa.models.MetodoPago;
 import com.novedadesale.puntoventa.models.Producto;
+import com.novedadesale.puntoventa.models.Rol;
 import com.novedadesale.puntoventa.models.SolicitudVenta;
 import com.novedadesale.puntoventa.models.Totales;
+import com.novedadesale.puntoventa.models.Usuario;
 import com.novedadesale.puntoventa.models.Venta;
 import com.novedadesale.puntoventa.persistence.BaseDatos;
 import com.novedadesale.puntoventa.services.Servicios;
@@ -160,5 +162,61 @@ class PersistenciaTest {
 
         Producto despues = Servicios.productos().porCodigo("P-001").orElseThrow();
         assertEquals(stockAntes - 2, despues.stock());
+    }
+
+    @Test
+    void usuariosSembradosDebenCambiarPassword() {
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        try {
+            var sembrados = Servicios.usuarios().listar();
+            assertTrue(sembrados.stream()
+                    .filter(u -> u.usuario().equals("admin")).findFirst().orElseThrow().debeCambiarPassword());
+            assertTrue(sembrados.stream()
+                    .filter(u -> u.usuario().equals("caja1")).findFirst().orElseThrow().debeCambiarPassword());
+        } finally {
+            Sesion.cerrar();
+        }
+    }
+
+    @Test
+    void usuarioCreadoPorAdminDebeCambiarPassword() {
+        Sesion.iniciar(Servicios.usuarios().autenticar("admin", "admin123").orElseThrow());
+        try {
+            Usuario nuevo = Servicios.usuarios().crear("Prueba S8", "prueba-s8", "Clave123", Rol.CAJERO);
+            assertTrue(nuevo.debeCambiarPassword());
+            assertEquals(0, nuevo.intentosFallidos());
+            assertNull(nuevo.bloqueadoHasta());
+        } finally {
+            Sesion.cerrar();
+        }
+    }
+
+    @Test
+    void migracionDeBaseExistenteAgregaCredencialesSinPerderUsuarios() throws Exception {
+        Path legado = Files.createTempFile("novedadesale-legado-", ".db");
+        Files.deleteIfExists(legado);
+        String hash = com.novedadesale.puntoventa.shared.Seguridad.hash("Clave123");
+        try (java.sql.Connection c = java.sql.DriverManager.getConnection("jdbc:sqlite:" + legado);
+             java.sql.Statement st = c.createStatement()) {
+            st.execute("CREATE TABLE usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, "
+                    + "usuario TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, rol TEXT NOT NULL, "
+                    + "activo INTEGER NOT NULL DEFAULT 1)");
+            st.execute("CREATE TABLE categorias (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL)");
+            st.execute("INSERT INTO categorias (nombre) VALUES ('Existente')");
+            st.execute("INSERT INTO usuarios (nombre, usuario, password_hash, rol, activo) VALUES "
+                    + "('Legado', 'legado', '" + hash + "', 'CAJERO', 1)");
+        }
+        BaseDatos.cerrar();
+        BaseDatos.usarRuta(legado.toString());
+        try {
+            Usuario usuario = Servicios.usuarios().autenticar("legado", "Clave123").orElseThrow();
+            assertFalse(usuario.debeCambiarPassword());
+            assertEquals(0, usuario.intentosFallidos());
+            assertNull(usuario.bloqueadoHasta());
+        } finally {
+            BaseDatos.cerrar();
+            Files.deleteIfExists(legado);
+            BaseDatos.usarRuta(db.toString());
+        }
     }
 }

@@ -59,7 +59,8 @@ final class Seeder {
     private static long insertarUsuario(Connection c, String nombre, String usuario,
                                         String password, String rol) throws SQLException {
         try (PreparedStatement ps = c.prepareStatement(
-                "INSERT INTO usuarios (nombre, usuario, password_hash, rol, activo) VALUES (?,?,?,?,1)",
+                "INSERT INTO usuarios (nombre, usuario, password_hash, rol, activo, debe_cambiar_password) "
+                + "VALUES (?,?,?,?,1,1)",
                 Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, nombre);
             ps.setString(2, usuario);

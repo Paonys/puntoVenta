@@ -17,11 +17,14 @@ import java.util.Optional;
 public class SqliteUsuarioRepository implements UsuarioRepository {
 
     private static final String SELECT_BASE =
-            "SELECT id, nombre, usuario, password_hash, rol, activo FROM usuarios ";
+            "SELECT id, nombre, usuario, password_hash, rol, activo, "
+            + "debe_cambiar_password, intentos_fallidos, bloqueado_hasta FROM usuarios ";
 
     private Usuario mapear(ResultSet rs) throws SQLException {
         return new Usuario(rs.getInt("id"), rs.getString("nombre"), rs.getString("usuario"),
-                rs.getString("password_hash"), Rol.valueOf(rs.getString("rol")), rs.getInt("activo") == 1);
+                rs.getString("password_hash"), Rol.valueOf(rs.getString("rol")), rs.getInt("activo") == 1,
+                rs.getInt("debe_cambiar_password") == 1, rs.getInt("intentos_fallidos"),
+                rs.getString("bloqueado_hasta"));
     }
 
     @Override
@@ -66,25 +69,33 @@ public class SqliteUsuarioRepository implements UsuarioRepository {
     public Usuario guardar(Usuario usuario) {
         try {
             if (usuario.id() <= 0) {
-                String sql = "INSERT INTO usuarios (nombre, usuario, password_hash, rol, activo) VALUES (?,?,?,?,?)";
+                String sql = "INSERT INTO usuarios (nombre, usuario, password_hash, rol, activo, "
+                        + "debe_cambiar_password, intentos_fallidos, bloqueado_hasta) VALUES (?,?,?,?,?,?,?,?)";
                 try (PreparedStatement ps = BaseDatos.conexion().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                     ps.setString(1, usuario.nombre());
                     ps.setString(2, usuario.usuario());
                     ps.setString(3, usuario.passwordHash());
                     ps.setString(4, usuario.rol().name());
                     ps.setInt(5, usuario.activo() ? 1 : 0);
+                    ps.setInt(6, usuario.debeCambiarPassword() ? 1 : 0);
+                    ps.setInt(7, usuario.intentosFallidos());
+                    ps.setString(8, usuario.bloqueadoHasta());
                     ps.executeUpdate();
                     return porId(SqlUtil.claveGenerada(ps)).orElse(usuario);
                 }
             }
-            String sql = "UPDATE usuarios SET nombre = ?, usuario = ?, password_hash = ?, rol = ?, activo = ? WHERE id = ?";
+            String sql = "UPDATE usuarios SET nombre = ?, usuario = ?, password_hash = ?, rol = ?, activo = ?, "
+                    + "debe_cambiar_password = ?, intentos_fallidos = ?, bloqueado_hasta = ? WHERE id = ?";
             try (PreparedStatement ps = BaseDatos.conexion().prepareStatement(sql)) {
                 ps.setString(1, usuario.nombre());
                 ps.setString(2, usuario.usuario());
                 ps.setString(3, usuario.passwordHash());
                 ps.setString(4, usuario.rol().name());
                 ps.setInt(5, usuario.activo() ? 1 : 0);
-                ps.setInt(6, usuario.id());
+                ps.setInt(6, usuario.debeCambiarPassword() ? 1 : 0);
+                ps.setInt(7, usuario.intentosFallidos());
+                ps.setString(8, usuario.bloqueadoHasta());
+                ps.setInt(9, usuario.id());
                 ps.executeUpdate();
                 return porId(usuario.id()).orElse(usuario);
             }

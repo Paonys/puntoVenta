@@ -1,4 +1,4 @@
-﻿package com.novedadesale.puntoventa.services.impl;
+package com.novedadesale.puntoventa.services.impl;
 
 import com.novedadesale.puntoventa.models.Categoria;
 import com.novedadesale.puntoventa.repositories.CategoriaRepository;

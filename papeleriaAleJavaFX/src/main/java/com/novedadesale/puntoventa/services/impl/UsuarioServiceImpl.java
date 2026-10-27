@@ -52,7 +52,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ServiceException("Ya existe el usuario \"" + usuario + "\"");
         });
         return repo.guardar(new Usuario(0, nombre.trim(), usuario.trim(),
-                Seguridad.hash(password), rol == null ? Rol.CAJERO : rol, true));
+                Seguridad.hash(password), rol == null ? Rol.CAJERO : rol, true, true, 0, null));
     }
 
     @Override
@@ -73,7 +73,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         String hash = (passwordOpcional == null || passwordOpcional.isBlank())
                 ? actual.passwordHash() : Seguridad.hash(passwordOpcional);
-        return repo.guardar(new Usuario(id, nombre.trim(), usuario.trim(), hash, nuevoRol, activo));
+        return repo.guardar(new Usuario(id, nombre.trim(), usuario.trim(), hash, nuevoRol, activo,
+                actual.debeCambiarPassword(), actual.intentosFallidos(), actual.bloqueadoHasta()));
     }
 
     @Override
@@ -83,7 +84,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow(() -> new ServiceException("Usuario no encontrado: " + id));
         Validadores.requerido(password, "Contraseña");
         repo.guardar(new Usuario(id, actual.nombre(), actual.usuario(),
-                Seguridad.hash(password), actual.rol(), actual.activo()));
+                Seguridad.hash(password), actual.rol(), actual.activo(),
+                actual.debeCambiarPassword(), actual.intentosFallidos(), actual.bloqueadoHasta()));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.novedadesale.puntoventa.persistence;
 
 import com.novedadesale.puntoventa.exceptions.ServiceException;
+import com.novedadesale.puntoventa.shared.Seguridad;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -63,6 +64,38 @@ public final class BaseDatos {
         }
         migrarPagosSiFaltaForeignKeys(c);
         migrarProductosSiFaltanColumnas(c);
+        migrarUsuariosSiFaltanColumnas(c);
+    }
+
+    /**
+     * S8: bases creadas antes de la Fase 2 de seguridad no tienen las columnas
+     * de credenciales. Además marca el cambio obligatorio en las cuentas
+     * sembradas que todavía conservan su contraseña inicial.
+     */
+    private static void migrarUsuariosSiFaltanColumnas(Connection c) throws SQLException {
+        agregarColumnaSiFalta(c, "usuarios", "debe_cambiar_password", "INTEGER NOT NULL DEFAULT 0");
+        agregarColumnaSiFalta(c, "usuarios", "intentos_fallidos", "INTEGER NOT NULL DEFAULT 0");
+        agregarColumnaSiFalta(c, "usuarios", "bloqueado_hasta", "TEXT");
+        marcarClavesSembradasPorCambiar(c);
+    }
+
+    private static void marcarClavesSembradasPorCambiar(Connection c) throws SQLException {
+        String[][] sembrados = {{"admin", "admin123"}, {"caja1", "caja123"}};
+        for (String[] cuenta : sembrados) {
+            try (PreparedStatement ps = c.prepareStatement(
+                    "SELECT password_hash FROM usuarios WHERE usuario = ? AND debe_cambiar_password = 0")) {
+                ps.setString(1, cuenta[0]);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next() && Seguridad.verificar(cuenta[1], rs.getString(1))) {
+                        try (PreparedStatement up = c.prepareStatement(
+                                "UPDATE usuarios SET debe_cambiar_password = 1 WHERE usuario = ?")) {
+                            up.setString(1, cuenta[0]);
+                            up.executeUpdate();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

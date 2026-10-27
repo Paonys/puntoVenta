@@ -138,9 +138,12 @@ final class Esquema {
                 id             INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre         TEXT NOT NULL,
                 usuario        TEXT NOT NULL UNIQUE,
-                password_hash  TEXT NOT NULL,
-                rol            TEXT NOT NULL,
-                activo         INTEGER NOT NULL DEFAULT 1
+                password_hash         TEXT NOT NULL,
+                rol                   TEXT NOT NULL,
+                activo                INTEGER NOT NULL DEFAULT 1,
+                debe_cambiar_password INTEGER NOT NULL DEFAULT 0,
+                intentos_fallidos     INTEGER NOT NULL DEFAULT 0,
+                bloqueado_hasta       TEXT
             )
             """,
             """
