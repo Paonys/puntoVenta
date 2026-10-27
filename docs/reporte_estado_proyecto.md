@@ -3,7 +3,7 @@
 **Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-27
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B test` → **BUILD SUCCESS** · **61/61 tests OK**
+**Build:** `mvn -B test` → **BUILD SUCCESS** · **65/65 tests OK**
 
 ---
 
@@ -32,6 +32,13 @@ aplicación con **cada sección cargando su propia página** conectada a datos r
 > y `docs/reporte_ejecucion_seguridad_rbac_fase2_2026-10-27.md`.
 > **Solo queda la verificación manual de la S13** (migración sobre una copia de la base real y
 > los 4 escenarios de la matriz).
+>
+> **Revisión ponytail: 7 de 9 hallazgos corregidos** (2026-10-27). Migración de `pagos` atómica y
+> probada (#1/#6), folio y stock dentro de la transacción con descuento de stock en SQL (#5), y
+> el listado de Reportes ya incluye ventas canceladas con su estado (#7); #2, #3 y #4 estaban
+> corregidos antes. **Pendientes: #8** (la página de Reportes carga el periodo dos veces) y **#9**
+> (`SqlitePagoRepository.guardar` puede devolver un pago sin fecha). Informes:
+> `docs/informe_revision_ponytail_2026-10-21.md` y `docs/informe_sesion_2026-10-27.md`.
 
 ---
 
@@ -188,10 +195,13 @@ Ejecutar lo que queda de la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (secc
 2. **Reportes (B, baja):** **PDF**, que requiere una dependencia nueva en `pom.xml` (propiedad de A).
 3. **Empaquetado y pruebas (A/B):** **A10/B13** — `jpackage`/`jlink` y pruebas de UI/FXML (hoy
    6 clases de test de lógica: `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`,
-   `CredencialesTest`, `InactividadTest`; **61/61**).
+   `CredencialesTest`, `InactividadTest`; **65/65**).
 4. **Decisión de alcance:** confirmar si todo lo anterior entra en la entrega.
 5. **Seguridad (S13):** verificación manual de fase 2 sobre una copia de la base real
    (`docs/reporte_ejecucion_seguridad_rbac_fase2_2026-10-27.md`).
+6. **Revisión ponytail:** corregir **#8** (la página de Reportes carga el periodo dos veces y hace
+   una consulta de renglones por venta) y **#9** (`SqlitePagoRepository.guardar` devuelve un pago
+   sin fecha si se le pasa null). Detalle en `docs/informe_revision_ponytail_2026-10-21.md`.
 
 ---
 

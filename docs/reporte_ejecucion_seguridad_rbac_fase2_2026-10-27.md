@@ -57,7 +57,7 @@ La S8 (esquema y modelo) ya estaba commiteada el mismo día en
 - `AutorizacionTest`: password de prueba `pass2` → `Admin2026x` (ahora sujeta a política).
 
 ## Validación
-- **61/61 pruebas verdes** (`mvn -B test`).
+- **61/61 pruebas verdes** al ejecutar la fase 2 (`mvn -B test`); **65/65 al cierre del día**, tras las correcciones de la revisión ponytail (#1/#5/#6/#7).
 
 ## Pendiente (S13 manual)
 - Probar la migración sobre una **copia** de `novedadesale.db` real.

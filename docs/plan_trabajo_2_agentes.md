@@ -124,16 +124,16 @@ Fuente: `docs/pendientes_sugerencia_agente_b.md` (inventario de B) + `docs/pendi
 | **B10** ✅ | POS: seleccionar cliente, aplicar **descuento de cliente** y **cancelar venta** (usa `ventas().cancelar`) — **hecho** (`018832f`) | B | Alta |
 | **B11** ✅ | Reportes: exportar **CSV** e **imprimir** — **hecho** (`415d9ad`). PDF queda pendiente: requeriría una dependencia en `pom.xml` (propiedad de A) | B | Media |
 | **B12** | Configuración: parámetros de negocio — **pendiente**: `IVA_TASA` y `UMBRAL_STOCK_BAJO` siguen fijos en `shared/AppConstants`; requiere acuerdo con A sobre las constantes congeladas | B/A | Media |
-| **A10/B13** | Empaquetado (`jpackage`/`jlink`) y pruebas de UI — **pendiente**: `pom.xml` solo tiene `javafx-maven-plugin`; 4 clases de test de lógica (`SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`), sin pruebas de UI/FXML | A/B | Media/Baja |
+| **A10/B13** | Empaquetado (`jpackage`/`jlink`) y pruebas de UI — **pendiente**: `pom.xml` solo tiene `javafx-maven-plugin`; 6 clases de test de lógica (`SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`, `CredencialesTest`, `InactividadTest`), sin pruebas de UI/FXML | A/B | Media/Baja |
 | **B11-PDF** | Reportes: exportar **PDF** — **pendiente**: CSV e imprimir ya hechos; el PDF requiere una dependencia nueva en `pom.xml` (propiedad de A) | B (bloqueado por A) | Baja |
 
 > **Acuerdo pendiente:** declarar si la Fase 2 entra en el **alcance de entrega**. Hasta que no se
 > decida, no se considera "terminado" el proyecto (evita trabajar "a ciegas"). **Sigue abierto.**
 
-> **Estado verificado (2026-10-22):** `mvn -B test` → **43/43 OK**. Últimos cambios
-> integrados: A7 (`b0c675e`), rediseño de confirmaciones de venta / icono de Reportes (`7f2a9bc`),
-> A8+A9 (`b5ca1ed`), fuente única del dinero del día (= ventas `COMPLETADA`) y detalle de productos
-> con historial de cambios por triggers (`97e3528`).
+> **Estado verificado (2026-10-27):** `mvn -B test` → **65/65 OK**. Integrado desde la última
+> verificación: seguridad RBAC fase 2 (`323e921`) y revisión ponytail — #1/#6 (`26be001`),
+> #5 (`596b997`), #7 (`ab80256`); quedan **#8 y #9** por corregir
+> (`docs/informe_revision_ponytail_2026-10-21.md`).
 >
 > **Nota A7 ↔ B10:** con A7, `SolicitudVenta.descuentoPorcentaje` pasó a ser **solo el descuento del
 > cliente**; las promociones las resuelve el servicio. El POS (`PointOfSaleController`) se ajustó

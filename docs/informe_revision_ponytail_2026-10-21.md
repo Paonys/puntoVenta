@@ -7,6 +7,8 @@
 **Cambios revisados:** A8 (autorización por rol en la capa de servicios), A9 (FK `pagos`→`ventas`, `pagos` como fuente única de ingresos y migración automática), reescritura de la página de Reportes y sus pruebas.
 **Verificación:** `mvn -B test` → **39/39 OK** (ejecutado durante la revisión). No se modificó código.
 
+> **Estado global de la revisión (2026-10-27):** **7 de 9 hallazgos corregidos** en código (#1, #2, #3, #4, #5, #6, #7); **pendientes #8 y #9** (pospuestos). Cada hallazgo corregido lleva su nota de estado en el texto. Detalle de la sesión: `docs/informe_sesion_2026-10-27.md`.
+
 ---
 
 ## Qué hace este cambio
@@ -121,4 +123,4 @@ No lo mandaría así: corrige **1** (la migración puede dejar la app inservible
 
 ---
 
-*revision por ponytail — informe generado sobre el commit `b5ca1ed` (20-10-2026). No se modificó código.*
+*revision por ponytail — informe generado sobre el commit `b5ca1ed` (20-10-2026). **Actualizado el 2026-10-27:** los hallazgos corregidos llevan su nota de estado (7 de 9); los pendientes son #8 y #9.*

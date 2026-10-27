@@ -33,7 +33,7 @@ Runtime FXML/CSS live **only** under `src/main/resources`; do not add copies nex
 
 - Build: `mvn -B clean compile`
 - Run the app: `mvn javafx:run` (mainClass `com.novedadesale.puntoventa.App`)
-- All tests: `mvn -B test` (61 tests across `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`, `CredencialesTest`, `InactividadTest`)
+- All tests: `mvn -B test` (65 tests across `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`, `CredencialesTest`, `InactividadTest`)
 - Single test class: `mvn -B test -Dtest=NegocioTest`
 - Single test method: `mvn -B test -Dtest=NegocioTest#totalesSinDescuentoAplicanIva16`
 
@@ -62,4 +62,5 @@ All colors, radii, shadows, spacing, and gradients are `ui.*` Maven properties i
 - Passwords use PBKDF2-HMAC-SHA256 with per-user salt (`shared/Seguridad`), with legacy SHA-256 verification supported.
 - `docs/plan_trabajo_2_agentes.md` tracks completed work (A0–A6 / B0–B8, más A7–A9 y B9–B11 de la Fase 2); pendientes de esa Fase 2: B12, PDF y A10/B13. `docs/reporte_estado_proyecto.md` is the current status summary. Check these before assuming a feature is unimplemented or deciding scope.
 - Security hardening (RBAC fases 1 y 2) **is implemented**: fase 1 (2026-10-23) and fase 2 (2026-10-27) — sesión obligatoria, identidad de venta desde la sesión, cambio obligatorio de contraseña (`cambiarPasswordPropia`), bloqueo a los 5 intentos/15 min, política en `Validadores.passwordSegura`, cierre por inactividad (`ui/TemporizadorInactividad` + `shared/Reloj`). Informes: `docs/reporte_ejecucion_seguridad_rbac_fase1_2026-10-23.md` y `docs/reporte_ejecucion_seguridad_rbac_fase2_2026-10-27.md` (falta la verificación manual S13).
+- Code review (ponytail): 7 of 9 findings fixed — atomic payments migration (#1/#6), sale folio + stock inside the transaction with SQL arithmetic (#5), reports listing shows cancelled sales with state (#7). Open: #8 (reports page loads the period twice) and #9 (`SqlitePagoRepository.guardar` may return a payment without date). See `docs/informe_revision_ponytail_2026-10-21.md` and `docs/informe_sesion_2026-10-27.md`.
 - `target/` and `*.db` are git-ignored; never commit database files.
