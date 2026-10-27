@@ -21,5 +21,10 @@ public interface ReporteService {
      */
     BigDecimal ingresos(LocalDate desde, LocalDate hasta);
 
+    /**
+     * Todas las ventas del rango (inclusive), COMPLETADA y CANCELADA, para el
+     * listado y su columna de estado. El dinero no se mide aquí: ver
+     * {@link #ingresos(LocalDate, LocalDate)}.
+     */
     List<Venta> ventas(LocalDate desde, LocalDate hasta);
 }

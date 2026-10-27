@@ -88,6 +88,11 @@ public class ReporteServiceImpl implements ReporteService {
 
     @Override
     public List<Venta> ventas(LocalDate desde, LocalDate hasta) {
-        return completadasEntre(desde, hasta);
+        // Listado completo del periodo (COMPLETADA y CANCELADA): la columna de
+        // estado, el badge y los contadores de tickets/unidades de la página de
+        // reportes necesitan ver las canceladas. El dinero vive en
+        // ingresos()/resumenJornada(), que sí filtran por COMPLETADA.
+        Autorizacion.exigirSesion("consultar reportes");
+        return ventaRepo.entre(desde, hasta);
     }
 }

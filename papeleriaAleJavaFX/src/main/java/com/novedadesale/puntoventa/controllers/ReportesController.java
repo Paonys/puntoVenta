@@ -283,7 +283,8 @@ public class ReportesController implements Initializable {
             Venta venta = ventas.get(i);
             doc.getChildren().add(Componentes.etiqueta(venta.folio() + "  " + venta.fecha().format(FECHA)
                     + "  " + (venta.clienteNombre() == null ? "Público general" : venta.clienteNombre())
-                    + "  " + Formato.money(venta.total())));
+                    + "  " + Formato.money(venta.total())
+                    + (venta.estado() == EstadoVenta.CANCELADA ? "  [Cancelada]" : "")));
         }
         if (ventas.size() > limite) {
             doc.getChildren().add(Componentes.etiqueta("... y " + (ventas.size() - limite) + " ventas más"));

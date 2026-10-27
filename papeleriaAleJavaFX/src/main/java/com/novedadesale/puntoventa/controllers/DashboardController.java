@@ -1,5 +1,6 @@
 package com.novedadesale.puntoventa.controllers;
 
+import com.novedadesale.puntoventa.models.EstadoVenta;
 import com.novedadesale.puntoventa.models.ProductoMasVendido;
 import com.novedadesale.puntoventa.models.ResumenJornada;
 import com.novedadesale.puntoventa.models.Venta;
@@ -95,7 +96,11 @@ public class DashboardController implements Initializable {
 
         masVendidos.setAll(Servicios.reportes().productosMasVendidos(hoy.minusDays(29), hoy, 8));
 
-        List<Venta> recientes = Servicios.reportes().ventas(hoy, hoy);
+        // El dashboard no tiene columna de estado: lista solo ventas cobradas,
+        // que son las que suman en los números de arriba.
+        List<Venta> recientes = Servicios.reportes().ventas(hoy, hoy).stream()
+                .filter(v -> v.estado() == EstadoVenta.COMPLETADA)
+                .toList();
         ventas.setAll(recientes.size() > 12 ? recientes.subList(0, 12) : recientes);
     }
 }

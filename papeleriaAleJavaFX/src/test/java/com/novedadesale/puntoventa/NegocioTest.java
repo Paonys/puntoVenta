@@ -279,6 +279,11 @@ class NegocioTest {
         assertEquals(3, top.get(0).cantidad());
     }
 
+    /**
+     * Las canceladas no cuentan en el dinero (ingresos/resumen), pero sí salen
+     * en el listado del periodo con su estado: la columna Estado y el badge de
+     * la página de reportes dependen de eso.
+     */
     @Test
     void ventasCanceladasNoCuentanEnReportes() {
         Venta venta = registrar(item(producto("P-003"), 1), null, MetodoPago.EFECTIVO, new BigDecimal("300"));
@@ -289,7 +294,11 @@ class NegocioTest {
 
         assertEquals(0, Servicios.reportes().ingresos(LocalDate.now(), LocalDate.now())
                 .compareTo(BigDecimal.ZERO));
-        assertTrue(Servicios.reportes().ventas(LocalDate.now(), LocalDate.now()).isEmpty());
+        assertEquals(0, Servicios.reportes().resumenJornada(LocalDate.now()).numeroVentas());
+
+        List<Venta> listado = Servicios.reportes().ventas(LocalDate.now(), LocalDate.now());
+        assertEquals(1, listado.size(), "la cancelada sigue en el listado del periodo");
+        assertEquals(EstadoVenta.CANCELADA, listado.get(0).estado());
     }
 
     /**

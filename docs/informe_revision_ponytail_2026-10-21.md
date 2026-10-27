@@ -83,6 +83,8 @@ A8 lleva las guardas de rol a la capa de servicios (`Autorizacion` + `ui.Sesion`
 
 ### 7. Columna "Estado" y badge CANCELADA muertos — `controllers/ReportesController.java:106-119, 179-182, 211-219` con `services/impl/ReporteServiceImpl.java:91-94`
 
+> **Estado (2026-10-27): CORREGIDO** — `ReporteService.ventas()` ahora devuelve el periodo completo (COMPLETADA y CANCELADA): la columna Estado, el badge, el CSV y los contadores de tickets/unidades cobran vida (los filtros por estado ahora sí pueden descartar). El dinero sigue midiendo solo COMPLETADA en `ingresos()`/`resumenJornada()`. El Dashboard (que no tiene columna de estado) filtra COMPLETADA en su lista de recientes, y el reporte impreso marca `[Cancelada]`. Prueba ajustada: `NegocioTest.ventasCanceladasNoCuentanEnReportes` (65/65).
+
 - **Qué es:** `ReporteService.ventas()` devuelve solo ventas COMPLETADA, así que la tabla nunca puede mostrar una cancelada.
 - **Problema:** la columna Estado siempre dice "Completada", el CSV siempre escribe "Completada", y los dos `filter(v -> v.estado() == COMPLETADA)` siempre dan true. Cancelar una venta desde aquí hace que la fila desaparezca en vez de mostrar "Cancelada".
 - **Fix:** o devuelve todas las ventas del periodo (y dejas los filtros), o borra la columna Estado, el badge y los dos filtros que siempre dan true (~15 líneas).
