@@ -2,7 +2,9 @@
 
 **Fecha:** 22 de octubre de 2026  
 **Alcance aprobado:** fase 1 + fase 2.  
-**Estado:** planificado. **No se ha modificado código.**  
+**Estado:** **fase 1 ejecutada** (2026-10-23, `docs/reporte_ejecucion_seguridad_rbac_fase1_2026-10-23.md`)
+y **fase 2 ejecutada** (2026-10-27, `docs/reporte_ejecucion_seguridad_rbac_fase2_2026-10-27.md`).
+Sigue pendiente la verificación manual de la S13 sobre una copia de la base real.  
 **Documento de análisis:** `docs/analisis_seguridad_rbac_y_plan_2026-10-22.md`
 
 ## 1. Resultado esperado

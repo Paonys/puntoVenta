@@ -244,7 +244,7 @@ class AutorizacionTest {
     void conDosAdminsSiSePuedeDesactivarAlPrimero() {
         entrarComoAdmin();
         Usuario primero = Servicios.usuarios().porId(Sesion.id()).orElseThrow();
-        Servicios.usuarios().crear("Segundo Admin", "admin2", "pass2", Rol.ADMIN);
+        Servicios.usuarios().crear("Segundo Admin", "admin2", "Admin2026x", Rol.ADMIN);
 
         Servicios.usuarios().actualizar(primero.id(), primero.nombre(), primero.usuario(),
                 Rol.ADMIN, false, null);

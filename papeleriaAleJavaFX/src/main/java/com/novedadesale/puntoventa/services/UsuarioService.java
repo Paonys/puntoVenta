@@ -23,5 +23,11 @@ public interface UsuarioService {
 
     void cambiarPassword(int id, String password);
 
+    /**
+     * Cambio de la contraseña de la sesión activa (S9): valida la actual,
+     * aplica la política de contraseñas y limpia la bandera de cambio obligatorio.
+     */
+    void cambiarPasswordPropia(String passwordActual, String passwordNueva);
+
     void eliminar(int id);
 }

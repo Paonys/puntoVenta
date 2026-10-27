@@ -19,8 +19,8 @@ puntoVenta/
         │   ├── repositories/ interfaces + repositories/sqlite/ DAOs
         │   ├── services/     interfaces + services/impl/  (hidden behind Servicios)
         │   ├── persistence/  BaseDatos, Esquema (DDL), Seeder
-        │   ├── shared/       AppConstants, CalculadoraTotales, Formato, Seguridad, Validadores
-        │   ├── ui/           Sesion, Dialogos, Componentes, Animations
+        │   ├── shared/       AppConstants, CalculadoraTotales, Formato, Reloj, Seguridad, Validadores
+        │   ├── ui/           Sesion, Dialogos, Componentes, Animations, TemporizadorInactividad
         │   └── exceptions/   ServiceException, ValidacionException
         └── resources/com/novedadesale/puntoventa/
             ├── styles/       8 CSS files (atoms/molecules/organisms/pages/templates/theme/utilities/animations)
@@ -33,7 +33,7 @@ Runtime FXML/CSS live **only** under `src/main/resources`; do not add copies nex
 
 - Build: `mvn -B clean compile`
 - Run the app: `mvn javafx:run` (mainClass `com.novedadesale.puntoventa.App`)
-- All tests: `mvn -B test` (43 tests across `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`)
+- All tests: `mvn -B test` (61 tests across `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`, `CredencialesTest`, `InactividadTest`)
 - Single test class: `mvn -B test -Dtest=NegocioTest`
 - Single test method: `mvn -B test -Dtest=NegocioTest#totalesSinDescuentoAplicanIva16`
 
@@ -60,6 +60,6 @@ All colors, radii, shadows, spacing, and gradients are `ui.*` Maven properties i
 - `models/`, `services/` interfaces, and `shared/` are treated as a **frozen contract**: prefer adding methods to the existing interfaces over creating parallel services. `docs/plan_trabajo_2_agentes.md` §6 lists the canonical signatures.
 - Throw `ValidacionException` for bad input and `ServiceException` for operational failures; controllers surface them via `ui/Dialogos`.
 - Passwords use PBKDF2-HMAC-SHA256 with per-user salt (`shared/Seguridad`), with legacy SHA-256 verification supported.
-- `docs/plan_trabajo_2_agentes.md` tracks completed work (A0–A6 / B0–B8) and the pending Fase 2 (A7–A10 / B9–B13); `docs/reporte_estado_proyecto.md` is the current status summary. Check these before assuming a feature is unimplemented or deciding scope.
-- Security hardening (RBAC fases 1 y 2) is planned but **not implemented**: see `docs/analisis_seguridad_rbac_y_plan_2026-10-22.md` and `docs/plan_trabajo_seguridad_fases_1_2.md`.
+- `docs/plan_trabajo_2_agentes.md` tracks completed work (A0–A6 / B0–B8, más A7–A9 y B9–B11 de la Fase 2); pendientes de esa Fase 2: B12, PDF y A10/B13. `docs/reporte_estado_proyecto.md` is the current status summary. Check these before assuming a feature is unimplemented or deciding scope.
+- Security hardening (RBAC fases 1 y 2) **is implemented**: fase 1 (2026-10-23) and fase 2 (2026-10-27) — sesión obligatoria, identidad de venta desde la sesión, cambio obligatorio de contraseña (`cambiarPasswordPropia`), bloqueo a los 5 intentos/15 min, política en `Validadores.passwordSegura`, cierre por inactividad (`ui/TemporizadorInactividad` + `shared/Reloj`). Informes: `docs/reporte_ejecucion_seguridad_rbac_fase1_2026-10-23.md` y `docs/reporte_ejecucion_seguridad_rbac_fase2_2026-10-27.md` (falta la verificación manual S13).
 - `target/` and `*.db` are git-ignored; never commit database files.

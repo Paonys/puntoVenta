@@ -1,9 +1,9 @@
 ﻿# Reporte de Estado y Pendientes — Punto de Venta "Novedades Ale"
 
-**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-23
+**Fecha:** 12 de octubre de 2026 — **actualizado:** 2026-10-27
 **Proyecto:** Sistema de Punto de Venta — Papelería Novedades Ale
 **Stack:** JavaFX 21.0.6 · Maven · FXML · CSS · Ikonli · SQLite (JDBC)
-**Build:** `mvn -B test` → **BUILD SUCCESS** · **49/49 tests OK**
+**Build:** `mvn -B test` → **BUILD SUCCESS** · **61/61 tests OK**
 
 ---
 
@@ -25,10 +25,13 @@ aplicación con **cada sección cargando su propia página** conectada a datos r
 > (B12), **PDF** de reportes, **empaquetado y pruebas de UI** (A10/B13). Detalle en
 > `docs/plan_trabajo_2_agentes.md` (sección **4.bis**). **Falta decidir si la Fase 2 entra en la entrega.**
 >
-> **Seguridad RBAC (fases 1 y 2):** hay un análisis y un plan aprobados en
-> `docs/analisis_seguridad_rbac_y_plan_2026-10-22.md` y `docs/plan_trabajo_seguridad_fases_1_2.md`.
-> Cubre el endurecimiento de credenciales (cambio obligatorio, bloqueo por intentos, cierre por
-> inactividad) y cerrar huecos de autorización que A8 dejó abiertos. **Aún no se ha modificado código.**
+> **Seguridad RBAC (fases 1 y 2): ejecutadas.** Fase 1 (sesión obligatoria, identidad de venta
+> desde la sesión, descuentos y pagos por rol) el 2026-10-23 y fase 2 (cambio obligatorio de
+> contraseña, bloqueo a los 5 intentos, política de contraseñas, cierre por inactividad a los
+> 15 min) el 2026-10-27. Informes en `docs/reporte_ejecucion_seguridad_rbac_fase1_2026-10-23.md`
+> y `docs/reporte_ejecucion_seguridad_rbac_fase2_2026-10-27.md`.
+> **Solo queda la verificación manual de la S13** (migración sobre una copia de la base real y
+> los 4 escenarios de la matriz).
 
 ---
 
@@ -184,8 +187,11 @@ Ejecutar lo que queda de la **Fase 2** de `docs/plan_trabajo_2_agentes.md` (secc
    bajo) sacándolos de `shared/AppConstants`; **requiere acuerdo con A** por ser contrato congelado.
 2. **Reportes (B, baja):** **PDF**, que requiere una dependencia nueva en `pom.xml` (propiedad de A).
 3. **Empaquetado y pruebas (A/B):** **A10/B13** — `jpackage`/`jlink` y pruebas de UI/FXML (hoy
-   4 clases de test de lógica: `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`; **43/43**).
+   6 clases de test de lógica: `SharedTest`, `PersistenciaTest`, `NegocioTest`, `AutorizacionTest`,
+   `CredencialesTest`, `InactividadTest`; **61/61**).
 4. **Decisión de alcance:** confirmar si todo lo anterior entra en la entrega.
+5. **Seguridad (S13):** verificación manual de fase 2 sobre una copia de la base real
+   (`docs/reporte_ejecucion_seguridad_rbac_fase2_2026-10-27.md`).
 
 ---
 

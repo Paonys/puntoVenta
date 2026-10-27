@@ -2,8 +2,12 @@ package com.novedadesale.puntoventa.controllers;
 
 import com.novedadesale.puntoventa.App;
 import com.novedadesale.puntoventa.models.Rol;
+import com.novedadesale.puntoventa.shared.AppConstants;
 import com.novedadesale.puntoventa.ui.Animations;
+import com.novedadesale.puntoventa.ui.Dialogos;
 import com.novedadesale.puntoventa.ui.Sesion;
+import com.novedadesale.puntoventa.ui.TemporizadorInactividad;
+import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,6 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -52,6 +58,9 @@ public class MainLayoutController implements Initializable {
 
     private final List<Button> navButtons = new ArrayList<>();
 
+    private TemporizadorInactividad inactividad;
+    private AnimationTimer vigilanteInactividad;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         for (Node child : sidebar.getChildren()) {
@@ -63,6 +72,41 @@ public class MainLayoutController implements Initializable {
         aplicarPermisos();
         goToInicio();
         Animations.enableMicroInteractions(root);
+        activarInactividad();
+    }
+
+    /** S12: cierra la sesión a los 15 minutos sin actividad. */
+    private void activarInactividad() {
+        inactividad = new TemporizadorInactividad(AppConstants.MINUTOS_INACTIVIDAD, this::cerrarPorInactividad);
+        inactividad.activar();
+        root.addEventFilter(MouseEvent.ANY, e -> inactividad.registrarActividad());
+        root.addEventFilter(KeyEvent.ANY, e -> inactividad.registrarActividad());
+        vigilanteInactividad = new AnimationTimer() {
+            @Override
+            public void handle(long ahora) {
+                if (Dialogos.abierto()) {
+                    inactividad.pausar();
+                } else {
+                    inactividad.reanudar();
+                }
+                inactividad.comprobar();
+            }
+        };
+        vigilanteInactividad.start();
+    }
+
+    private void cerrarPorInactividad() {
+        detenerInactividad();
+        App.mostrarLogin();
+    }
+
+    private void detenerInactividad() {
+        if (vigilanteInactividad != null) {
+            vigilanteInactividad.stop();
+        }
+        if (inactividad != null) {
+            inactividad.detener();
+        }
     }
 
     private void aplicarPermisos() {
@@ -177,7 +221,10 @@ public class MainLayoutController implements Initializable {
         sesion.setDisable(true);
 
         MenuItem cerrarSesion = new MenuItem("Cerrar sesión");
-        cerrarSesion.setOnAction(e -> App.mostrarLogin());
+        cerrarSesion.setOnAction(e -> {
+            detenerInactividad();
+            App.mostrarLogin();
+        });
 
         ContextMenu menu = new ContextMenu(sesion, new SeparatorMenuItem(), cerrarSesion);
         menu.show(userMenu, Side.BOTTOM, 0, 8);
